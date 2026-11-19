@@ -901,7 +901,7 @@ add({ id:"dolor_duracion", mode:"primera", section:"Hábito intestinal", huli:"g
   showIf:{ id:"dolor_cuando", in:["Durante y después de evacuar"] } });
 
 add({ id:"irritantes", mode:"primera", section:"Hábito intestinal", huli:"gi",
-  type:"check", required:true, exclusive:["Ninguno"],
+  type:"check", required:true, exclusive:["Ninguno"], advanceOnExclusive:true,
   title:"¿Consumes irritantes?",
   hint:"Puedes marcar más de una. Si no consumes ninguno, elige Ninguno.",
   options:[
@@ -913,8 +913,12 @@ add({ id:"irritantes", mode:"primera", section:"Hábito intestinal", huli:"gi",
   ] });
 
 add({ id:"suplementos", mode:"primera", section:"Hábito intestinal", huli:"gi",
-  type:"text", required:true, title:"¿Tomas algún suplemento?",
-  placeholder:"Si no tomas ninguno, escribe Ninguno" });
+  type:"mc", required:true, title:"¿Tomas algún suplemento?",
+  options:["Sí","No"] });
+add({ id:"suplementos_cual", mode:"primera", section:"Hábito intestinal", huli:"gi",
+  type:"text", required:true, title:"¿Qué suplemento tomas?",
+  hint:"Si son varios, escríbelos todos.", placeholder:"Por ejemplo: fibra, probióticos, vitaminas",
+  showIf:{ id:"suplementos", in:["Sí"] } });
 
 add({ id:"comezon", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:true,
@@ -1449,6 +1453,7 @@ add({ id:"dispareunia", mode:"primera", section:"Preguntas personalizadas", huli
   type:"mc", required:true,
   title:"¿Te duele, o suele dolerte de vez en cuando, en el sexo anal?",
   options:["Sí","No"],
+  showIf:{ id:"anorreceptivo", in:["Sí"] },
   showIfFn: muestraSexualidadAnal });
 add({ id:"condon", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
   type:"mc", required:true, title:"¿Usas condón?", options:["Sí","No","A veces"] });
@@ -1468,20 +1473,24 @@ add({ id:"doxy_pep", mode:"primera", section:"Preguntas personalizadas", huli:"p
   options:["Sí","No"],
   showIfFn: muestraSexualidadAnal });
 add({ id:"lubricante", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
-  type:"check", required:true, exclusive:["No"], other:true,
+  type:"check", required:true, exclusive:["No uso nunca"], advanceOnExclusive:true, other:true,
   title:"¿Qué lubricante usas?",
-  options:["No","Agua","Silicón","Aceite"],
+  hint:"Puedes marcar más de una.",
+  options:["Agua","Silicón","Aceite","Saliva","A veces sí, a veces no","No uso nunca"],
+  showIf:{ id:"anorreceptivo", in:["Sí"] },
   showIfFn: muestraSexualidadAnal });
 add({ id:"enema", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
-  type:"check", required:true, exclusive:["No usa"], other:"Otro irritante",
+  type:"check", required:true, exclusive:["No usa"], advanceOnExclusive:true, other:"Otro irritante",
   title:"¿Haces lavados (enemas) antes de relaciones anales? Si sí, ¿con qué?",
-  options:["Jabón y agua","Agua corriente","Medicamento","No usa","Otro irritante"],
+  options:["Jabón y agua","Agua corriente","Medicamento","A veces sí, a veces no","No usa","Otro irritante"],
+  showIf:{ id:"anorreceptivo", in:["Sí"] },
   showIfFn: muestraSexualidadAnal });
 add({ id:"enema_cant", mode:"primera", section:"Preguntas personalizadas", huli:"observaciones",
   type:"mc", required:false, other:true,
   title:"Si haces lavados, ¿qué cantidad de agua crees que usas?",
   options:["Menos de 500 ml","500 ml a 1 litro","1 a 2 litros","Muchísimo"],
   showIfNot:{ id:"enema", only:["No usa"] },
+  showIf:{ id:"anorreceptivo", in:["Sí"] },
   showIfFn: muestraSexualidadAnal });
 const TAMIZ = [["hep_b","de hepatitis B"],["hep_c","de hepatitis C"],["vih","de VIH"],["sifilis","de sífilis"]];
 TAMIZ.forEach(([k, nom]) => {
@@ -2108,7 +2117,7 @@ const BLOCK_OF = {};
   ["contacto", ["quien_refiere","nombre","apellido1","apellido2","fnac","sexo_bio","identidad","genero","estado_nac","estado_nac_otro","tiene_curp","curp","telefono","correo"]],
   ["ficha", ["civil","trabajo","estado_res","estado_res_otro","tipo_sangre","estudios","estudios_en","religion","mascotas"]],
   ["motivo", ["motivo","hobbies","relato"]],
-  ["habito", ["evac_dia","bristol","pujar","tenesmo","sangre","sangre_inicio","sangre_ultimo","sangre_color","coagulos","sangre_donde","moco","moco_desde","tiempo_bano","agua","comidas","fruta","verdura","dolor_evac","dolor_eva","dolor_tipo","dolor_cuando","dolor_duracion","irritantes","suplementos","comezon","comezon_inicio","comezon_rascado","toallas","meds_topicos","meds_topicos_cual","humedad","humedad_det","aseo_vigoroso","cuerpo_extranio","cuerpo_extranio_inicio","cuerpo_extranio_sale","cuerpo_extranio_dolor","fiebre","fiebre_det","fiebre_veces","perdida_peso","perdida_peso_det","ejercicio"]],
+  ["habito", ["evac_dia","bristol","pujar","tenesmo","sangre","sangre_inicio","sangre_ultimo","sangre_color","coagulos","sangre_donde","moco","moco_desde","tiempo_bano","agua","comidas","fruta","verdura","dolor_evac","dolor_eva","dolor_tipo","dolor_cuando","dolor_duracion","irritantes","suplementos","suplementos_cual","comezon","comezon_inicio","comezon_rascado","toallas","meds_topicos","meds_topicos_cual","humedad","humedad_det","aseo_vigoroso","cuerpo_extranio","cuerpo_extranio_inicio","cuerpo_extranio_sale","cuerpo_extranio_dolor","fiebre","fiebre_det","fiebre_veces","perdida_peso","perdida_peso_det","ejercicio"]],
   ["gineco", ["fum_estado","fum","gestas","partos","partos_cesarea","abortos","macrosomia","parto_instrumentado","pap","pap_cuando","pap_conoce","pap_precancer","mamo","mamo_cuando","mamo_hallazgo"]],
   ["wexner", ["wexner_solidas","wexner_liquidas","wexner_gases","wexner_toallas","wexner_estilo"]],
   ["antecedentes", ["ahf"].concat(AHF_ENF.flatMap(([k]) => ["ahf_"+k+"_quien","ahf_"+k+"_edad","ahf_"+k+"_vive","ahf_"+k+"_fallece"])).concat(["ahf_notas","app_pat"].concat(APP_ENF.flatMap(([k]) => ["app_"+k+"_desde","app_"+k+"_med"])).concat(["app_vih_cd4","app_vih_cd4_fecha","app_vih_cv","app_vih_cv_fecha","app_detalle","app_notas","alergias","cx_tiene","cx1_tipo","cx1_cual","cx1_tecnica","cx1_lado_hernia","cx1_malla","cx1_lado","cx1_cuando","cx1_porque","cx1_compl","cx1_otra","cx2_tipo","cx2_cual","cx2_tecnica","cx2_lado_hernia","cx2_malla","cx2_lado","cx2_cuando","cx2_porque","cx2_compl","cx2_otra","cx3_tipo","cx3_cual","cx3_tecnica","cx3_lado_hernia","cx3_malla","cx3_lado","cx3_cuando","cx3_porque","cx3_compl","cx_mas","hosp","vacunas","vac_vph_tipo","vac_vph_dosis","vac_vph_anio","vac_mpox_dosis","vac_mpox_anio","vac_menb_dosis","vac_menb_anio","vac_hepa_dosis","vac_hepa_anio","vac_hepb_dosis","vac_hepb_anio","fracturas","transfusiones","transf_anio","fuma","fuma_anios","fuma_cant","fuma_dejo","alcohol","alcohol_que","alcohol_freq","drogas","droga_dur_otro","drogas_notas"]))],
@@ -2322,6 +2331,12 @@ function displayAnswer(qOrId) {
   const v = val(q.id);
   const ot = otherToken(q);
   if (v == null || v === "") return "";
+  if (Q.includes(q) && !displayAnswer._busy) {
+    displayAnswer._busy = true;
+    let vis = true;
+    try { vis = visible(q); } finally { displayAnswer._busy = false; }
+    if (!vis) return "";
+  }
   if (isPndToken(v) || (Array.isArray(v) && v.length && v.every(isPndToken))) return "";
   const otherTxt = (state.others[q.id] || "").trim();
   if (Array.isArray(v)) {
@@ -3813,7 +3828,7 @@ function buildNote() {
   t += "Nota para el expediente: este bloque no tiene un apartado propio en Huli. Pegarlo en la nota de la consulta de primera vez, antes de la exploración física.\n\n";
   const evo = composeNotaEvolucion();
   t += (evo || "Sin datos de motivo, padecimiento o evacuaciones.") + "\n\n";
-  if (has("suplementos") && !/^ningun/i.test(ans("suplementos"))) t += line("Suplementos", ans("suplementos"));
+  if (ans("suplementos") === "Sí" && has("suplementos_cual")) t += line("Suplementos", ans("suplementos_cual"));
   t += "\n";
 
   const otros = composeOtrosDatosLines();
@@ -3926,7 +3941,7 @@ function buildSummaryHTML() {
     if (evaRows.length) h += '<article class="card"><h3>Escala de dolor</h3>' + evaRows.join("") + '</article>';
   }
   h += card("Otros datos del hábito intestinal", [
-    ["Suplementos", ans("suplementos")]
+    ["Suplementos", ans("suplementos") === "Sí" ? (ans("suplementos_cual") || "Sí") : ans("suplementos")]
   ]);
   const otros = composeOtrosDatosLines();
   h += card("Otros datos del cuestionario (sin campo en Huli)", otros.map(line => {
@@ -3987,7 +4002,7 @@ const SIMULADO = {
     dolor_tipo: "Ardoroso",
     dolor_cuando: "Solo durante la evacuación",
     irritantes: ["Comida picante"],
-    suplementos: "Ninguno",
+    suplementos: "No",
     comezon: "Sí",
     comezon_inicio: "Hace tres meses",
     comezon_rascado: "No",
