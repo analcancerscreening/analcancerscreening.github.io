@@ -2500,8 +2500,6 @@ function composeAppNotas() {
 }
 function composeOtrosDatosLines() {
   const lines = [];
-  if (has("religion")) lines.push("Religión: " + ans("religion"));
-  if (has("mascotas")) lines.push("Mascotas: " + ans("mascotas"));
   if (has("identidad")) lines.push("Identidad de género referida: " + ans("identidad"));
   if (has("temas") && ans("temas").indexOf("Ninguna") < 0) lines.push("Temas de interés para la consulta: " + ans("temas"));
   if (has("observaciones")) lines.push(ans("observaciones"));
@@ -3103,9 +3101,14 @@ function composeNotaEvolucion() {
     lines.push("Padecimiento:");
     lines.push(pad.join("\n"));
   }
-  if (has("hobbies")) {
+  const hs = [];
+  const clean = x => ans(x).replace(/\.?\s*$/, "");
+  if (has("hobbies")) hs.push("Le gusta: " + clean("hobbies"));
+  if (has("religion")) hs.push("Religión: " + clean("religion"));
+  if (has("mascotas")) hs.push("Mascotas: " + clean("mascotas"));
+  if (hs.length) {
     lines.push("");
-    lines.push("Historia social: " + ans("hobbies").replace(/\.?\s*$/, "") + ".");
+    lines.push("Historia social: " + hs.join(". ") + ".");
   }
   const gineco = composeGinecoLine();
   if (gineco) {
