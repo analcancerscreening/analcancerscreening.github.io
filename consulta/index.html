@@ -957,13 +957,13 @@ add({ id:"moco_desde", mode:"primera", section:"Hábito intestinal", huli:"gi",
   showIf:{ id:"moco", in:["Sí"] } });
 
 add({ id:"tiempo_bano", mode:"primera", section:"Hábito intestinal", huli:"gi",
-  type:"mc", required:true, other:true,
+  type:"mc", required:true,
   title:"¿Cuánto tiempo te quedas sentado en el baño?",
-  options:["< 5 minutos","5 minutos","5-10 minutos","10 minutos","10-15 minutos","15-20 minutos","Más de 20 minutos"] });
+  options:["Menos de 5 minutos","5 a 10 minutos","10 a 15 minutos","15 a 20 minutos","Más de 20 minutos"] });
 
 add({ id:"agua", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:true, title:"¿Cuánta agua tomas en 24 horas?",
-  options:["Más de 3 litros","Más de 2 litros","2 litros","1.5 a 2 litros","1 a 1.5 litros","Menos de 1 litro"] });
+  options:["Más de 3 litros","2 a 3 litros","1.5 a 2 litros","1 a 1.5 litros","Menos de 1 litro"] });
 
 add({ id:"comidas", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:true, other:true,
@@ -1018,11 +1018,11 @@ add({ id:"irritantes", mode:"primera", section:"Hábito intestinal", huli:"gi",
   title:"¿Consumes irritantes?",
   hint:"Puedes marcar más de una. Si no consumes ninguno, elige Ninguno.",
   options:[
+    "Ninguno",
     "Comida grasosa abundante",
     "Comida picante",
     "Alcohol",
-    "Comida muy condimentada o con mucha pimienta (por ejemplo, comida hindú o italiana con mucha pimienta)",
-    "Ninguno"
+    "Comida muy condimentada o con mucha pimienta (por ejemplo, comida hindú o italiana con mucha pimienta)"
   ] });
 
 add({ id:"suplementos", mode:"primera", section:"Hábito intestinal", huli:"gi",
@@ -1921,8 +1921,8 @@ add({ id:"observaciones", mode:"primera", section:"Observaciones", huli:"observa
 const DIAS_7 = ["Ningún día","1 de 7 días","2 de 7 días","3 de 7 días","4 de 7 días","5 de 7 días","6 de 7 días","Los 7 días"];
 const PCT_10 = ["0%","10%","20%","30%","40%","50%","60%","70%","80%","90%","100%"];
 const VECES_DIA = ["1","2","3","4","5 o más"];
-const TIEMPO_BANO_OPTS = ["< 5 minutos","5 minutos","5-10 minutos","10 minutos","10-15 minutos","15-20 minutos","Más de 20 minutos"];
-const AGUA_OPTS = ["Más de 3 litros","Más de 2 litros","2 litros","1.5 a 2 litros","1 a 1.5 litros","Menos de 1 litro"];
+const TIEMPO_BANO_OPTS = ["Menos de 5 minutos","5 a 10 minutos","10 a 15 minutos","15 a 20 minutos","Más de 20 minutos"];
+const AGUA_OPTS = ["Más de 3 litros","2 a 3 litros","1.5 a 2 litros","1 a 1.5 litros","Menos de 1 litro"];
 const SANGRE_COLOR_OPTS = [
   { v:"Rojo brillante, como si me acabara de cortar o sangrara la nariz", img:"rojo_brillante" },
   { v:"Rojo oscuro", img:"rojo_oscuro" },
@@ -3624,6 +3624,7 @@ function composeAguaNote() {
     "Más de 3 litros": "> 3 litros",
     "Más de 2 litros": "> 2 litros",
     "2 litros": "2 litros",
+    "2 a 3 litros": "2 a 3 litros",
     "1.5 a 2 litros": "1.5 a 2 litros",
     "1 a 1.5 litros": "1 a 1.5 litros",
     "De 1 litro a 1.5 litros": "1 a 1.5 litros",
@@ -4299,7 +4300,7 @@ const SIMULADO = {
     sangre_donde: ["Manchado en el papel"],
     moco: "Sí",
     moco_desde: "Ocasionalmente el último mes",
-    tiempo_bano: "< 5 minutos",
+    tiempo_bano: "Menos de 5 minutos",
     agua: "1.5 a 2 litros",
     comidas: "3",
     fruta: "2",
@@ -4456,8 +4457,8 @@ const SIMULADO_SEGUIMIENTO = {
   sg_fruta: "2",
   sg_verdura: "2",
   sg_agua: "1.5 a 2 litros",
-  sg_tiempo_antes: "15-20 minutos",
-  sg_tiempo_ahora: "< 5 minutos",
+  sg_tiempo_antes: "15 a 20 minutos",
+  sg_tiempo_ahora: "Menos de 5 minutos",
   sg_toallas_usaba: "Siempre",
   sg_toallas_suspendio: "Sí"
 };
