@@ -511,6 +511,7 @@ select.field { appearance: auto; background: #fff; }
 }
 .dev-btn:hover { opacity: 1; }
 
+.q-finish{margin:18px 0 0;font-size:1.05rem;font-weight:700;color:var(--green-deep);text-align:center;}
 .img-heading{margin:0 0 10px;font-size:1.25rem;font-weight:800;color:var(--green-deep);text-align:center;}
 .booty-done-gif{display:block;margin:0 auto 6px;width:180px;height:auto;}
 .papelitos{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:999;}
@@ -568,6 +569,7 @@ body.patient-view #screen-done .booty-done-gif{display:block;}
     <div id="q-media" class="q-media"></div>
     <div id="q-input"></div>
     <p id="q-err" class="err hidden">Esta pregunta es obligatoria.</p>
+    <p id="q-finish" class="q-finish" hidden>Gracias, si terminaste dale clic aquí:</p>
     <div class="nav">
       <button class="btn ghost" id="btn-back" type="button">Atrás</button>
       <button class="btn primary" id="btn-next" type="button">Siguiente</button>
@@ -2449,7 +2451,8 @@ function updateNav(q) {
   $("#btn-next").hidden = !showNext;
   $("#btn-next").disabled = showNext && !canProceed(q);
   $("#btn-next").setAttribute("aria-disabled", (showNext && !canProceed(q)) ? "true" : "false");
-  $("#btn-next").textContent = last ? "Ver resultado" : "Siguiente";
+  $("#btn-next").textContent = last ? "Terminar" : "Siguiente";
+  $("#q-finish").hidden = !(last && showNext);
   $("#btn-back").hidden = state.i === 0;
 }
 
