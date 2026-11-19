@@ -595,6 +595,41 @@ const DOLOR_TIPO_HINT = {
   "Como presión": "Pesadez, como si algo empujara hacia afuera"
 };
 const DOLOR_DURA_OPTS = ["Menos de 5 minutos","De 5 a 30 minutos","De 30 minutos a 1 hora","De 1 a 3 horas","Más de 3 horas"];
+function composeAhfNotas() {
+  const out = [];
+  const got = asList("ahf");
+  AHF_ENF.forEach(([k, nom]) => {
+    if (!got.includes(nom)) return;
+    const parts = [];
+    const q = ans("ahf_"+k+"_quien"), e = ans("ahf_"+k+"_edad"), v = ans("ahf_"+k+"_vive"), f = ans("ahf_"+k+"_fallece");
+    if (q) parts.push(q.charAt(0).toLowerCase() + q.slice(1));
+    if (e) parts.push("diagnóstico " + e);
+    if (v === "Sí, vive") parts.push("vive");
+    else if (v === "Falleció") parts.push("falleció" + (f ? " " + f : ""));
+    else if (v && v !== "No sé") parts.push(v);
+    if (parts.length) out.push(nom + ": " + parts.join(", ") + ".");
+  });
+  const n = ans("ahf_notas"); if (n) out.push(n);
+  return out.join(" ");
+}
+function composeAppPat() {
+  const got = asList("app_pat");
+  const out = [];
+  got.forEach(nom => {
+    const e = APP_ENF.find(x => x[1] === nom);
+    if (!e) { if (nom !== "Ninguna" && nom !== PND) out.push(nom); return; }
+    const k = e[0], d = ans("app_"+k+"_desde"), m = ans("app_"+k+"_med");
+    let t = nom; if (d) t += " desde " + d; if (m) t += ", en tratamiento con " + m;
+    if (k === "vih") {
+      const c = ans("app_vih_cd4"), cf = ans("app_vih_cd4_fecha"), v = ans("app_vih_cv"), vf = ans("app_vih_cv_fecha");
+      if (c) t += ". Últimos CD4: " + c + (/\d$/.test(c) ? " células/mm³" : "") + (cf ? " (" + cf + ")" : "");
+      if (v && v !== "No lo sé") t += ". Última carga viral: " + (v === "Indetectable" ? "indetectable" : v + (/\d$/.test(v) ? " copias/mL" : "")) + (vf ? " (" + vf + ")" : "");      if (c || (v && v !== "No lo sé")) t += " (refiere, sin mostrar resultados)";
+    }
+    out.push(t);
+  });
+  const det = ans("app_detalle");
+  return [out.join(". "), det].filter(Boolean).join(". ");
+}
 const BRISTOL = {
   "1": "Trozos duros separados, como nueces (cuesta evacuar)",
   "2": "Con forma de salchicha, pero terronosa",
@@ -1087,23 +1122,78 @@ add({ id:"wexner_estilo", mode:"primera", section:"Escala de Wexner", huli:"gi",
   showIfFn: hasPartos });
 
 /* Antecedentes familiares patológicos */
+const AHF_ENF = [["dm", "Diabetes"], ["has", "Hipertensión"], ["colon", "Cáncer de colon"], ["recto", "Cáncer de recto"], ["ano", "Cáncer de ano"], ["estomago", "Cáncer de estómago"], ["cacu", "Cáncer cervicouterino"], ["endometrio", "Cáncer de endometrio"], ["mama", "Cáncer de mama"]];
 add({ id:"ahf", mode:"primera", section:"Antecedentes familiares", huli:"ahf",
   type:"check", required:true, other:true, exclusive:["Niega antecedentes relevantes"],
-  title:"En tu familia, ¿hay alguna enfermedad relevante?",
-    options:["Diabetes","Hipertensión","Cáncer de colon o recto"] });
+  title:"En tu familia (papás, hermanos, abuelos, tíos), ¿alguien ha tenido alguna de estas enfermedades?",
+    options:AHF_ENF.map(e => e[1]).concat(["Niega antecedentes relevantes"]) });
+AHF_ENF.forEach(([k, nom]) => {
+  const low = nom.charAt(0).toLowerCase() + nom.slice(1);
+  add({ id:"ahf_"+k+"_quien", mode:"primera", section:"Antecedentes familiares", huli:"ahf",
+    type:"text", required:false, placeholder:"Por ejemplo: mamá y abuelo paterno",
+    title:"Si sabes, ¿qué familiar o familiares han tenido " + low + "?",
+    showIf:{ id:"ahf", in:[nom] } });
+  add({ id:"ahf_"+k+"_edad", mode:"primera", section:"Antecedentes familiares", huli:"ahf",
+    type:"text", required:false, placeholder:"Por ejemplo: mamá a los 50, abuelo a los 70",
+    title:"Si sabes, ¿a qué edad se lo diagnosticaron? (" + nom + ")",
+    showIf:{ id:"ahf", in:[nom] } });
+  add({ id:"ahf_"+k+"_vive", mode:"primera", section:"Antecedentes familiares", huli:"ahf",
+    type:"mc", required:false, other:true,
+    title:"¿Ese familiar vive? (" + nom + ")",
+    options:["Sí, vive","Falleció","No sé"],
+    showIf:{ id:"ahf", in:[nom] } });
+  add({ id:"ahf_"+k+"_fallece", mode:"primera", section:"Antecedentes familiares", huli:"ahf",
+    type:"text", required:false, placeholder:"Por ejemplo: a los 68 años",
+    title:"Si sabes, ¿a qué edad falleció? (" + nom + ")",
+    showIf:{ id:"ahf_"+k+"_vive", in:["Falleció"] } });
+});
 add({ id:"ahf_notas", mode:"primera", section:"Antecedentes familiares", huli:"ahf",
   type:"textarea", required:false,
-  title:"Si quieres, ¿quién en la familia y qué detalle?",
+  title:"¿Algo más sobre enfermedades en tu familia?",
    });
 
 /* Antecedentes patológicos */
+const APP_ENF = [["dm","Diabetes"],["has","Hipertensión"],["asma","Asma"],["vih","VIH"],["dlp","Dislipidemia"],["hipot","Hipotiroidismo"]];
 add({ id:"app_pat", mode:"primera", section:"Antecedentes patológicos", huli:"app",
   type:"check", required:true, other:true, exclusive:["Ninguna"],
-  title:"¿Tienes diagnóstico de alguna enfermedad?",
-    options:["Diabetes","Hipertensión","Asma","VIH","Dislipidemia","Hipotiroidismo","Ninguna"] });
+  title:"¿Vives con alguna condición médica que requiera tratamiento?",
+    options:APP_ENF.map(e => e[1]).concat(["Ninguna"]) });
+APP_ENF.forEach(([k, nom]) => {
+  add({ id:"app_"+k+"_desde", mode:"primera", section:"Antecedentes patológicos", huli:"app",
+    type:"text", required:false, placeholder:"Por ejemplo: hace 5 años, o desde 2018",
+    title:"¿Desde cuándo vives con " + (k === "vih" ? "VIH" : nom.toLowerCase()) + "?",
+    showIf:{ id:"app_pat", in:[nom] } });
+  if (k === "vih") {
+    add({ id:"app_vih_med", mode:"primera", section:"Antecedentes patológicos", huli:"app",
+      type:"mc", required:false, other:true,
+      title:"¿Qué medicamento tomas para el VIH?",
+      options:["Biktarvy","Dovato","Triumeq"],
+      showIf:{ id:"app_pat", in:[nom] } });
+  } else {
+    add({ id:"app_"+k+"_med", mode:"primera", section:"Antecedentes patológicos", huli:"app",
+      type:"text", required:false, placeholder:"Por ejemplo: metformina 850 mg cada 12 horas",
+      title:"¿Qué medicamento tomas para " + (k === "has" ? "la hipertensión" : k === "dm" ? "la diabetes" : k === "dlp" ? "la dislipidemia" : k === "asma" ? "el asma" : "el hipotiroidismo") + "?",
+      showIf:{ id:"app_pat", in:[nom] } });
+  }
+});
+const VIH_SHOW = { id:"app_pat", in:["VIH"] };
+add({ id:"app_vih_cd4", mode:"primera", section:"Antecedentes patológicos", huli:"app",
+  type:"text", required:false, placeholder:"Por ejemplo: 650",
+  title:"Si lo sabes, ¿cuánto salieron tus últimos CD4?", showIf:VIH_SHOW });
+add({ id:"app_vih_cd4_fecha", mode:"primera", section:"Antecedentes patológicos", huli:"app",
+  type:"text", required:false, placeholder:"Por ejemplo: agosto 2026",
+  title:"¿Cuándo te hiciste ese estudio de CD4?", showIfNotEmpty:"app_vih_cd4" });
+add({ id:"app_vih_cv", mode:"primera", section:"Antecedentes patológicos", huli:"app",
+  type:"mc", required:false, other:true,
+  title:"Si lo sabes, ¿cuánto salió tu última carga viral?",
+  options:["Indetectable","No lo sé"], showIf:VIH_SHOW });
+add({ id:"app_vih_cv_fecha", mode:"primera", section:"Antecedentes patológicos", huli:"app",
+  type:"text", required:false, placeholder:"Por ejemplo: agosto 2026",
+  title:"¿Cuándo te hiciste ese estudio de carga viral?",
+  showIfNot:{ id:"app_vih_cv", only:["No lo sé"] } });
 add({ id:"app_detalle", mode:"primera", section:"Antecedentes patológicos", huli:"app",
-  type:"textarea", required:true,
-  title:"Describe esas enfermedades y si tomas medicamento.",
+  type:"textarea", required:false,
+  title:"Si tienes otra condición, ¿cuál es, desde cuándo y qué medicamento tomas?",
   showIfNot:{ id:"app_pat", only:["Ninguna"] } });
 add({ id:"app_notas", mode:"primera", section:"Antecedentes patológicos", huli:"app",
   type:"textarea", required:false,
@@ -1654,7 +1744,7 @@ const BLOCK_OF = {};
   ["habito", ["evac_dia","bristol","pujar","tenesmo","sangre","sangre_inicio","sangre_ultimo","sangre_color","coagulos","sangre_donde","moco","moco_desde","tiempo_bano","agua","comidas","fruta","verdura","dieta","dolor_evac","dolor_eva","dolor_tipo","dolor_cuando","dolor_duracion","irritantes","suplementos","comezon","comezon_inicio","comezon_rascado","toallas","meds_topicos","meds_topicos_cual","humedad","humedad_det","aseo_vigoroso","cuerpo_extranio","cuerpo_extranio_inicio","cuerpo_extranio_sale","cuerpo_extranio_dolor","fiebre","fiebre_det","fiebre_veces","perdida_peso","perdida_peso_det","ejercicio"]],
   ["gineco", ["fum_estado","fum","gestas","partos","partos_cesarea","abortos","macrosomia","parto_instrumentado","pap","pap_cuando","pap_conoce","pap_precancer","mamo","mamo_cuando","mamo_hallazgo"]],
   ["wexner", ["wexner_solidas","wexner_liquidas","wexner_gases","wexner_toallas","wexner_estilo"]],
-  ["antecedentes", ["ahf","ahf_notas","app_pat","app_detalle","app_notas","alergias","cirugias_hosp","vacunas","fracturas","transfusiones","fuma","fuma_detalle","alcohol","alcohol_que","alcohol_freq","drogas","droga_dur_otro","drogas_notas"]],
+  ["antecedentes", ["ahf"].concat(AHF_ENF.flatMap(([k]) => ["ahf_"+k+"_quien","ahf_"+k+"_edad","ahf_"+k+"_vive","ahf_"+k+"_fallece"])).concat(["ahf_notas","app_pat"].concat(APP_ENF.flatMap(([k]) => ["app_"+k+"_desde","app_"+k+"_med"])).concat(["app_vih_cd4","app_vih_cd4_fecha","app_vih_cv","app_vih_cv_fecha","app_detalle","app_notas","alergias","cirugias_hosp","vacunas","fracturas","transfusiones","fuma","fuma_detalle","alcohol","alcohol_que","alcohol_freq","drogas","droga_dur_otro","drogas_notas"]))],
   ["sexual", ["intro_historia_sexual","orientacion","anorreceptivo","dispareunia","condon","condon_freq","prep","doxy_pep","lubricante","enema","enema_cant","tamizaje_hep_b","tamizaje_hep_c","tamizaje_vih","tamizaje_sifilis","tamizaje_its","debut","parejas","its","tamizaje_ca_anal","tamizaje_ca_colon","trabajo_sexual_recibido","trabajo_sexual_dado","sexo_riesgo","exposiciones_otra","fisting","doble_penetracion"]],
   ["obs", ["temas"]],
   ["abuso", ["abuso_aviso","abuso_sexual"]],
@@ -2572,8 +2662,8 @@ function huliFields() {
   addF("Ficha básica", "Estado de residencia", composeEstadoRes());
   addF("Ficha básica", "Tipo de sangre", ans("tipo_sangre"));
   addF("Antecedentes familiares patológicos", "Patologías", ans("ahf"));
-  addF("Antecedentes familiares patológicos", "Notas", ans("ahf_notas"));
-  const pat = [ans("app_pat"), ans("app_detalle")].filter(Boolean).join(". ");
+  addF("Antecedentes familiares patológicos", "Notas", composeAhfNotas());
+  const pat = composeAppPat();
   addF("Antecedentes patológicos", "Patologías", pat);
   addF("Antecedentes patológicos", "Notas", composeAppNotas());
   addF("Antecedentes patológicos", "Alergias", ans("alergias"));
@@ -3389,10 +3479,13 @@ const SIMULADO = {
     fiebre: "No",
     perdida_peso: "No",
     ejercicio: "Sí",
-    ahf: ["Hipertensión"],
-    ahf_notas: "Papá con hipertensión desde los 50 años. Nadie en la familia con cáncer de colon.",
-    app_pat: ["Asma"],
-    app_detalle: "Asma desde la infancia, usa salbutamol de rescate dos o tres veces al mes. Sin otros medicamentos diarios.",
+    ahf: ["Hipertensión","Cáncer de colon"],
+    ahf_has_quien: "Papá", ahf_has_edad: "a los 50 años", ahf_has_vive: "Sí, vive",
+    ahf_colon_quien: "Abuela materna", ahf_colon_edad: "a los 65 años", ahf_colon_vive: "Falleció", ahf_colon_fallece: "a los 70 años",
+    app_pat: ["Asma","VIH"],
+    app_asma_desde: "la infancia", app_asma_med: "salbutamol de rescate dos o tres veces al mes",
+    app_vih_desde: "2019", app_vih_med: "Biktarvy",
+    app_vih_cd4: "650", app_vih_cd4_fecha: "agosto 2026", app_vih_cv: "Indetectable", app_vih_cv_fecha: "agosto 2026",
     app_notas: "Última crisis de asma hace un año, no se ha hospitalizado por eso desde 2018.",
     alergias: "Alérgico al paracetamol: le salen ronchas. Tolera el ibuprofeno.",
     cirugias_hosp: "Apendicectomía en 2012.\nHospitalizado por neumonía en 2018, una semana, sin complicación.",
