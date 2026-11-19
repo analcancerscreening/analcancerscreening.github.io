@@ -3361,29 +3361,7 @@ function composeSgRoma() {
   }
   return [antes, ahora].filter(Boolean).join("; ");
 }
-addSgPack({
-  key:"motivo", kind:"n7",
-  had:"Sobre el motivo principal que escribiste, ¿lo tenías cuando te vio el doctor la vez pasada?",
-  init:"En esa ocasión, ¿qué porcentaje de los días lo tenías?",
-  reduc:"¿Qué tanto sientes que se redujo?",
-  now:"¿Y ahora, qué porcentaje de los días lo tienes?",
-  bajo:"¿Cuándo empezó a bajar, después de la consulta?",
-  elimino:"¿Se te quitó por completo?",
-  eliminoCuando:"¿Cuándo se te quitó?",
-  ultima:"¿Cuándo fue la última vez que lo tuviste?"
-});
-/* El paquete de motivo solo se muestra si el texto no coincide con un síntoma ya preguntado. */
-["tenia","inicio","reduccion","actual","bajo_cuando","elimino","elimino_cuando","ultima"].forEach(suf => {
-  const q = Q.find(x => x.id === "sg_motivo_"+suf);
-  if (q) {
-    const prev = q.showIfFn;
-    q.showIfFn = function() {
-      if (!motivoEsOtro()) return false;
-      return prev ? prev() : true;
-    };
-    if (suf === "tenia") q.showIfFn = motivoEsOtro;
-  }
-});
+/* Pantalla del motivo principal en seguimiento eliminada (Dr. Agus 20/11/2026) */
 
 add({ id:"sg_evac_dia", mode:"seguimiento", section:"Evacuaciones de ahora", huli:"gi",
   type:"mc", required:true, other:true,
@@ -3644,7 +3622,7 @@ const ABAJO = ids => Object.fromEntries(ids.map(i => [i, "down"]));
 ].forEach(([h, ids]) => defChain(h, ids));
 // pujo y tenesmo: el porcentaje de "ahora" (sg_pujar / sg_tenesmo) va en la misma pantalla, justo después de la reducción (Dr. Agus 20/11/2026)
 const SG_AHORA = { pujo:"sg_pujar", tenesmo:"sg_tenesmo" };
-["sangrado","dolor","comezon","moco","pujo","tenesmo","bulto","abdominal","motivo"].forEach(k => {
+["sangrado","dolor","comezon","moco","pujo","tenesmo","bulto","abdominal"].forEach(k => {
   const ids = pref("sg_"+k+"_", ["sg_"+k+"_tenia"]);
   if (SG_AHORA[k]) { const i = ids.indexOf("sg_"+k+"_reduccion"); ids.splice(i + 1, 0, SG_AHORA[k]); }
   defChain("sg_"+k+"_tenia", ids);
@@ -6626,10 +6604,6 @@ function composeNotaSeguimiento() {
   if (sBulto) sx.push(sBulto);
   const sAbd = composeSgSintomaLine("abdominal", "Dolor abdominal");
   if (sAbd) sx.push(sAbd);
-  if (motivoEsOtro()) {
-    const sMot = composeSgSintomaLine("motivo", "Motivo principal");
-    if (sMot) sx.push(sMot);
-  }
   if (sx.length) pad.push(sx.join("\n"));
   if (pad.length) {
     lines.push("");
