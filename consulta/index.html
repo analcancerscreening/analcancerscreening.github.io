@@ -759,7 +759,7 @@ function identidadCongruente(opt) {
     set(v) { base = v; }, enumerable: true, configurable: true
   });
 })();
-add({ id:"genero", mode:"primera", section:"Ficha básica", huli:"ficha",
+add({ id:"genero", showIfFn: () => false /* quitada a petición del Dr. Agus, 19/11/2026; se llena sola desde identidad */, mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"mc", required:true,
   title:"Género en el expediente",
   options:["Femenino","Intersexual","Masculino","No especificado","Otro","Transexual","Transgénero","Travesti"] });
@@ -3220,7 +3220,7 @@ function maybeMapGenero() {
   const raw = val("identidad");
   if (!raw) return;
   const mapped = mapIdentidadToGenero(raw);
-  if (mapped && !val("genero")) state.answers.genero = mapped;
+  if (mapped) state.answers.genero = mapped;
 }
 function composeFechaNac() {
   const fn = fmtDateISO(val("fnac")) || ans("fnac");
@@ -3289,7 +3289,7 @@ function huliFields() {
   addF("Ficha básica", "Primer apellido", ans("apellido1"));
   addF("Ficha básica", "Segundo apellido", ans("apellido2"));
   addF("Ficha básica", "Sexo asignado al nacimiento", ans("sexo_bio"));
-  addF("Ficha básica", "Género", ans("genero"));
+  addF("Ficha básica", "Género", String(val("genero") || mapIdentidadToGenero(val("identidad")) || ""));
   addF("Ficha básica", "Fecha de nacimiento", composeFechaNac());
   addF("Ficha básica", "Estado de nacimiento", composeEstadoNac());
   addF("Ficha básica", "Identificación (CURP)", composeCURP());
