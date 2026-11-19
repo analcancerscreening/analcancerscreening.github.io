@@ -842,12 +842,12 @@ add({ id:"bristol", mode:"primera", section:"Hábito intestinal", huli:"gi",
 
 add({ id:"pujar", mode:"primera", section:"Hábito intestinal", huli:"gi",
   required:true, type:"pct", left:"0%: nunca", right:"100%: siempre",
-  title:"De todas las veces que evacúas, ¿en qué porcentaje necesitas pujar?" });
+  title:"De todas las veces que evacúas, ¿en qué porcentaje necesitas pujar muy fuerte y durante toda la evacuación?", hint:"Todos necesitamos pujar un poco al evacuar. Aquí te preguntamos si necesitas pujar muy fuerte y durante toda la evacuación." });
 
 add({ id:"tenesmo", mode:"primera", section:"Hábito intestinal", huli:"gi",
   required:true, type:"pct", left:"0%: nunca", right:"100%: siempre",
-  title:"De todas las veces que evacúas, ¿en qué porcentaje sientes, al terminar, que aún quieres evacuar?",
-  hint:"Esa sensación de no terminar. Si no te pasa, toca 0%." });
+  title:"De todas las veces que evacúas, ¿en qué porcentaje sientes, al terminar, que el recto sigue lleno y que aún quieres evacuar?",
+  hint:"Lo sientes en el recto (la parte final del intestino, justo arriba del ano), no en el abdomen o la panza. Si no te pasa, toca 0%." });
 
 add({ id:"sangre", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:true, other:true,
@@ -2125,10 +2125,11 @@ add({ id:"sg_bristol", mode:"seguimiento", section:"Evacuaciones de ahora", huli
   optionHint: BRISTOL });
 add({ id:"sg_pujar", mode:"seguimiento", section:"Evacuaciones de ahora", huli:"gi",
   required:true, type:"pct", left:"0%: nunca", right:"100%: siempre",
-  title:"Ahora, de todas las veces que evacúas, ¿en qué porcentaje necesitas pujar?" });
+  title:"Ahora, de todas las veces que evacúas, ¿en qué porcentaje necesitas pujar muy fuerte y durante toda la evacuación?", hint:"Todos necesitamos pujar un poco al evacuar. Aquí te preguntamos si necesitas pujar muy fuerte y durante toda la evacuación." });
 add({ id:"sg_tenesmo", mode:"seguimiento", section:"Evacuaciones de ahora", huli:"gi",
   required:true, type:"pct", left:"0%: nunca", right:"100%: siempre",
-  title:"Ahora, de todas las veces que evacúas, ¿en qué porcentaje sientes, al terminar, que aún quieres evacuar?" });
+  title:"Ahora, de todas las veces que evacúas, ¿en qué porcentaje sientes, al terminar, que el recto sigue lleno y que aún quieres evacuar?",
+  hint:"Lo sientes en el recto (la parte final del intestino, justo arriba del ano), no en el abdomen o la panza. Si no te pasa, toca 0%." });
 
 add({ id:"sg_comidas", mode:"seguimiento", section:"Evacuaciones de ahora", huli:"gi",
   type:"mc", required:true, other:true,
