@@ -3092,6 +3092,10 @@ function composeNotaEvolucion() {
     lines.push("Padecimiento:");
     lines.push(pad.join("\n"));
   }
+  if (has("hobbies")) {
+    lines.push("");
+    lines.push("Historia social: " + ans("hobbies").replace(/\.?\s*$/, "") + ".");
+  }
   const gineco = composeGinecoLine();
   if (gineco) {
     lines.push("");
@@ -3147,7 +3151,6 @@ function buildNote() {
   t += "Nota para el expediente: este bloque no tiene un apartado propio en Huli. Pegarlo en la nota de la consulta de primera vez, antes de la exploración física.\n\n";
   const evo = composeNotaEvolucion();
   t += (evo || "Sin datos de motivo, padecimiento o evacuaciones.") + "\n\n";
-  if (has("hobbies")) t += line("Contexto personal", ans("hobbies"));
   if (has("dieta")) t += line("Alimentación (día típico, opcional)", ans("dieta"));
   if (has("suplementos") && !/^ningun/i.test(ans("suplementos"))) t += line("Suplementos", ans("suplementos"));
   t += "\n";
@@ -3254,7 +3257,6 @@ function buildSummaryHTML() {
     h += '<article class="card"><h3>Nota de evolución</h3><p class="gi-flag">Bloque listo para pegar en la consulta de primera vez, antes de la exploración física.</p><pre class="resumen-evolucion">'+escapeHtml(evoRes)+"</pre></article>";
   }
   h += card("Otros datos del hábito intestinal", [
-    ["Contexto", ans("hobbies")],
     ["Dieta (opcional)", ans("dieta")],
     ["Suplementos", ans("suplementos")]
   ]);
