@@ -587,6 +587,7 @@ window.__FC_IMAGES__ = {"bristol": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAA
 const IMAGES = window.__FC_IMAGES__;
 IMAGES.booty_pensando = "assets/booty_pensando_APROBADO.gif";
 
+const PORCION_OPTS = ["0","1","2","3","4","5 o más"];
 const BRISTOL = {
   "1": "Trozos duros separados, como nueces (cuesta evacuar)",
   "2": "Con forma de salchicha, pero terronosa",
@@ -785,16 +786,25 @@ add({ id:"agua", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:true, title:"¿Cuánta agua tomas en 24 horas?",
   options:["Más de 3 litros","Más de 2 litros","2 litros","1.5 a 2 litros","1 a 1.5 litros","Menos de 1 litro"] });
 
-add({ id:"fibra", mode:"primera", section:"Hábito intestinal", huli:"gi",
-  type:"mc", required:true,
-  title:"¿Cómo ves tu consumo de fibra?",
-  hint:"Por ejemplo, frutas, verduras y cereales integrales.",
-  options:["Adecuada","Moderada","Escasa"] });
+add({ id:"comidas", mode:"primera", section:"Hábito intestinal", huli:"gi",
+  type:"mc", required:true, other:true,
+  title:"¿Cuántas comidas haces al día?",
+  options: PORCION_OPTS });
+add({ id:"fruta", mode:"primera", section:"Hábito intestinal", huli:"gi",
+  type:"mc", required:true, other:true,
+  title:"¿Cuántas porciones de fruta comes al día?",
+  hint:"Una porción es más o menos lo que cabe en tu mano.",
+  options: PORCION_OPTS });
+add({ id:"verdura", mode:"primera", section:"Hábito intestinal", huli:"gi",
+  type:"mc", required:true, other:true,
+  title:"¿Cuántas porciones de verdura comes al día?",
+  hint:"Una porción es más o menos lo que cabe en tu mano.",
+  options: PORCION_OPTS });
 
 add({ id:"dieta", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"textarea", required:false,
   title:"Si quieres, un día típico de comida",
-  hint:"Con la pregunta de fibra ya basta para la nota. Este detalle es opcional." });
+  hint:"Con las preguntas de comidas, fruta y verdura ya basta para la nota. Este detalle es opcional." });
 
 add({ id:"dolor_evac", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:true, title:"¿Hay dolor al evacuar?", options:["Sí","No"] });
@@ -1287,7 +1297,6 @@ const PCT_10 = ["0%","10%","20%","30%","40%","50%","60%","70%","80%","90%","100%
 const VECES_DIA = ["1","2","3","4","5 o más"];
 const TIEMPO_BANO_OPTS = ["< 5 minutos","5 minutos","5-10 minutos","10 minutos","10-15 minutos","15-20 minutos","Más de 20 minutos"];
 const AGUA_OPTS = ["Más de 3 litros","Más de 2 litros","2 litros","1.5 a 2 litros","1 a 1.5 litros","Menos de 1 litro"];
-const PORCION_OPTS = ["0","1","2","3","4","5 o más"];
 const SANGRE_COLOR_OPTS = [
   { v:"Rojo brillante, como si me acabara de cortar o sangrara la nariz", img:"rojo_brillante" },
   { v:"Rojo oscuro", img:"rojo_oscuro" },
@@ -1553,26 +1562,21 @@ add({ id:"sg_tenesmo", mode:"seguimiento", section:"Evacuaciones de ahora", huli
   title:"Ahora, en una semana, ¿cuántos días sientes, al terminar, que aún quieres evacuar?",
   options: DIAS_7 });
 
-add({ id:"sg_fibra_ahora", mode:"seguimiento", section:"Evacuaciones de ahora", huli:"gi",
-  type:"mc", required:true,
-  title:"¿Estás comiendo fibra ahora?",
-  hint:"Por ejemplo, frutas, verduras y cereales integrales.",
-  options:["Sí","No"] });
 add({ id:"sg_comidas", mode:"seguimiento", section:"Evacuaciones de ahora", huli:"gi",
   type:"mc", required:true, other:true,
   title:"¿Cuántas comidas al día haces?",
   options: PORCION_OPTS,
-  showIf:{ id:"sg_fibra_ahora", in:["Sí"] } });
+  });
 add({ id:"sg_fruta", mode:"seguimiento", section:"Evacuaciones de ahora", huli:"gi",
   type:"mc", required:true, other:true,
   title:"¿Cuántas porciones de fruta comes al día?",
   options: PORCION_OPTS,
-  showIf:{ id:"sg_fibra_ahora", in:["Sí"] } });
+  });
 add({ id:"sg_verdura", mode:"seguimiento", section:"Evacuaciones de ahora", huli:"gi",
   type:"mc", required:true, other:true,
   title:"¿Cuántas porciones de verdura comes al día?",
   options: PORCION_OPTS,
-  showIf:{ id:"sg_fibra_ahora", in:["Sí"] } });
+  });
 
 add({ id:"sg_agua", mode:"seguimiento", section:"Evacuaciones de ahora", huli:"gi",
   type:"mc", required:true,
@@ -1622,7 +1626,7 @@ const BLOCK_OF = {};
   ["contacto", ["quien_refiere","nombre","apellido1","apellido2","fnac","sexo_bio","identidad","genero","estado_nac","estado_nac_otro","tiene_curp","curp","telefono","correo"]],
   ["ficha", ["civil","trabajo","estado_res","estado_res_otro","tipo_sangre","estudios","estudios_en","religion","mascotas"]],
   ["motivo", ["motivo","hobbies","relato"]],
-  ["habito", ["evac_dia","bristol","pujar","tenesmo","sangre","sangre_inicio","sangre_ultimo","sangre_color","coagulos","sangre_donde","moco","moco_desde","tiempo_bano","agua","fibra","dieta","dolor_evac","dolor_eva","dolor_tipo","dolor_cuando","irritantes","suplementos","comezon","comezon_inicio","comezon_rascado","toallas","meds_topicos","meds_topicos_cual","humedad","humedad_det","aseo_vigoroso","banos_asiento","banos_asiento_freq","cuerpo_extranio","cuerpo_extranio_inicio","cuerpo_extranio_dolor","fiebre","fiebre_det","perdida_peso","perdida_peso_det","ejercicio"]],
+  ["habito", ["evac_dia","bristol","pujar","tenesmo","sangre","sangre_inicio","sangre_ultimo","sangre_color","coagulos","sangre_donde","moco","moco_desde","tiempo_bano","agua","comidas","fruta","verdura","dieta","dolor_evac","dolor_eva","dolor_tipo","dolor_cuando","irritantes","suplementos","comezon","comezon_inicio","comezon_rascado","toallas","meds_topicos","meds_topicos_cual","humedad","humedad_det","aseo_vigoroso","banos_asiento","banos_asiento_freq","cuerpo_extranio","cuerpo_extranio_inicio","cuerpo_extranio_dolor","fiebre","fiebre_det","perdida_peso","perdida_peso_det","ejercicio"]],
   ["gineco", ["fum_estado","fum","gestas","partos","partos_cesarea","abortos","macrosomia","parto_instrumentado","pap","pap_cuando","pap_conoce","pap_precancer","mamo","mamo_cuando","mamo_hallazgo"]],
   ["wexner", ["wexner_solidas","wexner_liquidas","wexner_gases","wexner_toallas","wexner_estilo"]],
   ["antecedentes", ["ahf","ahf_notas","app_pat","app_detalle","app_notas","alergias","cirugias_hosp","vacunas","fracturas","transfusiones","fuma","fuma_detalle","alcohol","alcohol_que","alcohol_freq","drogas","droga_dur_otro","drogas_notas"]],
@@ -1632,7 +1636,7 @@ const BLOCK_OF = {};
   ["cierre", ["observaciones"]],
   ["seguimiento", ["sg_cirugia", "sg_cirugia_cuando", "sg_psyllium", "sg_psyllium_apego", "sg_banos_ind", "sg_banos_hecho", "sg_motivo"]],
   ["sg_sintomas", ["sg_sangrado_color", "sg_sangrado_coagulos", "sg_sangrado_donde", "sg_dolor_tipo", "sg_dolor_cuando"]],
-  ["sg_evac", ["sg_evac_dia", "sg_bristol", "sg_pujar", "sg_tenesmo", "sg_fibra_ahora", "sg_comidas", "sg_fruta", "sg_verdura", "sg_agua", "sg_tiempo_antes", "sg_tiempo_ahora", "sg_toallas_usaba", "sg_toallas_suspendio"]]
+  ["sg_evac", ["sg_evac_dia", "sg_bristol", "sg_pujar", "sg_tenesmo", "sg_comidas", "sg_fruta", "sg_verdura", "sg_agua", "sg_tiempo_antes", "sg_tiempo_ahora", "sg_toallas_usaba", "sg_toallas_suspendio"]]
 ].forEach(pair => pair[1].forEach(id => { BLOCK_OF[id] = pair[0]; }));
 
 const SENSITIVE_IDS = new Set([
@@ -2689,13 +2693,26 @@ function composeAguaNote() {
   };
   return map[a] || a || "";
 }
-function composeFibraNote() {
-  const f = ans("fibra");
-  if (!f) return "";
-  if (/adecuad/i.test(f)) return "adecuada";
-  if (/escas/i.test(f)) return "escaso";
-  if (/moderad/i.test(f)) return "moderado";
-  return lowerJoin(f);
+function porcionNum(v) {
+  const n = parseInt(String(v || "").replace(/^Otro:\s*/i, ""), 10);
+  return isNaN(n) ? null : n;
+}
+function composeFibraNote(pre) {
+  pre = pre || "";
+  const c = ans(pre + "comidas"), f = ans(pre + "fruta"), v = ans(pre + "verdura");
+  if (!c && !f && !v) return "";
+  const fn = porcionNum(f), vn = porcionNum(v);
+  let cal = "";
+  if (fn !== null && vn !== null) {
+    if (fn >= 3 && vn >= 3) cal = "adecuado";
+    else if (fn >= 2 && vn >= 2) cal = "regular";
+    else cal = "bajo";
+  }
+  const bits = [];
+  if (c) bits.push(c + " comidas al día");
+  if (f) bits.push("fruta " + (fn !== null ? fn : f) + "/3 porciones");
+  if (v) bits.push("verdura " + (vn !== null ? vn : v) + "/3 porciones");
+  return (cal ? cal + " (" : "") + bits.join(", ") + (cal ? ")" : "");
 }
 function composeDolorNote() {
   if (!has("dolor_evac") || ans("dolor_evac") === "No") return "negado";
@@ -2921,7 +2938,8 @@ function composeEvacuacionesParagraph() {
   evac += " Moco: " + composeMocoNote() + ".";
   if (has("tiempo_bano")) evac += " Tiempo: " + ans("tiempo_bano").replace(/^Otro:\s*/i, "") + ".";
   if (has("agua")) evac += " Agua: " + composeAguaNote() + ".";
-  if (has("fibra")) evac += " Fibra: " + composeFibraNote() + ".";
+  const fibraTxt = composeFibraNote("");
+  if (fibraTxt) evac += " Consumo de fibra: " + fibraTxt + ".";
   evac += " Dolor: " + composeDolorNote() + ".";
   if (has("irritantes")) evac += " Irritantes: " + composeIrritantesNote() + ".";
   evac += " Prurito: " + composePruritoNote() + ".";
@@ -3049,14 +3067,8 @@ function composeNotaSeguimiento() {
     if (te) ev.push("tenesmo: " + te);
   }
   let evac = ev.length ? ("Evacuaciones: " + ev.join(", ") + ".") : "";
-  if (ans("sg_fibra_ahora") === "No") evac += " Fibra: no.";
-  else if (ans("sg_fibra_ahora") === "Sí") {
-    const bits = ["sí"];
-    if (has("sg_comidas")) bits.push(ans("sg_comidas") + " comidas al día");
-    if (has("sg_fruta")) bits.push(ans("sg_fruta") + " porciones de fruta");
-    if (has("sg_verdura")) bits.push(ans("sg_verdura") + " porciones de verdura");
-    evac += " Fibra: " + bits.join(", ") + ".";
-  }
+  const sgFibra = composeFibraNote("sg_");
+  if (sgFibra) evac += " Consumo de fibra: " + sgFibra + ".";
   if (has("sg_agua")) evac += " Agua: " + lowerJoin(ans("sg_agua")) + ".";
   if (has("sg_tiempo_antes") || has("sg_tiempo_ahora")) {
     const bits = [];
@@ -3310,7 +3322,9 @@ const SIMULADO = {
     moco_desde: "Ocasionalmente el último mes",
     tiempo_bano: "< 5 minutos",
     agua: "1.5 a 2 litros",
-    fibra: "Adecuada",
+    comidas: "3",
+    fruta: "2",
+    verdura: "3",
     dieta: "Desayuna avena con fruta; come pollo o pescado con verduras y arroz; cena yogurt y una pieza de fruta. Los fines de semana come más picante y comida grasosa.",
     dolor_evac: "Sí",
     dolor_eva: "5",
@@ -3450,7 +3464,6 @@ const SIMULADO_SEGUIMIENTO = {
   sg_bristol: "4",
   sg_pujar: "2 de 7 días",
   sg_tenesmo: "1 de 7 días",
-  sg_fibra_ahora: "Sí",
   sg_comidas: "3",
   sg_fruta: "2",
   sg_verdura: "2",
