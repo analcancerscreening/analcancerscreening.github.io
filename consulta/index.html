@@ -503,6 +503,8 @@ select.field { appearance: auto; background: #fff; }
 .numunit { display:flex; gap:10px; align-items:stretch; }
 .numunit input.field { flex: 0 0 40%; min-width: 0; }
 .numunit select.field { flex: 1 1 auto; min-width: 0; }
+.numunit.telcc select.field { flex: 0 0 34%; }
+.numunit.telcc input.field { flex: 1 1 auto; }
 .dev-btn {
   display: inline-block; margin-top: 10px;
   background: none; border: none; color: var(--muted);
@@ -775,7 +777,16 @@ add({ id:"curp", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"text", required:true, title:"CURP", placeholder:"18 caracteres",
   showIf:{ id:"tiene_curp", in:["Sí"] } });
 add({ id:"telefono", mode:"primera", section:"Ficha básica", huli:"ficha",
-  type:"tel", required:true, title:"Teléfono", placeholder:"55 0000 0000" });
+  type:"telcc", required:true, title:"Teléfono celular", hint:"Elige la clave de tu país y escribe tu número de 10 dígitos." });
+const LADAS = [
+  ["🇲🇽 México","+52"],["🇺🇸 Estados Unidos","+1"],["🇨🇦 Canadá","+1"],["🇨🇴 Colombia","+57"],
+  ["🇦🇷 Argentina","+54"],["🇨🇱 Chile","+56"],["🇵🇪 Perú","+51"],["🇬🇹 Guatemala","+502"],
+  ["🇻🇪 Venezuela","+58"],["🇧🇷 Brasil","+55"],["🇪🇸 España","+34"]
+];
+function telPartes() {
+  const m = String(val("telefono") || "").match(/^(\+\d+)\s*(\d*)$/);
+  return m ? { cc: m[1], num: m[2] } : { cc: "+52", num: String(val("telefono") || "").replace(/\D/g, "").slice(-10) };
+}
 add({ id:"correo", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"email", required:false, title:"Correo electrónico", placeholder:"tucorreo@ejemplo.com" });
 add({ id:"civil", mode:"primera", section:"Ficha básica", huli:"ficha",
@@ -799,8 +810,8 @@ add({ id:"tipo_sangre", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"mc", required:true, title:"Tipo de sangre",
   options:["O+","O-","A+","A-","B+","B-","AB+","AB-","Desconocido"] });
 add({ id:"religion", mode:"primera", section:"Ficha básica", huli:"observaciones",
-  type:"text", required:true, title:"¿Practicas alguna religión?",
-  placeholder:"Si no, puedes escribir Ninguna" });
+  type:"mc", required:true, other:true, title:"¿Practicas alguna religión?",
+  options:["Ninguna","Católica","Cristiana","Testigo de Jehová","Judía","Musulmana","Budista","Creo en Dios, sin religión"] });
 add({ id:"mascotas", mode:"primera", section:"Ficha básica", huli:"observaciones",
   type:"text", required:true, title:"¿Hay mascotas en casa?" });
 
@@ -2394,6 +2405,7 @@ function isAnswered(q) {
     return true;
   }
   if (v == null || String(v).trim() === "") return false;
+  if (q.type === "telcc" && !/^\+\d+ \d{10}$/.test(String(v))) return false;
   if (ot && v === ot && !(state.others[q.id] || "").trim()) return false;
   return true;
 }
@@ -2637,6 +2649,25 @@ function renderInput(q) {
     box.appendChild(inp);
   } else if (q.type === "notice") {
     /* Pantalla de aviso: sin campo de respuesta. */
+  } else if (q.type === "telcc") {
+    const p = telPartes();
+    const wrap = el("div", { className:"numunit telcc" });
+    const sel = el("select", { className:"field", id:"inp-cc" });
+    sel.setAttribute("aria-label", "Clave de país");
+    LADAS.forEach(([n, c], k) => { const o = el("option"); o.value = k; o.textContent = n.split(" ")[0] + " " + c; o.title = n; sel.appendChild(o); });
+    let k0 = state.telccIdx != null ? state.telccIdx : LADAS.findIndex(x => x[1] === p.cc);
+    sel.value = String(k0 >= 0 ? k0 : 0);
+    const inp = el("input", { className:"field", type:"tel", id:"inp-tel" });
+    inp.inputMode = "numeric"; inp.maxLength = 10; inp.placeholder = "10 dígitos"; inp.autocomplete = "tel-national";
+    inp.value = p.num;
+    const sync = () => {
+      inp.value = inp.value.replace(/\D/g, "").slice(0, 10);
+      state.telccIdx = Number(sel.value);
+      state.answers[q.id] = LADAS[Number(sel.value)][1] + " " + inp.value;
+      updateNav(q);
+    };
+    inp.addEventListener("input", sync); sel.addEventListener("change", sync);
+    wrap.appendChild(sel); wrap.appendChild(inp); box.appendChild(wrap);
   } else {
     const typ = (q.type === "tel" || q.type === "email") ? q.type : "text";
     const inp = el("input", { className:"field", type:typ, id:"inp" });
@@ -4083,7 +4114,7 @@ const SIMULADO = {
     estado_nac: "Ciudad de México",
     tiene_curp: "Sí",
     curp: "XXXX000000XXXXXX00",
-    telefono: "55 0000 0000",
+    telefono: "+52 5500000000",
     correo: "paciente.simulado@example.com",
     civil: "Soltero(a)",
     trabajo: "Diseño gráfico (ejemplo ficticio)",
