@@ -594,6 +594,10 @@ body { font-weight: 400; font-size: 1rem; line-height: 1.5; }
 .pair-lbl:first-child{margin-top:0}
 .pair-otro{margin-top:8px}
 .pair-err{color:#b3261e;min-height:1em;margin-top:6px}
+.choices.choices-grid{grid-template-columns:repeat(4,1fr)}
+.choices-grid .choice{justify-content:center;text-align:center;padding-left:6px;padding-right:6px}
+.choices-grid .choice .txt{width:100%;text-align:center}
+.choices-grid .choice .k{display:none}
 </style>
 </head>
 <body class="is-home">
@@ -916,10 +920,10 @@ add({ id:"estudios_en", mode:"primera", section:"Ficha básica", huli:"ficha",
   placeholder:"Por ejemplo: Contaduría, Enfermería, Diseño gráfico",
   showIf:{ id:"estudios", in:["Carrera técnica","Licenciatura","Posgrado o especialidad","Maestría","Doctorado"] } });
 add({ id:"tipo_sangre", mode:"primera", section:"Ficha básica", huli:"ficha",
-  type:"mc", required:true, title:"Tipo de sangre",
+  type:"sangre2", required:true, title:"Tipo de sangre",
   options:["O+","O-","A+","A-","B+","B-","AB+","AB-","Desconocido"] });
 add({ id:"religion", mode:"primera", section:"Ficha básica", huli:"observaciones",
-  type:"mc", required:true, other:true, title:"¿Practicas alguna religión?",
+  type:"mc", required:true, other:true, grid:2, title:"¿Practicas alguna religión?",
   options:["Ninguna","Católica","Cristiana","Testigo de Jehová","Judía","Musulmana","Budista","Creo en Dios, sin religión"] });
 add({ id:"mascotas", mode:"primera", section:"Ficha básica", huli:"observaciones",
   type:"text", required:true, title:"¿Hay mascotas en casa?" });
@@ -2862,6 +2866,42 @@ function renderInput(q) {
   else if (q.type === "scale") renderScale(box, q);
   else if (q.type === "pct") renderPct(box, q);
   else if (q.type === "numunit") renderNumUnit(box, q, rawVal);
+  else if (q.type === "sangre2") {
+    /* Grupo y Rh por separado en la misma pantalla (Dr. Agus, 20/11/2026); se guarda junto, p. ej. "O+" */
+    const cur = String(val(q.id) || "");
+    const m = cur.match(/^(AB|A|B|O)([+-])$/);
+    if (state.sangreG == null) state.sangreG = m ? m[1] : "";
+    if (state.sangreR == null) state.sangreR = m ? m[2] : "";
+    const sync = () => {
+      if (state.sangreG && state.sangreR) state.answers[q.id] = state.sangreG + state.sangreR;
+      else if (state.answers[q.id] !== "Desconocido") delete state.answers[q.id];
+      draw(); updateNav(q);
+      if (canProceed(q) && state.answers[q.id]) scheduleAdvance();
+    };
+    const holder = el("div"); box.appendChild(holder);
+    function grupo(lbl, cols, items, isSel, onPick) {
+      const l = el("label", { className:"pair-lbl" }); l.textContent = lbl; holder.appendChild(l);
+      const w = el("div", { className:"choices choices-grid" }); w.style.gridTemplateColumns = "repeat(" + cols + ",1fr)";
+      items.forEach(([v, t]) => {
+        const b = el("button", { className:"choice" + (isSel(v) ? " selected" : ""), type:"button" });
+        const tx = el("span", { className:"txt" }); tx.textContent = t; b.appendChild(tx);
+        b.addEventListener("click", () => onPick(v)); w.appendChild(b);
+      });
+      holder.appendChild(w);
+    }
+    function draw() {
+      holder.innerHTML = "";
+      const des = val(q.id) === "Desconocido";
+      grupo("Grupo", 4, [["O","O"],["A","A"],["B","B"],["AB","AB"]], v => !des && state.sangreG === v, v => { if (val(q.id) === "Desconocido") delete state.answers[q.id]; state.sangreG = v; sync(); });
+      grupo("Rh", 2, [["+","Positivo (+)"],["-","Negativo (−)"]], v => !des && state.sangreR === v, v => { if (val(q.id) === "Desconocido") delete state.answers[q.id]; state.sangreR = v; sync(); });
+      const w = el("div", { className:"choices" }); w.style.marginTop = "14px";
+      const b = el("button", { className:"choice" + (des ? " selected" : ""), type:"button" });
+      const tx = el("span", { className:"txt" }); tx.textContent = "No sé mi tipo de sangre"; b.appendChild(tx);
+      b.addEventListener("click", () => { state.sangreG = ""; state.sangreR = ""; state.answers[q.id] = "Desconocido"; draw(); updateNav(q); scheduleAdvance(); });
+      w.appendChild(b); holder.appendChild(w);
+    }
+    draw();
+  }
   else if (q.type === "estados2") {
     const par = [["estado_nac","¿En qué estado naciste?","Escribe el país y la ciudad donde naciste"],
                  ["estado_res","¿En qué estado vives?","Escribe el país y la ciudad donde vives"]];
@@ -3028,7 +3068,8 @@ function renderInput(q) {
 }
 
 function renderChoices(box, q, multi) {
-  const wrap = el("div", { className:"choices" });
+  const wrap = el("div", { className:"choices" + (q.grid ? " choices-grid" : "") });
+  if (q.grid) wrap.style.gridTemplateColumns = "repeat(" + q.grid + ",1fr)";
   const ot = otherToken(q);
   const opts = q.options.map(optionValue);
   if (ot && !opts.includes(ot)) opts.push(ot);
@@ -3248,6 +3289,7 @@ function startMode(mode) {
   state.i = 0;
   state.maxQid = null;
   state.answers = {};
+  state.sangreG = null; state.sangreR = null;
   state.others = {};
   state.demo = false;
   state.hcSent = false;
