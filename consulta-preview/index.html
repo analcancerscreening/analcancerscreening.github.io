@@ -1648,7 +1648,7 @@ add({ id:"fuma_dejo", mode:"primera", section:"Antecedentes no patológicos", hu
   showIf:{ id:"fuma", in:["Sí, pero ya lo dejé"] } });
 add({ id:"alcohol", mode:"primera", section:"Antecedentes no patológicos", huli:"anp",
   type:"mc", required:true, title:"¿Tomas alcohol?",
-  options:["Sí","No","Antes tomaba, lo suspendí"] });
+  options:["No","Sí","Antes tomaba, lo suspendí"] });
 add({ id:"alcohol_que", mode:"primera", section:"Antecedentes no patológicos", huli:"anp",
   type:"text", required:true, title:"¿Qué tomas?",
   titleFn: () => /antes/i.test(val("alcohol") || "") ? "¿Qué tomabas?" : "¿Qué tomas?",
