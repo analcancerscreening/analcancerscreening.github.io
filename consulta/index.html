@@ -301,9 +301,12 @@ input.pct-range.untouched { accent-color: #d6d6d6; }
 input.pct-range.untouched::-webkit-slider-thumb { opacity: 0; }
 input.pct-range.untouched::-moz-range-thumb { opacity: 0; }
 .slider-ticks { display: flex; justify-content: space-between; color: var(--muted); font-size: 0.78rem; }
-.eva-faces { display:grid; grid-template-columns: repeat(6, 1fr); gap:4px; margin-bottom:10px; }
+.eva-faces { display:grid; grid-template-columns: repeat(6, 1fr); gap:4px; margin:0 -2% 4px; }
+.scale-ticks { display:flex; justify-content:space-between; font-size:.72rem; color: var(--muted); padding: 0 6px; }
+.eva-sum { display:flex; align-items:center; gap:10px; margin:4px 0; }
+.eva-sum img { width:56px; height:56px; }
 .eva-faces button { border:0; background:transparent; padding:2px; border-radius:12px; opacity:.45; transition: opacity .2s, transform .2s; }
-.eva-faces button img { width:100%; max-width:80px; display:block; margin:0 auto; filter: hue-rotate(var(--booty-hue, 0deg)); }
+.eva-faces button img { width:100%; max-width:90px; display:block; margin:0 auto; filter: hue-rotate(var(--booty-hue, 0deg)); }
 .eva-faces button span { display:block; font-size:.75rem; font-weight:700; color: var(--muted); }
 .eva-faces button.selected { opacity:1; transform: scale(1.12); background: var(--green-soft); }
 .eva-faces:not(.has-val) button { opacity:.9; }
@@ -877,7 +880,7 @@ add({ id:"dolor_evac", mode:"primera", section:"Hábito intestinal", huli:"gi",
 add({ id:"dolor_eva", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"scale", required:false, min:0, max:10, eva:true,
   title:"¿Qué tanto dolor, de 0 a 10?",
-  hint:"Toca la cara de Booty o el número que más se parezca a tu dolor.",
+  hint:"Toca la cara de Booty o el punto de la línea que más se parezca a tu dolor.",
   left:"0: sin dolor", right:"10: el peor dolor",
   showIf:{ id:"dolor_evac", in:["Sí"] } });
 
@@ -2318,7 +2321,7 @@ function reduced() { return !!(reducedMotion && reducedMotion.matches); }
 function clearAdvance() { if (advTimer) { clearTimeout(advTimer); advTimer = null; } }
 function usesAutoAdvance(q) {
   if (!q) return false;
-  if (q.type !== "mc" && q.type !== "scale") return false;
+  if (q.type !== "mc") return false;
   const ot = otherToken(q);
   if (ot && val(q.id) === ot) return false;
   return true;
@@ -2618,40 +2621,54 @@ function renderPct(box, q) {
 }
 function renderScale(box, q) {
   const cur = val(q.id);
+  const has = cur !== undefined && cur !== null && cur !== "" && cur !== PND && !isNaN(Number(cur));
+  const wrap = el("div", { className:"slider-wrap" });
+  let faces = null;
+  const setFaces = (v) => {
+    if (!faces) return;
+    const sel = v == null ? -1 : Math.min(5, Math.round(Number(v)/2));
+    faces.classList.toggle("has-val", v != null);
+    [...faces.children].forEach((b, i) => b.classList.toggle("selected", i === sel));
+  };
+  const lab = el("div", { className:"slider-val" + (has ? "" : " empty") });
+  lab.textContent = has ? String(cur) : "Toca la línea donde estés";
+  const r = el("input", { type:"range", className:"pct-range" + (has ? "" : " untouched"), min:String(q.min), max:String(q.max), step:"1" });
+  r.value = has ? String(cur) : String(Math.round((q.min+q.max)/2));
+  r.setAttribute("aria-label", q.title || "Escala");
+  const setV = (auto) => {
+    if (val(q.id) === PND) delete state.answers[q.id];
+    state.answers[q.id] = String(r.value);
+    r.classList.remove("untouched"); lab.classList.remove("empty");
+    lab.textContent = String(r.value);
+    setFaces(r.value);
+    $("#q-err") && $("#q-err").classList.add("hidden");
+    updateNav(q);
+  };
   if (q.eva) {
-    const faces = el("div", { className:"eva-faces" + (cur !== undefined && cur !== "" && cur !== PND ? " has-val" : "") });
-    const sel = (cur !== undefined && cur !== "" && !isNaN(Number(cur))) ? Math.min(5, Math.round(Number(cur)/2)) : -1;
-    [0,2,4,6,8,10].forEach((n, i) => {
+    faces = el("div", { className:"eva-faces" });
+    [0,2,4,6,8,10].forEach((n) => {
       const b = el("button", { type:"button" });
       b.setAttribute("aria-label", "Dolor " + n);
-      b.innerHTML = '<img alt="Booty, dolor ' + n + '" src="' + IMAGES["eva_"+n] + '"><span>' + n + '</span>';
-      if (i === sel) b.classList.add("selected");
-      b.addEventListener("click", () => {
-        clearAdvance();
-        state.answers[q.id] = String(n);
-        renderInput(q); updateNav(q);
-        if (usesAutoAdvance(q) && canProceed(q)) scheduleAdvance();
-      });
+      b.innerHTML = '<img alt="Booty, dolor ' + n + '" src="' + IMAGES["eva_"+n] + '">';
+      b.addEventListener("click", () => { r.value = String(n); setV(); });
       faces.appendChild(b);
     });
-    box.appendChild(faces);
+    wrap.appendChild(faces);
+    setFaces(has ? cur : null);
   }
-  const wrap = el("div", { className:"scale" });
-  for (let n = q.min; n <= q.max; n++) {
-    const b = el("button", { type:"button" });
-    b.textContent = String(n);
-    b.setAttribute("data-choice", String(n));
-    if (String(cur) === String(n)) b.classList.add("selected");
-    b.addEventListener("click", () => {
-      clearAdvance();
-      if (val(q.id) === PND) delete state.answers[q.id];
-      state.answers[q.id] = String(n);
-      renderInput(q);
-      updateNav(q);
-      if (usesAutoAdvance(q) && canProceed(q)) scheduleAdvance();
-    });
-    wrap.appendChild(b);
-  }
+  r.addEventListener("input", () => setV());
+  r.addEventListener("change", () => setV());
+  r.addEventListener("pointerdown", (e) => {
+    const rect = r.getBoundingClientRect();
+    const f = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+    r.value = String(Math.round(q.min + f * (q.max - q.min)));
+    setV();
+  });
+  wrap.appendChild(lab);
+  wrap.appendChild(r);
+  const ticks = el("div", { className:"scale-ticks" });
+  for (let n = q.min; n <= q.max; n++) { const t = el("span"); t.textContent = String(n); ticks.appendChild(t); }
+  wrap.appendChild(ticks);
   box.appendChild(wrap);
   const cap = el("div", { className:"scale-caption" });
   cap.innerHTML = `<span>${escapeHtml(q.left||"")}</span><span>${escapeHtml(q.right||"")}</span>`;
@@ -3812,6 +3829,14 @@ function buildSummaryHTML() {
   const evoRes = composeNotaEvolucion();
   if (evoRes) {
     h += '<article class="card"><h3>Nota de evolución</h3><p class="gi-flag">Bloque listo para pegar en la consulta de primera vez, antes de la exploración física.</p><pre class="resumen-evolucion">'+escapeHtml(evoRes)+"</pre></article>";
+  }
+  {
+    const evaRows = [];
+    const evaItem = (label, id) => { const v = val(id); if (v !== undefined && v !== "" && v !== PND && !isNaN(Number(v))) { const f = Math.min(5, Math.round(Number(v)/2))*2; evaRows.push('<div class="eva-sum"><img alt="Booty, dolor '+f+'" src="'+IMAGES["eva_"+f]+'"><div><strong>'+escapeHtml(label)+':</strong> '+escapeHtml(String(v))+'/10</div></div>'); } };
+    evaItem("Dolor al evacuar (EVA)", "dolor_eva");
+    evaItem("Dolor en la consulta anterior (EVA)", "sg_dolor_inicio");
+    evaItem("Dolor actual (EVA)", "sg_dolor_actual");
+    if (evaRows.length) h += '<article class="card"><h3>Escala de dolor</h3>' + evaRows.join("") + '</article>';
   }
   h += card("Otros datos del hábito intestinal", [
     ["Dieta (opcional)", ans("dieta")],
