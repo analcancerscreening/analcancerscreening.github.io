@@ -9,6 +9,7 @@
 <style>
 
 :root {
+  --booty-hue: 295deg; /* Booty verde por defecto (base ~205° azul) */
   --ink: #14241e;
   --ink-soft: #2f443c;
   --muted: #5e736b;
@@ -306,7 +307,7 @@ input.pct-range.untouched::-moz-range-thumb { opacity: 0; }
 .eva-sum { display:flex; align-items:center; gap:10px; margin:4px 0; }
 .eva-sum img { width:56px; height:56px; }
 .eva-faces button { border:0; background:transparent; padding:2px; border-radius:12px; opacity:.45; transition: opacity .2s, transform .2s; }
-.eva-faces button img { width:100%; max-width:90px; display:block; margin:0 auto; filter: hue-rotate(var(--booty-hue, 0deg)); }
+.eva-faces button img { width:100%; max-width:90px; display:block; margin:0 auto; filter: hue-rotate(var(--booty-hue, 295deg)); }
 .eva-faces button span { display:block; font-size:.75rem; font-weight:700; color: var(--muted); }
 .eva-faces button.selected { opacity:1; transform: scale(1.12); background: var(--green-soft); }
 .eva-faces:not(.has-val) button { opacity:.9; }
@@ -474,7 +475,7 @@ label.lab { display: block; font-size: 0.8rem; color: var(--muted); margin: 0 0 
   margin: 0;
 }
 body.patient-view .doctor-views-label, body.patient-view .tabs, body.patient-view #view-nota, body.patient-view #view-resumen, body.patient-view #screen-done .nav { display: none !important; }
-#screen-quiz img.booty-gif, #screen-quiz .booty-media img { filter: hue-rotate(var(--booty-hue, 0deg)); transition: filter .3s; }
+#screen-quiz img.booty-gif, #screen-quiz .booty-media img, img.booty-home-gif, img.booty-done-gif { filter: hue-rotate(var(--booty-hue, 295deg)); transition: filter .3s; }
 @media print {
   header.top, .tabs, .toolbar, .btn, .fine, .privacy, #btn-restart,
   .thanks, .doctor-views-label, .huli-hint, #evolucion-wrap, #screen-done .nav { display: none !important; }
@@ -2422,7 +2423,7 @@ const RAINBOW = [
   { h:210, s:65, l:40 },  /* azul */
   { h:275, s:45, l:45 }   /* morado */
 ];
-const BOOTY_BASE_HUE = 210;
+const BOOTY_BASE_HUE = 205;
 function applyRainbow(i) {
   const r = document.documentElement.style;
   if (i == null) {
