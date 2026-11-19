@@ -1455,11 +1455,11 @@ add({ id:"alcohol", mode:"primera", section:"Antecedentes no patológicos", huli
   type:"mc", required:true, title:"¿Tomas alcohol?",
   options:["Sí","No","Antes tomaba, lo suspendí"] });
 add({ id:"alcohol_que", mode:"primera", section:"Antecedentes no patológicos", huli:"anp",
-  type:"text", required:false, title:"¿Qué tomas?",
+  type:"text", required:true, title:"¿Qué tomas?",
   titleFn: () => /antes/i.test(val("alcohol") || "") ? "¿Qué tomabas?" : "¿Qué tomas?",
   showIf:{ id:"alcohol", in:["Sí","Antes tomaba, lo suspendí"] } });
 add({ id:"alcohol_freq", mode:"primera", section:"Antecedentes no patológicos", huli:"anp",
-  type:"mc", required:false, title:"¿Con qué frecuencia?",
+  type:"mc", required:true, title:"¿Con qué frecuencia?",
   titleFn: () => /antes/i.test(val("alcohol") || "") ? "¿Con qué frecuencia tomabas?" : "¿Con qué frecuencia tomas?",
   options:["Varias veces a la semana","1 a la semana","1 al mes","Cada 3 meses","Solo eventos especiales"],
   showIf:{ id:"alcohol", in:["Sí","Antes tomaba, lo suspendí"] } });
@@ -2184,7 +2184,7 @@ const BLOCK_OF = {};
 
 const SENSITIVE_IDS = new Set([
   "identidad",
-  "fuma","fuma_anios","fuma_cant","fuma_dejo","alcohol","alcohol_que","alcohol_freq","drogas","droga_dur_otro","drogas_notas",
+  "drogas","droga_dur_otro","drogas_notas",
   "quien_refiere","orientacion","anorreceptivo","dispareunia","condon","condon_freq","prep","doxy_pep",
   "lubricante","enema","enema_cant","tamizaje_hep_b_si","tamizaje_hep_b","tamizaje_hep_b_res","tamizaje_hep_c_si","tamizaje_hep_c","tamizaje_hep_c_res","tamizaje_vih_si","tamizaje_vih","tamizaje_vih_res","tamizaje_sifilis_si","tamizaje_sifilis","tamizaje_sifilis_res","info_hisopo","hisopo_anal","hisopo_cual","hisopo_its_cuando","hisopo_its_res","hisopo_vph_cuando","hisopo_vph_res","hisopo_cito_cuando","hisopo_cito_res",
   "debut","parejas","its","info_ca_anal_0","ca_anal_si","ca_anal_entendio","ca_anal_si2","ca_anal_cual","ca_anal_cito_cuando","ca_anal_cito_res","ca_anal_pcr_cuando","ca_anal_pcr_res","ca_anal_ara_cuando","ca_anal_ara_res","info_ca_colon_0","info_ca_colon_1","ca_colon_si","ca_colon_entendio","ca_colon_si2","ca_colon_cual","ca_colon_colono_cuando","ca_colon_colono_res","ca_colon_soh_cuando","ca_colon_soh_res","trabajo_sexual_recibido","trabajo_sexual_dado","sexo_riesgo","exposiciones_otra","fisting","doble_penetracion","abuso_sexual"
