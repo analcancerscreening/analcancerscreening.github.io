@@ -741,6 +741,24 @@ add({ id:"identidad", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"mc", required:true, other:true,
   title:"¿Cómo te identificas?",
   options:["Hombre cisgénero","Mujer cisgénero","Hombre transgénero","Mujer transgénero","No binarie","Género fluido","Prefiero no responder"] });
+/* Identidad congruente con el sexo asignado al nacimiento (pedido del Dr. Agus, 19/11/2026) */
+const IDENT_NO_CONGRUENTE = {
+  "Hombre": ["Mujer cisgénero","Hombre transgénero"],
+  "Mujer": ["Hombre cisgénero","Mujer transgénero"]
+};
+function identidadCongruente(opt) {
+  let sx = ""; try { sx = val("sexo_bio"); } catch (e) { sx = ""; }
+  const malas = IDENT_NO_CONGRUENTE[sx] || [];
+  return !malas.includes(optionValue(opt));
+}
+(function () {
+  const q = Q[Q.length - 1];
+  let base = q.options;
+  Object.defineProperty(q, "options", {
+    get() { return base.filter(identidadCongruente); },
+    set(v) { base = v; }, enumerable: true, configurable: true
+  });
+})();
 add({ id:"genero", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"mc", required:true,
   title:"Género en el expediente",
@@ -2714,6 +2732,7 @@ function toggleChoice(q, opt, multi) {
     state.answers[q.id] = opt;
   }
   if (q.id === "identidad") maybeMapGenero();
+  if (q.id === "sexo_bio" && val("identidad") && !identidadCongruente(val("identidad"))) { delete state.answers.identidad; delete state.answers.genero; }
   renderInput(q);
   updateNav(q);
   if (!multi && usesAutoAdvance(q) && canProceed(q)) scheduleAdvance();
@@ -2852,6 +2871,7 @@ function goNext() {
   const oinp = $("#other-inp");
   if (oinp) state.others[q.id] = oinp.value;
   if (q.id === "identidad") maybeMapGenero();
+  if (q.id === "sexo_bio" && val("identidad") && !identidadCongruente(val("identidad"))) { delete state.answers.identidad; delete state.answers.genero; }
   if (q.required && !isAnswered(q)) {
     $("#q-err").textContent = "Esta pregunta es obligatoria.";
     $("#q-err").classList.remove("hidden");
