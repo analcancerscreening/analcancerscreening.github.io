@@ -869,11 +869,6 @@ add({ id:"verdura", mode:"primera", section:"Hábito intestinal", huli:"gi",
   hint:"Una porción es más o menos lo que cabe en tu mano.",
   options: PORCION_OPTS });
 
-add({ id:"dieta", mode:"primera", section:"Hábito intestinal", huli:"gi",
-  type:"textarea", required:false,
-  title:"Si quieres, un día típico de comida",
-  hint:"Con las preguntas de comidas, fruta y verdura ya basta para la nota. Este detalle es opcional." });
-
 add({ id:"dolor_evac", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:true, title:"¿Hay dolor al evacuar?", options:["Sí","No"] });
 
@@ -2072,7 +2067,7 @@ const BLOCK_OF = {};
   ["contacto", ["quien_refiere","nombre","apellido1","apellido2","fnac","sexo_bio","identidad","genero","estado_nac","estado_nac_otro","tiene_curp","curp","telefono","correo"]],
   ["ficha", ["civil","trabajo","estado_res","estado_res_otro","tipo_sangre","estudios","estudios_en","religion","mascotas"]],
   ["motivo", ["motivo","hobbies","relato"]],
-  ["habito", ["evac_dia","bristol","pujar","tenesmo","sangre","sangre_inicio","sangre_ultimo","sangre_color","coagulos","sangre_donde","moco","moco_desde","tiempo_bano","agua","comidas","fruta","verdura","dieta","dolor_evac","dolor_eva","dolor_tipo","dolor_cuando","dolor_duracion","irritantes","suplementos","comezon","comezon_inicio","comezon_rascado","toallas","meds_topicos","meds_topicos_cual","humedad","humedad_det","aseo_vigoroso","cuerpo_extranio","cuerpo_extranio_inicio","cuerpo_extranio_sale","cuerpo_extranio_dolor","fiebre","fiebre_det","fiebre_veces","perdida_peso","perdida_peso_det","ejercicio"]],
+  ["habito", ["evac_dia","bristol","pujar","tenesmo","sangre","sangre_inicio","sangre_ultimo","sangre_color","coagulos","sangre_donde","moco","moco_desde","tiempo_bano","agua","comidas","fruta","verdura","dolor_evac","dolor_eva","dolor_tipo","dolor_cuando","dolor_duracion","irritantes","suplementos","comezon","comezon_inicio","comezon_rascado","toallas","meds_topicos","meds_topicos_cual","humedad","humedad_det","aseo_vigoroso","cuerpo_extranio","cuerpo_extranio_inicio","cuerpo_extranio_sale","cuerpo_extranio_dolor","fiebre","fiebre_det","fiebre_veces","perdida_peso","perdida_peso_det","ejercicio"]],
   ["gineco", ["fum_estado","fum","gestas","partos","partos_cesarea","abortos","macrosomia","parto_instrumentado","pap","pap_cuando","pap_conoce","pap_precancer","mamo","mamo_cuando","mamo_hallazgo"]],
   ["wexner", ["wexner_solidas","wexner_liquidas","wexner_gases","wexner_toallas","wexner_estilo"]],
   ["antecedentes", ["ahf"].concat(AHF_ENF.flatMap(([k]) => ["ahf_"+k+"_quien","ahf_"+k+"_edad","ahf_"+k+"_vive","ahf_"+k+"_fallece"])).concat(["ahf_notas","app_pat"].concat(APP_ENF.flatMap(([k]) => ["app_"+k+"_desde","app_"+k+"_med"])).concat(["app_vih_cd4","app_vih_cd4_fecha","app_vih_cv","app_vih_cv_fecha","app_detalle","app_notas","alergias","cx_tiene","cx1_tipo","cx1_cual","cx1_tecnica","cx1_lado_hernia","cx1_malla","cx1_lado","cx1_cuando","cx1_porque","cx1_compl","cx1_otra","cx2_tipo","cx2_cual","cx2_tecnica","cx2_lado_hernia","cx2_malla","cx2_lado","cx2_cuando","cx2_porque","cx2_compl","cx2_otra","cx3_tipo","cx3_cual","cx3_tecnica","cx3_lado_hernia","cx3_malla","cx3_lado","cx3_cuando","cx3_porque","cx3_compl","cx_mas","hosp","vacunas","vac_vph_tipo","vac_vph_dosis","vac_vph_anio","vac_mpox_dosis","vac_mpox_anio","vac_menb_dosis","vac_menb_anio","vac_hepa_dosis","vac_hepa_anio","vac_hepb_dosis","vac_hepb_anio","fracturas","transfusiones","fuma","fuma_detalle","alcohol","alcohol_que","alcohol_freq","drogas","droga_dur_otro","drogas_notas"]))],
@@ -3725,7 +3720,6 @@ function buildNote() {
   t += "Nota para el expediente: este bloque no tiene un apartado propio en Huli. Pegarlo en la nota de la consulta de primera vez, antes de la exploración física.\n\n";
   const evo = composeNotaEvolucion();
   t += (evo || "Sin datos de motivo, padecimiento o evacuaciones.") + "\n\n";
-  if (has("dieta")) t += line("Alimentación (día típico, opcional)", ans("dieta"));
   if (has("suplementos") && !/^ningun/i.test(ans("suplementos"))) t += line("Suplementos", ans("suplementos"));
   t += "\n";
 
@@ -3839,7 +3833,6 @@ function buildSummaryHTML() {
     if (evaRows.length) h += '<article class="card"><h3>Escala de dolor</h3>' + evaRows.join("") + '</article>';
   }
   h += card("Otros datos del hábito intestinal", [
-    ["Dieta (opcional)", ans("dieta")],
     ["Suplementos", ans("suplementos")]
   ]);
   const otros = composeOtrosDatosLines();
@@ -3896,7 +3889,6 @@ const SIMULADO = {
     comidas: "3",
     fruta: "2",
     verdura: "3",
-    dieta: "Desayuna avena con fruta; come pollo o pescado con verduras y arroz; cena yogurt y una pieza de fruta. Los fines de semana come más picante y comida grasosa.",
     dolor_evac: "Sí",
     dolor_eva: "5",
     dolor_tipo: "Ardoroso",
