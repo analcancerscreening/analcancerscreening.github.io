@@ -904,15 +904,6 @@ add({ id:"aseo_vigoroso", mode:"primera", section:"Hábito intestinal", huli:"gi
   hint:"Aunque ya te sientas limpio.",
   options:["No","Sí"] });
 
-add({ id:"banos_asiento", mode:"primera", section:"Hábito intestinal", huli:"gi",
-  type:"mc", required:true,
-  title:"¿Usas baños de asiento?",
-  options:["No","Sí"] });
-
-add({ id:"banos_asiento_freq", mode:"primera", section:"Hábito intestinal", huli:"gi",
-  type:"text", required:false,
-  title:"¿Cuántos baños de asiento haces al día?",
-  showIf:{ id:"banos_asiento", in:["Sí"] } });
 
 add({ id:"cuerpo_extranio", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:true,
@@ -924,10 +915,17 @@ add({ id:"cuerpo_extranio_inicio", mode:"primera", section:"Hábito intestinal",
   title:"¿Desde cuándo lo notaste?",
   showIf:{ id:"cuerpo_extranio", in:["Sí"] } });
 
-add({ id:"cuerpo_extranio_dolor", mode:"primera", section:"Hábito intestinal", huli:"gi",
+add({ id:"cuerpo_extranio_sale", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:false, other:true,
-  title:"¿Esa bolita o ese bulto duele?",
-  options:["No","Sí","Solo al tocarlo"],
+  title:"¿Esa bolita sale y se vuelve a meter?",
+  options:["Sale y se mete sola","Sale y la tengo que meter con el dedo","Siempre está afuera","No sale, siempre se siente igual"],
+  showIf:{ id:"cuerpo_extranio", in:["Sí"] } });
+
+add({ id:"cuerpo_extranio_dolor", mode:"primera", section:"Hábito intestinal", huli:"gi",
+  type:"check", required:false, exclusive:["No duele"],
+  title:"¿Cuándo te duele esa bolita?",
+  hint:"Puedes marcar más de una.",
+  options:["Al asearme o tocarla","Al evacuar","En reposo","Duele más al evacuar","No duele"],
   showIf:{ id:"cuerpo_extranio", in:["Sí"] } });
 
 add({ id:"fiebre", mode:"primera", section:"Hábito intestinal", huli:"gi",
@@ -937,7 +935,14 @@ add({ id:"fiebre", mode:"primera", section:"Hábito intestinal", huli:"gi",
 
 add({ id:"fiebre_det", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"text", required:false,
-  title:"¿Desde cuándo y cómo ha sido la fiebre?",
+  title:"¿Desde cuándo tienes fiebre?",
+  placeholder:"Por ejemplo: desde hace una semana",
+  showIf:{ id:"fiebre", in:["Sí"] } });
+
+add({ id:"fiebre_veces", mode:"primera", section:"Hábito intestinal", huli:"gi",
+  type:"mc", required:false,
+  title:"¿Fue una sola vez o varias veces?",
+  options:["Una sola vez","Varias veces"],
   showIf:{ id:"fiebre", in:["Sí"] } });
 
 add({ id:"perdida_peso", mode:"primera", section:"Hábito intestinal", huli:"gi",
@@ -1646,7 +1651,7 @@ const BLOCK_OF = {};
   ["contacto", ["quien_refiere","nombre","apellido1","apellido2","fnac","sexo_bio","identidad","genero","estado_nac","estado_nac_otro","tiene_curp","curp","telefono","correo"]],
   ["ficha", ["civil","trabajo","estado_res","estado_res_otro","tipo_sangre","estudios","estudios_en","religion","mascotas"]],
   ["motivo", ["motivo","hobbies","relato"]],
-  ["habito", ["evac_dia","bristol","pujar","tenesmo","sangre","sangre_inicio","sangre_ultimo","sangre_color","coagulos","sangre_donde","moco","moco_desde","tiempo_bano","agua","comidas","fruta","verdura","dieta","dolor_evac","dolor_eva","dolor_tipo","dolor_cuando","dolor_duracion","irritantes","suplementos","comezon","comezon_inicio","comezon_rascado","toallas","meds_topicos","meds_topicos_cual","humedad","humedad_det","aseo_vigoroso","banos_asiento","banos_asiento_freq","cuerpo_extranio","cuerpo_extranio_inicio","cuerpo_extranio_dolor","fiebre","fiebre_det","perdida_peso","perdida_peso_det","ejercicio"]],
+  ["habito", ["evac_dia","bristol","pujar","tenesmo","sangre","sangre_inicio","sangre_ultimo","sangre_color","coagulos","sangre_donde","moco","moco_desde","tiempo_bano","agua","comidas","fruta","verdura","dieta","dolor_evac","dolor_eva","dolor_tipo","dolor_cuando","dolor_duracion","irritantes","suplementos","comezon","comezon_inicio","comezon_rascado","toallas","meds_topicos","meds_topicos_cual","humedad","humedad_det","aseo_vigoroso","cuerpo_extranio","cuerpo_extranio_inicio","cuerpo_extranio_sale","cuerpo_extranio_dolor","fiebre","fiebre_det","fiebre_veces","perdida_peso","perdida_peso_det","ejercicio"]],
   ["gineco", ["fum_estado","fum","gestas","partos","partos_cesarea","abortos","macrosomia","parto_instrumentado","pap","pap_cuando","pap_conoce","pap_precancer","mamo","mamo_cuando","mamo_hallazgo"]],
   ["wexner", ["wexner_solidas","wexner_liquidas","wexner_gases","wexner_toallas","wexner_estilo"]],
   ["antecedentes", ["ahf","ahf_notas","app_pat","app_detalle","app_notas","alergias","cirugias_hosp","vacunas","fracturas","transfusiones","fuma","fuma_detalle","alcohol","alcohol_que","alcohol_freq","drogas","droga_dur_otro","drogas_notas"]],
@@ -2803,18 +2808,37 @@ function composeCuerpoExtranioLine() {
   if (ans("cuerpo_extranio") === "No") return "Cuerpo extraño perianal: negado.";
   const bits = [];
   if (has("cuerpo_extranio_inicio")) bits.push("inicia " + lowerJoin(ans("cuerpo_extranio_inicio")));
-  const d = ans("cuerpo_extranio_dolor");
-  if (d === "No") bits.push("no doloroso");
-  else if (d === "Sí") bits.push("doloroso");
-  else if (d === "Solo al tocarlo") bits.push("doloroso solo a la palpación");
-  else if (d) bits.push(lowerJoin(d.replace(/^Otro:\s*/i, "")));
+  const sale = ans("cuerpo_extranio_sale");
+  if (/se mete sola/i.test(sale)) bits.push("protruye y se reduce espontáneamente");
+  else if (/con el dedo/i.test(sale)) bits.push("protruye y requiere reducción manual");
+  else if (/Siempre está afuera/i.test(sale)) bits.push("permanentemente prolapsado, no reductible");
+  else if (/No sale/i.test(sale)) bits.push("sin protrusión");
+  else if (sale) bits.push(lowerJoin(sale.replace(/^Otro:\s*/i, "")));
+  const dl = asList("cuerpo_extranio_dolor");
+  if (dl.includes("No duele")) bits.push("no doloroso");
+  else if (dl.length) {
+    const w = [];
+    if (dl.includes("Al asearme o tocarla")) w.push("al aseo o a la palpación");
+    if (dl.includes("Al evacuar")) w.push("a la evacuación");
+    if (dl.includes("En reposo")) w.push("en reposo");
+    let t = w.length ? "doloroso " + (w.length > 1 ? w.slice(0,-1).join(", ") + " y " + w[w.length-1] : w[0]) : "doloroso";
+    if (dl.includes("Duele más al evacuar")) t += ", de predominio a la evacuación";
+    bits.push(t);
+  }
   return "Cuerpo extraño perianal: " + (bits.join(", ") || "sí") + ".";
+}
+function composeFiebreTxt() {
+  const b = [];
+  if (has("fiebre_det")) b.push("desde " + lowerJoin(ans("fiebre_det")).replace(/^desde\s+/i, "").replace(/\.?\s*$/, ""));
+  if (ans("fiebre_veces") === "Una sola vez") b.push("en una sola ocasión");
+  else if (ans("fiebre_veces") === "Varias veces") b.push("en varias ocasiones");
+  return b.join(", ") || "sí";
 }
 function composeFiebrePesoLine() {
   const parts = [];
   if (has("fiebre")) {
     if (ans("fiebre") === "No") parts.push("Fiebre: negado");
-    else parts.push("Fiebre: " + (ans("fiebre_det") || "sí"));
+    else parts.push("Fiebre: " + composeFiebreTxt());
   }
   if (has("perdida_peso")) {
     if (ans("perdida_peso") === "No") parts.push("Pérdida de peso: negado");
@@ -2963,7 +2987,6 @@ function composeEvacuacionesParagraph() {
   evac += " Prurito: " + composePruritoNote() + ".";
   evac += " Toallas húmedas: " + composeToallasNote() + ", medicamentos: " + composeMedsNote() + ".";
   if (ans("humedad") === "Sí") evac += " Humedad: " + (ans("humedad_det") || "sí") + ".";
-  if (ans("banos_asiento") === "Sí") evac += " Baño de asiento: " + (ans("banos_asiento_freq") || "sí") + ".";
   const tab = composeTabacoEvo();
   if (tab) evac += " Tabaquismo: " + tab + ".";
   if (has("ejercicio")) evac += " Ejercicio: " + (ans("ejercicio") === "Sí" ? "sí" : "no") + ".";
@@ -3235,7 +3258,7 @@ function collectFlags() {
     }
     if (ans("cuerpo_extranio") === "Sí") amber.push("Cuerpo extraño o abultamiento perianal referido.");
     if (ans("humedad") === "Sí") amber.push("Humedad o escurrimiento anal.");
-    if (ans("fiebre") === "Sí") red.push("Fiebre: " + (ans("fiebre_det") || "sí") + ".");
+    if (ans("fiebre") === "Sí") red.push("Fiebre: " + composeFiebreTxt() + ".");
     if (ans("perdida_peso") === "Sí") amber.push("Pérdida de peso: " + (ans("perdida_peso_det") || "sí") + ".");
     if (ans("dispareunia") === "Sí") amber.push("Dispareunia anal.");
     if (ans("condon") === "No") amber.push("No usa condón.");
@@ -3362,7 +3385,6 @@ const SIMULADO = {
     meds_topicos: "No",
     humedad: "No",
     aseo_vigoroso: "No",
-    banos_asiento: "No",
     cuerpo_extranio: "No",
     fiebre: "No",
     perdida_peso: "No",
