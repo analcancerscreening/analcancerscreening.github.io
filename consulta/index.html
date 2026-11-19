@@ -1011,12 +1011,14 @@ add({ id:"meds_topicos_cual", mode:"primera", section:"Hábito intestinal", huli
 add({ id:"humedad", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:true,
   title:"¿Sientes el ano húmedo o se te escurre líquido?",
-  options:["No","Sí"] });
+  options:["No","Sí"],
+  showIfFn: () => false /* quitada a petición del Dr. Agus, 19/11/2026 */ });
 
 add({ id:"humedad_det", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"text", required:false,
   title:"¿Cómo es esa humedad o ese líquido?",
-  showIf:{ id:"humedad", in:["Sí"] } });
+  showIf:{ id:"humedad", in:["Sí"] },
+  showIfFn: () => false /* quitada a petición del Dr. Agus, 19/11/2026 */ });
 
 add({ id:"aseo_vigoroso", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:true,
@@ -1038,7 +1040,7 @@ add({ id:"cuerpo_extranio_inicio", mode:"primera", section:"Hábito intestinal",
 add({ id:"cuerpo_extranio_sale", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:false, other:true,
   title:"¿Esa bolita sale y se vuelve a meter?",
-  options:["Sale y se mete sola","Sale y la tengo que meter con el dedo","Siempre está afuera","No sale, siempre se siente igual"],
+  options:["Sale y se mete sola","Sale y la tengo que meter con el dedo","Siempre está afuera, no se mete"],
   showIf:{ id:"cuerpo_extranio", in:["Sí"] } });
 
 add({ id:"cuerpo_extranio_dolor", mode:"primera", section:"Hábito intestinal", huli:"gi",
@@ -3605,7 +3607,7 @@ function composeCuerpoExtranioLine() {
   const sale = ans("cuerpo_extranio_sale");
   if (/se mete sola/i.test(sale)) bits.push("protruye y se reduce espontáneamente");
   else if (/con el dedo/i.test(sale)) bits.push("protruye y requiere reducción manual");
-  else if (/Siempre está afuera/i.test(sale)) bits.push("permanentemente prolapsado, no reductible");
+  else if (/Siempre está afuera/i.test(sale)) bits.push("permanente, no reductible");
   else if (/No sale/i.test(sale)) bits.push("sin protrusión");
   else if (sale) bits.push(lowerJoin(sale.replace(/^Otro:\s*/i, "")));
   const dl = asList("cuerpo_extranio_dolor");
