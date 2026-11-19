@@ -588,6 +588,12 @@ const IMAGES = window.__FC_IMAGES__;
 IMAGES.booty_pensando = "assets/booty_pensando_APROBADO.gif";
 
 const PORCION_OPTS = ["0","1","2","3","4","5 o más"];
+const DOLOR_TIPO_HINT = {
+  "Ardoroso": "Arde o quema, como chile o limón en una cortada",
+  "Punzante": "Como piquetes o pinchazos, como si te clavaran una aguja",
+  "Opresivo": "Como si te apretaran o estrujaran la zona",
+  "Como presión": "Pesadez, como si algo empujara hacia afuera"
+};
 const BRISTOL = {
   "1": "Trozos duros separados, como nueces (cuesta evacuar)",
   "2": "Con forma de salchicha, pero terronosa",
@@ -819,6 +825,7 @@ add({ id:"dolor_tipo", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:false, other:true,
   title:"¿Qué tipo de dolor es?",
   options:["Ardoroso","Punzante","Opresivo","Como presión"],
+  optionHint: DOLOR_TIPO_HINT,
   showIf:{ id:"dolor_evac", in:["Sí"] } });
 
 add({ id:"dolor_cuando", mode:"primera", section:"Hábito intestinal", huli:"gi",
@@ -1448,6 +1455,7 @@ add({ id:"sg_dolor_tipo", mode:"seguimiento", section:"Síntomas desde la últim
   type:"mc", required:false, other:true,
   title:"¿Qué tipo de dolor es?",
   options: DOLOR_TIPO_OPTS,
+  optionHint: DOLOR_TIPO_HINT,
   showIf: sgTenia("dolor"), showIfFn: sgSiguePresente("dolor") });
 add({ id:"sg_dolor_cuando", mode:"seguimiento", section:"Síntomas desde la última consulta", huli:"gi",
   type:"mc", required:false, other:true,
