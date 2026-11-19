@@ -720,6 +720,9 @@ add({ id:"quien_refiere", mode:"primera", section:"Ficha básica", huli:"persona
   type:"text", required:false,
   title:"¿Quién te refirió?",
   placeholder:"Por ejemplo: un amigo, otro médico, o vine por mi cuenta" });
+add({ id:"hobbies", mode:"primera", section:"Ficha básica", huli:"motivo",
+  type:"textarea", required:true,
+  title:"¿Qué te gusta hacer?" });
 add({ id:"nombre", mode:"primera", also:"seguimiento", section:"Ficha básica", huli:"ficha",
   type:"text", required:true, title:"Nombre o nombres", placeholder:"Tu(s) nombre(s)" });
 add({ id:"apellido1", mode:"primera", also:"seguimiento", section:"Ficha básica", huli:"ficha",
@@ -783,9 +786,6 @@ add({ id:"mascotas", mode:"primera", section:"Ficha básica", huli:"observacione
 
 add({ id:"motivo", mode:"primera", section:"Motivo de consulta", huli:"motivo",
   type:"text", required:true, title:"Motivo de consulta", placeholder:"¿Por qué vienes a consulta?" });
-add({ id:"hobbies", mode:"primera", section:"Motivo de consulta", huli:"motivo",
-  type:"textarea", required:true,
-  title:"¿Qué te gusta hacer?" });
 add({ id:"relato", mode:"primera", section:"Motivo de consulta", huli:"motivo",
   type:"textarea", required:true,
   title:"¿Qué te llevó a pedir consulta?" });
@@ -2166,9 +2166,9 @@ const BLOCK_INTRO = {
 })();
 const BLOCK_OF = {};
 [
-  ["contacto", ["quien_refiere","nombre","apellido1","apellido2","fnac","sexo_bio","identidad","genero","estado_nac","estado_nac_otro","tiene_curp","curp","telefono","correo"]],
+  ["contacto", ["quien_refiere","hobbies","nombre","apellido1","apellido2","fnac","sexo_bio","identidad","genero","estado_nac","estado_nac_otro","tiene_curp","curp","telefono","correo"]],
   ["ficha", ["civil","trabajo","estado_res","estado_res_otro","tipo_sangre","estudios","estudios_en","religion","mascotas"]],
-  ["motivo", ["motivo","hobbies","relato"]],
+  ["motivo", ["motivo","relato"]],
   ["habito", ["evac_dia","bristol","pujar","tenesmo","sangre","sangre_inicio","sangre_ultimo","sangre_color","coagulos","sangre_donde","moco","moco_desde","tiempo_bano","agua","comidas","fruta","verdura","dolor_evac","dolor_eva","dolor_tipo","dolor_cuando","dolor_duracion","irritantes","suplementos","suplementos_cual","comezon","comezon_inicio","comezon_rascado","toallas","meds_topicos","meds_topicos_cual","humedad","humedad_det","aseo_vigoroso","cuerpo_extranio","cuerpo_extranio_inicio","cuerpo_extranio_sale","cuerpo_extranio_dolor","fiebre","fiebre_det","fiebre_veces","perdida_peso","perdida_peso_det","ejercicio"]],
   ["gineco", ["fum_estado","fum","gestas","partos","partos_cesarea","abortos","macrosomia","parto_instrumentado","pap","pap_cuando","pap_conoce","pap_precancer","mamo","mamo_cuando","mamo_hallazgo"]],
   ["wexner", ["wexner_solidas","wexner_liquidas","wexner_gases","wexner_toallas","wexner_estilo"]],
