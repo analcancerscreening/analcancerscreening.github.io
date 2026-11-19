@@ -670,6 +670,13 @@ add({ id:"civil", mode:"primera", section:"Ficha básica", huli:"ficha",
   options:["Soltero(a)","Casado(a)","Viudo(a)","Separado(a)","Divorciado(a)","Concubino(a)"] });
 add({ id:"trabajo", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"text", required:true, title:"¿A qué te dedicas?" });
+add({ id:"estudios", mode:"primera", section:"Ficha básica", huli:"ficha",
+  type:"mc", required:true, other:true, title:"Último grado de estudios",
+  options:["Sin estudios","Primaria","Secundaria","Preparatoria o bachillerato","Carrera técnica","Licenciatura","Especialidad","Maestría","Doctorado"] });
+add({ id:"estudios_en", mode:"primera", section:"Ficha básica", huli:"ficha",
+  type:"text", required:false, title:"¿En qué?",
+  placeholder:"Por ejemplo: Contaduría, Enfermería, Diseño gráfico",
+  showIf:{ id:"estudios", in:["Carrera técnica","Licenciatura","Especialidad","Maestría","Doctorado"] } });
 add({ id:"estado_res", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"dropdown", required:true, title:"Estado de residencia", options: ESTADOS });
 add({ id:"estado_res_otro", mode:"primera", section:"Ficha básica", huli:"ficha",
@@ -678,9 +685,6 @@ add({ id:"estado_res_otro", mode:"primera", section:"Ficha básica", huli:"ficha
 add({ id:"tipo_sangre", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"mc", required:true, title:"Tipo de sangre",
   options:["O+","O-","A+","A-","B+","B-","AB+","AB-","Desconocido"] });
-add({ id:"estudios", mode:"primera", section:"Ficha básica", huli:"observaciones",
-  type:"text", required:true, title:"Último grado de estudios concluido",
-  placeholder:"Por ejemplo: preparatoria, licenciatura, maestría" });
 add({ id:"religion", mode:"primera", section:"Ficha básica", huli:"observaciones",
   type:"text", required:true, title:"¿Practicas alguna religión?",
   placeholder:"Si no, puedes escribir Ninguna" });
@@ -1617,7 +1621,7 @@ const BLOCK_INTRO = {
 const BLOCK_OF = {};
 [
   ["contacto", ["quien_refiere","nombre","apellido1","apellido2","fnac","sexo_bio","identidad","genero","estado_nac","estado_nac_otro","tiene_curp","curp","telefono","correo"]],
-  ["ficha", ["civil","trabajo","estado_res","estado_res_otro","tipo_sangre","estudios","religion","mascotas"]],
+  ["ficha", ["civil","trabajo","estado_res","estado_res_otro","tipo_sangre","estudios","estudios_en","religion","mascotas"]],
   ["motivo", ["motivo","hobbies","relato"]],
   ["habito", ["evac_dia","bristol","pujar","tenesmo","sangre","sangre_inicio","sangre_ultimo","sangre_color","coagulos","sangre_donde","moco","moco_desde","tiempo_bano","agua","fibra","dieta","dolor_evac","dolor_eva","dolor_tipo","dolor_cuando","irritantes","suplementos","comezon","comezon_inicio","comezon_rascado","toallas","meds_topicos","meds_topicos_cual","humedad","humedad_det","aseo_vigoroso","banos_asiento","banos_asiento_freq","cuerpo_extranio","cuerpo_extranio_inicio","cuerpo_extranio_dolor","fiebre","fiebre_det","perdida_peso","perdida_peso_det","ejercicio"]],
   ["gineco", ["fum_estado","fum","gestas","partos","partos_cesarea","abortos","macrosomia","parto_instrumentado","pap","pap_cuando","pap_conoce","pap_precancer","mamo","mamo_cuando","mamo_hallazgo"]],
@@ -2493,13 +2497,22 @@ function composeAppNotas() {
 }
 function composeOtrosDatosLines() {
   const lines = [];
-  if (has("estudios")) lines.push("Escolaridad: " + ans("estudios"));
   if (has("religion")) lines.push("Religión: " + ans("religion"));
   if (has("mascotas")) lines.push("Mascotas: " + ans("mascotas"));
   if (has("identidad")) lines.push("Identidad de género referida: " + ans("identidad"));
   if (has("temas") && ans("temas").indexOf("Ninguna") < 0) lines.push("Temas de interés para la consulta: " + ans("temas"));
   if (has("observaciones")) lines.push(ans("observaciones"));
   return lines;
+}
+function composeOcupacion() {
+  const parts = [];
+  if (has("trabajo")) parts.push(ans("trabajo").replace(/\.?\s*$/, ""));
+  if (has("estudios")) {
+    let e = "Último grado de estudios: " + ans("estudios");
+    if (has("estudios_en")) e += " en " + ans("estudios_en").replace(/\.?\s*$/, "");
+    parts.push(e);
+  }
+  return parts.join(". ");
 }
 function composeEstadoRes() {
   const e = ans("estado_res");
@@ -2529,7 +2542,7 @@ function huliFields() {
   addF("Ficha básica", "Teléfono", ans("telefono"));
   addF("Ficha básica", "Correo", ans("correo"));
   addF("Ficha básica", "Estado civil", ans("civil"));
-  addF("Ficha básica", "Ocupación", ans("trabajo"));
+  addF("Ficha básica", "Ocupación", composeOcupacion());
   addF("Ficha básica", "Estado de residencia", composeEstadoRes());
   addF("Ficha básica", "Tipo de sangre", ans("tipo_sangre"));
   addF("Antecedentes familiares patológicos", "Patologías", ans("ahf"));
@@ -3276,6 +3289,7 @@ const SIMULADO = {
     estado_res: "Ciudad de México",
     tipo_sangre: "O+",
     estudios: "Licenciatura",
+    estudios_en: "Diseño gráfico",
     religion: "Ninguna",
     mascotas: "Un perro",
     motivo: "Sangrado al evacuar y comezón anal desde hace tres meses",
