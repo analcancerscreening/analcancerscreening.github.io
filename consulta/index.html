@@ -1712,7 +1712,7 @@ add({ id:"parejas", mode:"primera", section:"Preguntas personalizadas", huli:"pe
 add({ id:"its", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
   type:"check", required:true, other:true, exclusive:["Ninguna"], advanceOnExclusive:true,
   title:"¿Has tenido alguna infección de transmisión sexual?",
-  options:["Sífilis","Clamidia","Gonorrea","Herpes","Mpox","VPH anal","VPH en vagina","VPH en pene","Molusco contagioso","Ninguna"],
+  options:["Ninguna","Sífilis","Clamidia","Gonorrea","Herpes","Mpox","VPH anal","VPH en vagina","VPH en pene","Molusco contagioso"],
   hideOptFn: o => (o === "VPH en vagina" && val("sexo_bio") === "Hombre") || (o === "VPH en pene" && val("sexo_bio") === "Mujer") });
 /* Tamizaje de cáncer anal y de colon: Sí / No / No sé (con explicación) */
 const CA_BLOCKS = {
