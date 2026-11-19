@@ -593,6 +593,15 @@ body { font-weight: 400; font-size: 1rem; line-height: 1.5; }
 .pair-lbl{display:block;font-weight:700;margin:14px 0 6px}
 .pair-lbl:first-child{margin-top:0}
 .pair-otro{margin-top:8px}
+#inp-curp::placeholder{text-transform:none}
+.tel-hint{margin:-2px 0 8px}
+.ec-mas{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.mx-mapa{max-width:220px;margin:10px auto 2px}
+.mx-mapa svg{display:block;width:100%;height:auto}
+.mx-mapa path{fill:#eef1ef;stroke:#b7c3be;stroke-width:.6;stroke-linejoin:round}
+.mx-mapa path.on{fill:var(--green);stroke:var(--green-deep)}
+.mx-mapa .cdmx-dot{fill:var(--green);stroke:#fff;stroke-width:1.5}
+.mx-mapa.globo{max-width:84px;color:var(--green)}
 .pair-err{color:#b3261e;min-height:1em;margin-top:6px}
 .choices.choices-grid{grid-template-columns:repeat(4,1fr)}
 .choices-grid .choice{justify-content:center;text-align:center;padding-left:6px;padding-right:6px}
@@ -798,13 +807,42 @@ const BRISTOL = {
 };
 
 const ESTADOS = [
+  "Ciudad de México","Estado de México",
   "Aguascalientes","Baja California","Baja California Sur","Campeche","Chiapas",
-  "Chihuahua","Ciudad de México","Coahuila","Colima","Durango","Estado de México",
+  "Chihuahua","Coahuila","Colima","Durango",
   "Guanajuato","Guerrero","Hidalgo","Jalisco","Michoacán","Morelos","Nayarit",
   "Nuevo León","Oaxaca","Puebla","Querétaro","Quintana Roo","San Luis Potosí",
   "Sinaloa","Sonora","Tabasco","Tamaulipas","Tlaxcala","Veracruz","Yucatán",
   "Zacatecas","Fuera de México"
 ];
+
+// Mapa de México (decorativo). Fronteras estatales: Natural Earth, Admin 1 – States, Provinces 1:10m
+// (naturalearthdata.com, dominio público), simplificadas con mapshaper; proyección equirectangular a 23°N.
+const MX_MAPA = {"Sonora":"M22 3l-1 0l-1 2l1 2l0 2l2 1l5 3l1 0l2-1l2 1l1 2l4 1l-1 4l1 1l2 3l0 1l1 1l0 3l1 0l1 3l1 1l0 1l1 1l1 3l3 2l0 1l1 1l1 1l2 1l2 3l2 2l0-1l1 1l1 0l2 1l0 2l0 2l1 0l1 2l1 1l3 0l1 3l1 1l1 0l2 0l1 2l0 2l1 0l6-5l0-2l-1 0l-1-2l1-1l0-2l-1-1l-2-2l-1-1l-1-3l1-1l2 0l2 1l1-1l-1-3l0-2l-1-6l1 0l1-6l-1-5l-2-1l-2-2l1-5l-6 0l-9 0l-5 0l-11-4l-8-3l-7-2l-8-3zM45 40l1-2l-1-2l-1 0l-1 1l0 1l-1 1l2 1l1 0z","Baja California":"M22 3l1-2l-10 1l-12 1l1 2l0 1l1 2l2 1l0 3l1 2l2 3l0 1l1 0l1 2l1 2l0 1l2 2l0 2l0 1l1 1l0 1l2 2l2 1l1 1l2 0l2 3l1 0l1 2l1 0l1 2l1 1l1 1l-1 2l1 3l12 0l0-2l-1-1l0-1l0-1l-2 0l-1-2l-1-1l-2-1l-1-3l0-1l-1-1l-5-4l-1 0l0-1l-1-1l-2-2l1-2l-1-2l0-3l-1-1l-1-2l1-3l0-2l0-1l-1-1l0-2l-1-2l1-2l1 0zM18 45l-1 2l1 1l1-2l-1-1zM37 37l0-2l-2 0l0-1l-1-1l-1 1l4 3z","Chihuahua":"M128 38l-1 0l-1-1l-1-1l-2-1l-2 0l-2-2l-1 0l-1-2l-1-1l-1-1l0-3l-1-2l-1-2l-1-1l-2-1l-1-1l-2-1l0-1l-2-1l-2-2l-1 0l-2-2l0-1l-2-1l-7 0l-8 0l0 5l-7 0l-1 5l2 2l2 1l1 5l-1 6l-1 0l1 6l0 2l1 3l-1 1l-2-1l-2 0l-1 1l1 3l1 1l2 2l1 1l0 2l-1 1l1 2l1 0l1-1l2 1l1 1l1 1l1 2l1 4l3 1l1 0l1 2l2 3l2 0l2-2l0-2l1 0l1-1l-1-2l0-1l2 0l0-2l2-2l2 1l1 0l1 1l2 1l2-1l3 1l2 1l1 0l2-3l1-1l2 0l3 2l-3-13l3-6l3-5z","Coahuila":"M160 50l-1-1l-1-1l0-2l-2-1l-1-3l-1-2l-1-1l-1-2l-1-2l-2-1l0-1l-1 0l-1-1l-1-1l-1-1l-5 0l-1 0l-2-1l-1 1l-2 1l-1 1l-1 3l0 1l-1 0l-2 2l-1 0l-3 5l-3 6l3 13l3 2l0 1l0 2l0 4l-2 2l1 1l-1 1l1 2l1 0l0 2l1 1l2 0l1 1l0-2l2-2l1 0l3-1l3 1l1 2l2 0l0 1l1 1l1-1l1 0l1 2l3 0l0-2l0-1l1-1l-1 0l0-1l2-1l2 0l1 0l0-1l-2 0l-1-1l-2-4l0-2l-1-1l-1-1l-1-1l-1-1l4-3l1 1l1-2l0-2l-1-1l-1 0l0-1l2-1l1-1l1-2l0-1l2-1l2 2l1-2z","Tamaulipas":"M161 51l-2 1l1 1l1 4l0 1l0 1l1 1l0 1l2 1l0 2l2 1l0 2l1 0l2 1l0-1l3 1l0 5l1 1l-4 3l-2 0l-1 1l0 1l-3 2l-1 1l0 3l0 2l1 1l-1 2l-2 1l-1 2l0 1l-1 0l0 2l1 2l-1 1l0 1l4 2l2-1l1 2l3 1l3 0l2 0l1 0l1-1l1 1l3 1l-1-3l1-4l0-3l0-4l0-3l1-5l2-7l1-2l1-3l1-3l-1 0l-2 1l-2-1l-1-1l-4 0l-2-1l-2-1l0 1l-2-2l-2 0l-1-1l-1-3l-2-3l1-1l-1-1l0-1l0-2l-2-1z","Nuevo León":"M160 50l-1 2l-2-2l-2 1l0 1l-1 2l-1 1l-2 1l0 1l1 0l1 1l0 2l-1 2l-1-1l-4 3l1 1l1 1l1 1l1 1l0 2l2 4l1 1l2 0l0 1l-1 0l-2 0l-2 1l0 1l1 0l-1 1l0 1l0 2l2 3l0 4l1 1l0 1l0 2l0 3l1-1l3 1l0-2l1 0l0-1l1-2l2-1l1-2l-1-1l0-2l0-3l1-1l3-2l0-1l1-1l2 0l4-3l-1-1l0-5l-3-1l0 1l-2-1l-1 0l0-2l-2-1l0-2l-2-1l0-1l-1-1l0-1l0-1l-1-4l-1-1l2-1l-1-1z","Quintana Roo":"M258 148l1 0l2 1l1-2l0-1l1 0l1-3l2 0l2-3l1 1l-1 2l1 1l1 1l1-1l0-3l1-1l0-2l1-3l0-1l1-2l-2 0l-1-1l1 0l2-2l0-3l2-3l1-1l2-3l1-3l0-2l-1 0l-1-2l-2 2l-3-1l0 2l0 2l0 1l-1 4l-3 2l-2 0l-1 1l-1 0l0 1l-3 1l-2 2l-1 0l-1 1l-2 0l0 1l2 3l1 2l0 2l0 3l0 2l0 3l-1 2zM280 122l-1 1l-1 2l1 0l1-2l0-1z","Campeche":"M258 148l1-2l0-3l0-2l0-3l0-2l-1-2l-2-3l-1-1l-1-2l-2-1l0-2l-2-1l-1 0l-1-1l-1 0l0-3l-1 1l0 2l0 1l0 3l0 2l-2 1l0 1l0 3l-2 2l-2 2l-3 1l1 1l1 1l-1 1l-1 1l-1 1l-2-1l-2 0l0-2l-1 0l-4 1l2 1l2 0l0 3l2 2l2 0l1-1l2 0l2 1l1 0l0 2l1 0l6 0l10 0l0-2z","Tabasco":"M241 150l0-2l-1 0l-2-1l-2 0l-1 1l-2 0l-2-2l0-3l-2 0l-2-1l-1 0l-2 1l-1 1l-4 0l-7 2l1 2l0 1l1 1l2 1l1 2l0 1l1-2l1 0l1-4l1 0l1 1l1 0l0 2l0 1l1 2l2 0l2-2l1-1l1 0l2-2l2 1l0 1l1 0l0 2l2 1l0 1l4 0l0-5z","Chiapas":"M237 155l0-1l-2-1l0-2l-1 0l0-1l-2-1l-2 2l-1 0l-1 1l-2 2l-2 0l-1-2l0-1l0-2l-1 0l-1-1l-1 0l-1 4l-1 0l-1 2l0 1l-2 1l0 2l-1 1l-1 1l0 1l-1 2l1 2l0 2l1 0l0 1l3 2l4 3l2 2l1 1l2 2l3 4l1 0l0-1l0-1l1-2l0-1l-1-1l0-1l4-7l1-1l11 0l0-1l0-1l1 0l-1-1l-2-1l1-1l-1-1l-3-2l-3-3l-1-1z","Colima":"M124 141l1-2l1-1l0-1l0-2l-1-2l-2 1l-2-1l-1 0l0 2l-3 1l-1 1l2 0l0 1l4 1l2 2z","Nayarit":"M110 121l1-2l2 0l1-1l1 0l4 3l0-2l1-1l-1-2l3-1l0-1l-2-1l1-3l-3-3l0-2l1 0l-1-2l-1 1l-1-1l-1-1l-1-1l-1 2l-1-2l1-1l0-1l-2-1l-2 0l-1 1l-1 1l1 1l0 2l-1 0l-1 0l0 2l0 3l2 4l3 2l-1 1l0 1l0 1l-1 1l-1 2l2 1z","Baja California Sur":"M29 48l-1 0l0 1l0 2l2 0l-2 0l-1 0l-1-2l-1 1l-1 0l-3 0l-1 0l0 1l1 0l2 2l2 1l0 2l2 1l1 0l1 1l2 1l2 2l1-1l2 1l1-1l1 2l3 2l2 2l2 0l0 2l1 0l1 3l0 4l0 2l0 3l1 0l1 1l1 2l1-1l0 1l2 2l4 2l4 4l2 2l2 2l0 3l2 1l2-1l2-1l1-2l0-2l-1-1l-2 0l0-2l-1-2l0-1l-2 1l0-2l-1-1l-1 0l-1 0l1 1l-1 0l-2 0l-1-2l-1-2l1-1l0-1l-1-2l-1-1l-1-4l-2-1l0-1l-1-1l0-2l0-1l-1-3l0-1l-1-1l0-1l-2-2l0 2l-1 0l0-1l-1-2l0-1l-2-1l-1-2l-1-2l-2-1l-1-2l0-1l-12 0z","Sinaloa":"M106 103l1 0l1 0l0-2l-1-1l1-1l1-1l0-1l-2-1l-1-1l0-2l-1-1l-1-1l0-4l-1-2l-2-1l-2 1l-1 0l0-1l-1-1l-1-2l-2-2l-1-3l0-2l1-2l-2-3l-1-2l-1 0l-3-1l-1-4l-1-2l-1-1l-1-1l-2-1l-1 1l0 2l-6 5l-1 0l0 1l-2 2l0 2l3 2l0 1l3 0l1 1l3 1l1 1l1 0l1 1l-1 1l0 1l1 1l1 2l1 0l2 1l1 0l0 1l0 1l1 1l4 2l1 2l1 2l2 2l1 2l2 1l2 3l2 2l1 1z","Yucatán":"M247 120l0 3l1 0l1 1l1 0l2 1l0 2l2 1l1 2l1 1l0-1l2 0l1-1l1 0l2-2l3-1l0-1l1 0l1-1l2 0l3-2l1-4l0-1l0-2l0-2l-4-1l-1 0l-2 0l-1 0l-2 1l-1 0l-4 1l-6 1l-3 1l-2 2l0 2z","Veracruz":"M179 105l-3-1l-1-1l-1 1l-1 0l-2 0l2 1l0 1l0 2l-1 0l0 2l-1 1l0 1l1 1l0 1l0 1l1 1l2 0l1 1l-1 2l0 1l-2-1l0 2l-1 1l0 1l0 1l2 0l2-3l1 0l0 2l1-3l1 0l1 2l1 1l-1 1l-1 0l0 1l1 1l1 1l1-2l3 2l-2 2l0 2l-1 1l2 3l2 0l-1 1l-1 0l0 3l-1 1l0 1l2 1l1 1l2-1l0 2l2-2l1 1l1 1l1 1l0 1l1 1l2-1l1 1l0 1l-1 2l1 3l2 0l1-1l2-1l2 3l1 2l10 0l2-1l0-1l0-1l-1-2l-2-1l-1-1l0-1l-1-2l-3 1l-1-1l-2-3l-2-1l-2-1l-2 0l-2-1l-1 1l-2-4l-1-1l-1-1l-2-6l-2-3l-3-3l-1-1l-1-2l-1-3l-2-3l-1-2l0-2l2 2l0 2l1 0l0-2l-3-2l-1-3l0-2z","Jalisco":"M116 137l1-1l3-1l0-2l1 0l2 1l2-1l1 2l0 2l0 1l2 0l2 0l1-1l1-1l1-1l1 1l1-2l-1-1l-1 0l0-1l0-1l-1-1l1-2l-2 0l-1 0l0-1l4-1l1-1l4-1l1-2l-1-1l0-2l2-2l2-1l1-1l-1-2l1-1l0-2l-1-1l-2-1l-2 1l0 1l-1 1l-3 0l-1-1l-1 1l0 1l1 0l0 2l-3 1l-1 0l0 2l-1 0l-2-1l-2 0l-1-1l1-2l1-1l0-2l2-2l1 0l1-3l-3-2l0 1l0 1l-1 2l-2 0l0-2l1-2l-1-1l-1 4l0-1l0-3l1-1l-2-1l0 2l0 1l0 1l-2 1l-2 0l0 2l3 3l-1 3l2 1l0 1l-3 1l1 2l-1 1l0 2l-4-3l-1 0l-1 1l-2 0l-1 2l0 1l-1 1l-2 0l-1 1l1 2l0 2l3 3l1 1l1 2l2 2l2 1z","Michoacán":"M138 149l0-3l2 0l1-1l0-2l0-1l2 0l2 1l2 0l2 0l3 0l-1-3l1 0l1-1l3-4l-1 0l2-1l-1-2l1-3l0-2l-1-1l-1 1l0 1l-3 1l-1-1l-1 1l-1-1l0-1l-1 0l-1 1l-2-1l1-2l-1 0l-1 0l-1 1l-2 0l-1-2l-1 0l-4 1l-1 1l-4 1l0 1l1 0l2 0l-1 2l1 1l0 1l0 1l1 0l1 1l-1 2l-1-1l-1 1l-1 1l-1 1l-2 0l-2 0l-1 1l-1 2l0 1l1 1l1 2l1 0l3 1l3 1l1 1l4 1z","Guerrero":"M172 165l1-1l1 0l0-2l1 0l0-1l1-1l1-2l-2-2l-1-1l0-2l-1-1l1-3l-1-1l-1 0l-3 0l-2-3l-1-2l-2 0l-1-2l-2-1l0 1l-3 1l-1 1l-1 1l-1-1l-1-1l0-2l-1-1l-1 1l-1 0l1 3l-3 0l-2 0l-2 0l-2-1l-2 0l0 1l0 2l-1 1l-2 0l0 3l2-1l2 1l1 2l2 1l0 1l2 1l2 1l9 4l3 2l1 0l2 0l5 2l1-1l2 3z","Oaxaca":"M212 167l1 0l-2-1l0 1l-1-1l0-1l3 2l0-2l-1-2l1-2l0-1l1-1l1-1l0-2l-10 0l-1-2l-2-3l-2 1l-1 1l-2 0l-1-3l1-2l0-1l-1-1l-2 1l-1-1l0-1l-1-1l-1-1l-1-1l-2 2l0 1l-2 2l-2-1l-1 1l-1 1l-2-2l0-1l-1 0l-1 2l1 1l-1 1l-1-1l-2 0l0 1l-1 0l-1 3l1 1l0 2l1 1l2 2l-1 2l-1 1l0 1l-1 0l0 2l-1 0l-1 1l4 1l3 2l4 1l4 2l3 0l1 0l2 0l3-1l4-2l2-2l3 0l-1-1l2-1l1 1l1-1l0 1l-1 1l3 0l2 1z","Estado de México":"M171 133l0-1l0-1l-1-2l-1 0l-1 1l0-2l-1 0l-1 0l-2 2l-1-1l0-1l0-1l-1-1l-1 0l-1-1l-3 4l-1 3l1 2l-2 1l1 0l-3 4l1 1l0 2l1 1l1 1l1-1l1-1l3-1l0-1l2 1l0-1l2-1l-1-1l1-1l-1-2l1-1l1-2l2 3l0 2l1 1l2 0l0-2l0-2l0-1z","Puebla":"M171 138l0 1l-1 1l0 1l1 3l-2-1l-2 2l2 3l3 0l1 0l1 1l1 0l0-1l2 0l1 1l1-1l-1-1l1-2l1 0l0 1l2 2l1-1l1-1l2 1l2-2l0-1l0-2l-2 1l-1-1l-2-1l0-1l1-1l0-3l1 0l1-1l-2 0l-2-3l1-1l0-2l2-2l-3-2l-1 2l-1-1l-1-1l0-1l1 0l1-1l-1-1l-1-2l-1 0l-1 3l-2 2l1 2l-2 2l1 2l2 1l1 2l1 0l1 0l0 1l-2 0l0 1l-1 0l-1 0l-1 1l-2-1l-1-2l-1-1l0 1l0 2l0 2z","Morelos":"M171 138l-2 0l-1-1l-1 0l-2 0l-1 1l1 1l-2 1l0 1l1 2l2 0l1 2l2-2l2 1l-1-3l0-1l1-1l0-1z","Querétaro":"M167 115l-1-3l-2 1l0 1l-2 0l-1-1l-1 1l0 2l-1 0l-1 0l-1 3l-3-1l-1 3l1 2l0 1l1 1l1 1l1 1l0 2l3-4l0-2l2-1l1-1l0-1l1-1l0-2l1 0l2-1l0-1z","Hidalgo":"M167 115l0 1l-2 1l-1 0l0 2l-1 1l0 1l-1 1l-2 1l0 2l1 1l1 0l1 1l0 1l0 1l1 1l2-2l1 0l1 0l0 2l1-1l1 0l1 2l0 1l3 0l0-1l1 0l-1-2l2-2l-1-2l2-2l0-2l-1 0l-2 3l-2 0l0-1l0-1l1-1l0-2l2 1l0-1l1-2l-1-1l-2 0l-1-1l0-1l-1 0l0 2l-2 0l-1-1l-1 0z","Guanajuato":"M160 114l-1-1l-1-1l-3-1l-1 2l-1 0l-4-3l-2 0l-1-1l-2 1l0 2l-1 1l1 2l-1 1l-2 1l-2 2l0 2l1 1l-1 2l1 0l1 2l2 0l1-1l1 0l1 0l-1 2l2 1l1-1l1 0l0 1l1 1l1-1l1 1l3-1l0-1l1-1l-1-1l-1-1l0-1l-1-2l1-3l3 1l1-3l1 0l1 0l0-2z","San Luis Potosí":"M151 82l-1 1l-1 1l-2 4l-6 4l-2 2l-1 0l0 2l0 2l1 2l1 2l1 1l1 1l1-1l1-1l2 0l0 1l0 1l0 3l-2 3l2-1l1 1l2 0l4 3l1 0l1-2l3 1l1 1l1 1l1-1l1 1l2 0l0-1l2-1l1 3l1 0l1 1l2 0l0-2l1 0l0-1l-1-1l0-1l1-1l0-2l1 0l0-2l0-1l-2-1l-3 0l-3-1l-1-2l-2 1l-4-2l0-1l1-1l-1-2l-3-1l-1 1l0-3l0-2l0-1l-1-1l0-4l-2-3z","Zacatecas":"M151 82l-3 0l-1-2l-1 0l-1 1l-1-1l0-1l-2 0l-1-2l-3-1l-3 1l-1 0l1 3l0 3l-2 1l-5-1l-2 2l-1 1l-2 1l0 2l-1 3l-1 2l-1 2l0 1l0 5l-1 3l-1 0l2 0l2-1l0-1l0-1l0-2l2 1l-1 1l0 3l0 1l1-4l1 1l-1 2l0 2l2 0l1-2l0-1l0-1l3 2l-1 3l-1 0l-2 2l0 2l-1 1l-1 2l1 1l2 0l2 1l1 0l0-2l1 0l3-1l0-2l-1 0l0-1l-1-2l2-3l0-1l1 0l2-1l1 0l2 1l0 2l1 1l2 1l1 1l2-3l0-3l0-1l0-1l-2 0l-1 1l-1 1l-1-1l-1-1l-1-2l-1-2l0-2l0-2l1 0l2-2l6-4l2-4l1-1l1-1z","Aguascalientes":"M141 108l-1-1l0-2l-2-1l-1 0l-2 1l-1 0l0 1l-2 3l1 2l1-1l1 1l3 0l1-1l0-1l2-1z","Durango":"M94 72l-1 2l0 2l1 3l2 2l1 2l1 1l0 1l1 0l2-1l2 1l1 2l0 4l1 1l1 1l0 2l1 1l2 1l0 1l2 0l2 1l0 1l-1 1l1 2l1-2l1 1l1 1l1 1l1-1l1 2l1-3l0-5l0-1l1-2l1-2l1-3l0-2l2-1l1-1l2-2l5 1l2-1l0-3l-1-3l-2 2l0 2l-1-1l-2 0l-1-1l0-2l-1 0l-1-2l1-1l-1-1l2-2l0-4l0-2l0-1l-3-2l-3-2l-2 0l-1 1l-2 3l-1 0l-2-1l-3-1l-2 1l-2-1l-1-1l-1 0l-2-1l-2 2l0 2l-2 0l0 1l1 2l-1 1l-1 0l0 2l-2 2l-2 0z","Tlaxcala":"M175 131l-1 0l0 1l-3 0l0 1l1 1l1 2l2 1l1-1l1 0l1 0l0-1l2 0l0-1l-1 0l-1 0l-1-2l-2-1z","Ciudad de México":"M168 137l0-2l-2-3l-1 2l-1 1l1 2l2 0l1 0z"};
+function drawMxMapa(holder, estado) {
+  holder.innerHTML = "";
+  holder.className = "mx-mapa";
+  if (!estado) { holder.style.display = "none"; return; }
+  holder.style.display = "";
+  const NS = "http://www.w3.org/2000/svg";
+  if (estado === "Fuera de México") {
+    holder.className = "mx-mapa globo";
+    holder.innerHTML = '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="32" cy="32" r="27"/><ellipse cx="32" cy="32" rx="12" ry="27"/><path d="M5 32h54M10 18h44M10 46h44"/></svg>';
+    return;
+  }
+  const svg = document.createElementNS(NS, "svg"); svg.setAttribute("viewBox", "0 0 282 184");
+  let sel = null;
+  Object.keys(MX_MAPA).forEach(n => {
+    const p = document.createElementNS(NS, "path"); p.setAttribute("d", MX_MAPA[n]);
+    if (n === estado) { p.setAttribute("class", "on"); sel = p; } else svg.appendChild(p);
+  });
+  if (sel) svg.appendChild(sel);
+  if (estado === "Ciudad de México") {
+    const c = document.createElementNS(NS, "circle"); c.setAttribute("class", "cdmx-dot");
+    c.setAttribute("cx", "166"); c.setAttribute("cy", "134"); c.setAttribute("r", "5"); svg.appendChild(c);
+  }
+  holder.appendChild(svg);
+}
 
 const DROGAS = ["G (GHB)","Tussy","Cocaína","Marihuana","Cristal","Fentanilo","Poppers","LSD","Hongos","Tachas","MDMA","M","Piedra"];
 function drogaKey(label) {
@@ -889,12 +927,13 @@ add({ id:"estado_res_otro", mode:"primera", section:"Ficha básica", huli:"ficha
   showIf:{ id:"estado_res", in:["Fuera de México"] }, showIfFn: () => false /* va junto con estado_nac */ });
 add({ id:"tiene_curp", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"mc", required:true, title:"¿Tienes CURP?",
-  options:["No tengo CURP","Sí"] });
+  options:["No tengo CURP","Sí"],
+  showIfFn: () => false /* va junto con telefono (CURP en la misma pantalla), a petición del Dr. Agus 20/11/2026 */ });
 add({ id:"curp", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"text", required:true, title:"CURP", placeholder:"18 caracteres",
-  showIf:{ id:"tiene_curp", in:["Sí"] } });
+  showIf:{ id:"tiene_curp", in:["Sí"] }, showIfFn: () => false /* va junto con telefono */ });
 add({ id:"telefono", mode:"primera", section:"Ficha básica", huli:"ficha",
-  type:"telcc", required:true, withEmail:true, title:"Teléfono celular y correo electrónico", hint:"Elige la clave de tu país y escribe tu número de 10 dígitos." });
+  type:"telcc", required:true, withEmail:true, withCurp:true, withCivil:true, title:"Estado civil, teléfono, correo y CURP", telHint:"Elige la clave de tu país y escribe tu número de 10 dígitos." });
 const LADAS = [
   ["🇲🇽 México","+52"],["🇺🇸 Estados Unidos","+1"],["🇨🇦 Canadá","+1"],["🇨🇴 Colombia","+57"],
   ["🇦🇷 Argentina","+54"],["🇨🇱 Chile","+56"],["🇵🇪 Perú","+51"],["🇬🇹 Guatemala","+502"],
@@ -909,7 +948,12 @@ add({ id:"correo", mode:"primera", section:"Ficha básica", huli:"ficha",
   showIfFn: () => false /* va junto con el teléfono, a petición del Dr. Agus 20/11/2026 */ });
 add({ id:"civil", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"mc", required:true, other:true, title:"Estado civil",
-  options:["Soltero(a)","Casado(a)","Viudo(a)","Separado(a)","Divorciado(a)","Concubino(a)"] });
+  showIfFn: () => false /* va arriba en la pantalla de teléfono, a petición del Dr. Agus 20/11/2026 */,
+  options:["Soltero(a)","Casado(a)","Viudo(a)","Separado(a)","Divorciado(a)","Concubino(a)"],
+  // Pantalla en dos niveles (Dr. Agus 20/11/2026): principales + "Otro" que despliega el resto.
+  // "Unión libre" se guarda como "Concubino(a)" (valor de Huli); "Otro (especifica)" guarda el token "Otro".
+  ecMain:[["Soltero(a)","Soltero(a)"],["Casado(a)","Casado(a)"],["Concubino(a)","Unión libre"]],
+  ecMas:[["Viudo(a)","Viudo(a)"],["Separado(a)","Separado(a)"],["Divorciado(a)","Divorciado(a)"],["Otro","Otro (especifica)"]] });
 add({ id:"trabajo", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"text", required:true, title:"¿A qué te dedicas?" });
 add({ id:"estudios", mode:"primera", section:"Ficha básica", huli:"ficha",
@@ -926,7 +970,13 @@ add({ id:"religion", mode:"primera", section:"Ficha básica", huli:"observacione
   type:"mc", required:true, other:true, grid:2, title:"¿Practicas alguna religión?",
   options:["Ninguna","Católica","Cristiana","Testigo de Jehová","Judía","Musulmana","Budista","Creo en Dios, sin religión"] });
 add({ id:"mascotas", mode:"primera", section:"Ficha básica", huli:"observaciones",
-  type:"text", required:true, title:"¿Hay mascotas en casa?" });
+  type:"mc", required:true, title:"¿Hay mascotas en casa?",
+  options:["No","Sí"] });
+add({ id:"mascotas_cual", mode:"primera", section:"Ficha básica", huli:"observaciones",
+  type:"check", required:true, other:true, grid:2, title:"¿Qué mascotas?",
+  hint:"Puedes marcar más de una.",
+  options:["Perro","Gato","Ave","Pez","Conejo","Hámster","Tortuga","Reptil"],
+  showIf:{ id:"mascotas", in:["Sí"] } });
 
 add({ id:"motivo", mode:"primera", section:"Motivo de consulta", huli:"motivo",
   type:"textarea", required:true, title:"¿Qué te llevó a pedir consulta?", hint:"Cuéntanos con tus palabras qué sientes o qué te preocupa." });
@@ -2383,7 +2433,7 @@ const BLOCK_INTRO = {
 const BLOCK_OF = {};
 [
   ["contacto", ["quien_refiere","hobbies","nombre","apellido1","apellido2","fnac","sexo_bio","identidad","orientacion","genero","estado_nac","estado_nac_otro","estado_res","estado_res_otro","tiene_curp","curp","telefono","correo"]],
-  ["ficha", ["civil","trabajo","tipo_sangre","estudios","estudios_en","religion","mascotas"]],
+  ["ficha", ["civil","trabajo","tipo_sangre","estudios","estudios_en","religion","mascotas","mascotas_cual"]],
   ["motivo", ["motivo","relato"]],
   ["habito", ["evac_dia","evac_cada","bristol","pujar","tenesmo","sangre","sangre_inicio","sangre_ultimo","sangre_color","coagulos","sangre_donde","moco","moco_desde","tiempo_bano","agua","comidas","fruta","verdura","dolor_evac","dolor_eva","dolor_tipo","dolor_cuando","dolor_duracion","dolor_noche","irritantes","suplementos","suplementos_cual","comezon","comezon_inicio","comezon_rascado","toallas","meds_topicos","meds_topicos_cual","humedad","humedad_det","aseo_vigoroso","cuerpo_extranio","cuerpo_extranio_inicio","cuerpo_extranio_sale","cuerpo_extranio_duele","cuerpo_extranio_dolor","fiebre","fiebre_det","fiebre_veces","perdida_peso","perdida_peso_det","perdida_peso_kg","perdida_peso_tiempo","ejercicio"]],
   ["gineco", ["fum_estado","fum","gestas","partos","partos_cesarea","abortos","macrosomia","parto_instrumentado","pap","pap_cuando","pap_conoce","pap_precancer","mamo","mamo_cuando","mamo_hallazgo"]],
@@ -2588,6 +2638,8 @@ function isAnswered(q) {
   }
   if (v == null || String(v).trim() === "") return false;
   if (q.type === "telcc" && !/^\+\d+ \d{10}$/.test(String(v))) return false;
+  if (q.withCurp && !curpOk()) return false;
+  if (q.withCivil && !civilOk()) return false;
   if (q.type === "estados2") {
     for (const id of ["estado_nac","estado_res"]) {
       const e = String(val(id) || "");
@@ -2650,6 +2702,8 @@ function usesAutoAdvance(q) {
   if (ot && val(q.id) === ot) return false;
   return true;
 }
+// CURP junto con teléfono (20/11/2026): 18 caracteres o "No tengo CURP"
+function curpOk() { return val("tiene_curp") === "No tengo CURP" || String(val("curp") || "").length === 18; }
 function canProceed(q) {
   if (!q) return false;
   const ot = otherToken(q);
@@ -2658,6 +2712,8 @@ function canProceed(q) {
   if (q.type === "email" && val(q.id) !== PND && !EMAIL_RE.test(String(val(q.id) || "").trim())) return false;
   // Teléfono y correo juntos (20/11/2026): el correo es opcional, pero si lo escriben debe ser válido
   if (q.withEmail) { const c = String(val("correo") || "").trim(); if (c && !isPndToken(c) && !EMAIL_RE.test(c)) return false; }
+  if (q.withCurp && !curpOk()) return false;
+  if (q.withCivil && !civilOk()) return false;
   if (q.required) return isAnswered(q);
   return true;
 }
@@ -2913,11 +2969,12 @@ function renderInput(q) {
       sel.value = String(val(id) || "");
       const ot = el("input", { className:"field pair-otro", type:"text", id:"inp-" + id + "_otro" });
       ot.placeholder = lblOtro; ot.value = String(val(id + "_otro") || "");
-      const showOt = () => { ot.style.display = sel.value === "Fuera de México" ? "" : "none"; };
+      const mapa = el("div", { className:"mx-mapa" }); mapa.setAttribute("aria-hidden", "true");
+      const showOt = () => { ot.style.display = sel.value === "Fuera de México" ? "" : "none"; drawMxMapa(mapa, sel.value); };
       showOt();
       sel.addEventListener("change", () => { state.answers[id] = sel.value; showOt(); updateNav(q); });
       ot.addEventListener("input", () => { state.answers[id + "_otro"] = ot.value; updateNav(q); });
-      box.appendChild(sel); box.appendChild(ot);
+      box.appendChild(sel); box.appendChild(ot); box.appendChild(mapa);
     });
   }
   else if (q.type === "dropdown") {
@@ -3017,7 +3074,12 @@ function renderInput(q) {
       updateNav(q);
     };
     inp.addEventListener("input", sync); sel.addEventListener("change", sync);
+    if (q.withCivil) {
+      const lc = el("label", { className:"pair-lbl" }); lc.textContent = "Estado civil"; box.appendChild(lc);
+      const cq = Q.find(x => x.id === "civil"); if (cq) renderCivil(box, cq, q);
+    }
     if (q.withEmail) { const l1 = el("label", { className:"pair-lbl" }); l1.textContent = "Teléfono celular"; box.appendChild(l1); }
+    if (q.telHint) { const th = el("p", { className:"q-hint tel-hint" }); th.textContent = q.telHint; box.appendChild(th); }
     wrap.appendChild(sel); wrap.appendChild(inp); box.appendChild(wrap);
     if (q.withEmail) {
       const l2 = el("label", { className:"pair-lbl" }); l2.textContent = "Correo electrónico";
@@ -3032,6 +3094,28 @@ function renderInput(q) {
       };
       em.addEventListener("input", syncE);
       box.appendChild(l2); box.appendChild(em); box.appendChild(err);
+    }
+    if (q.withCurp) {
+      const l3 = el("label", { className:"pair-lbl" }); l3.textContent = "CURP"; l3.htmlFor = "inp-curp";
+      const cu = el("input", { className:"field", type:"text", id:"inp-curp" });
+      cu.maxLength = 18; cu.autocomplete = "off"; cu.autocapitalize = "characters"; cu.spellcheck = false;
+      cu.placeholder = "18 caracteres"; cu.style.textTransform = "uppercase";
+      cu.value = String(val("curp") || "");
+      const nc = el("button", { className:"btn ghost num-nose", type:"button" });
+      nc.textContent = "No tengo CURP";
+      if (val("tiene_curp") === "No tengo CURP") nc.classList.add("selected");
+      cu.addEventListener("input", () => {
+        const v = cu.value.toUpperCase().slice(0, 18);
+        if (v) { state.answers.curp = v; state.answers.tiene_curp = "Sí"; nc.classList.remove("selected"); }
+        else { delete state.answers.curp; if (val("tiene_curp") === "Sí") delete state.answers.tiene_curp; }
+        updateNav(q);
+      });
+      nc.addEventListener("click", () => {
+        cu.value = ""; delete state.answers.curp; state.answers.tiene_curp = "No tengo CURP";
+        nc.classList.add("selected"); updateNav(q);
+        if (canProceed(q)) goNext();
+      });
+      box.appendChild(l3); box.appendChild(cu); box.appendChild(nc);
     }
   } else {
     const typ = (q.type === "tel" || q.type === "email") ? q.type : "text";
@@ -3067,7 +3151,54 @@ function renderInput(q) {
   if (oinp) oinp.addEventListener("input", () => updateNav(q));
 }
 
+// host: pregunta de la pantalla combinada (telefono). Sin host = pantalla propia con avance automático.
+function renderCivil(box, q, host) {
+  const blk = el("div", { className:"ec-block" }); box.appendChild(blk);
+  const nav = () => updateNav(host || q);
+  const draw = () => {
+    blk.innerHTML = "";
+    const cur = val(q.id);
+    const abierto = q.ecMas.some(([v]) => v === cur) || state.ecOpen === true;
+    const elegir = (v) => {
+      if (host) { state.answers[q.id] = v; draw(); nav(); if (v === "Otro") { const o = document.getElementById("ec-other-inp"); if (o) o.focus(); } }
+      else toggleChoice(q, v, false);
+    };
+    const mk = (v, lbl, sel, onClick) => {
+      const bt = el("button", { className:"choice" + (sel ? " selected" : ""), type:"button" });
+      bt.setAttribute("data-choice", v); bt.setAttribute("aria-pressed", sel ? "true" : "false");
+      const t = el("span", { className:"txt" }); t.textContent = lbl; bt.appendChild(t);
+      bt.addEventListener("click", onClick); return bt;
+    };
+    const grid = () => { const w = el("div", { className:"choices choices-grid" }); w.style.gridTemplateColumns = "repeat(2,1fr)"; return w; };
+    const g1 = grid();
+    q.ecMain.forEach(([v, lbl]) => g1.appendChild(mk(v, lbl, cur === v, () => { state.ecOpen = false; elegir(v); })));
+    const bOtro = mk("__ec_otro", "Otro", abierto, () => {
+      clearAdvance(); state.ecOpen = true;
+      if (val(q.id) && !q.ecMas.some(([v]) => v === val(q.id))) delete state.answers[q.id];
+      if (host) { draw(); nav(); } else { renderInput(q); updateNav(q); }
+    });
+    bOtro.setAttribute("aria-expanded", abierto ? "true" : "false");
+    g1.appendChild(bOtro); blk.appendChild(g1);
+    if (abierto) {
+      const g2 = grid(); g2.classList.add("ec-mas");
+      q.ecMas.forEach(([v, lbl]) => g2.appendChild(mk(v, lbl, cur === v, () => { state.ecOpen = true; elegir(v); })));
+      blk.appendChild(g2);
+    }
+    const ow = el("div", { className:"other-wrap" + (cur === "Otro" ? "" : " hidden"), id: host ? "ec-other-wrap" : "other-wrap" });
+    ow.appendChild(el("label", { className:"lab" })).textContent = "Especifica:";
+    const oinp = el("input", { className:"other-field", type:"text", id: host ? "ec-other-inp" : "other-inp" });
+    oinp.value = state.others[q.id] || "";
+    oinp.addEventListener("input", () => { state.others[q.id] = oinp.value; nav(); });
+    ow.appendChild(oinp); blk.appendChild(ow);
+    const bty = el("div", { className:"ec-booty" }); bty.hidden = true; bty.setAttribute("aria-hidden", "true");
+    blk.appendChild(bty); // lugar reservado para la animación futura de Booty en pareja
+  };
+  draw();
+}
+// Estado civil completo: una opción final y, si es "Otro", el texto lleno
+function civilOk() { const v = val("civil"); if (!v) return false; if (v === "Otro") return !!String(state.others.civil || "").trim(); return true; }
 function renderChoices(box, q, multi) {
+  if (q.ecMain && !multi) return renderCivil(box, q);
   const wrap = el("div", { className:"choices" + (q.grid ? " choices-grid" : "") });
   if (q.grid) wrap.style.gridTemplateColumns = "repeat(" + q.grid + ",1fr)";
   const ot = otherToken(q);
@@ -4312,7 +4443,10 @@ function composeNotaEvolucion() {
   const clean = x => ans(x).replace(/\.?\s*$/, "");
   if (has("hobbies")) hs.push("Le gusta: " + clean("hobbies"));
   if (has("religion")) hs.push("Religión: " + clean("religion"));
-  if (has("mascotas")) hs.push("Mascotas: " + clean("mascotas"));
+  if (has("mascotas")) {
+    if (val("mascotas") === "Sí" && has("mascotas_cual")) hs.push("Mascotas: " + String(ans("mascotas_cual")).toLowerCase());
+    else hs.push("Mascotas: " + (val("mascotas") === "No" ? "no" : clean("mascotas")));
+  }
   if (hs.length) {
     lines.push("");
     lines.push("Historia social: " + hs.join(". ") + ".");
@@ -4520,7 +4654,7 @@ const SIMULADO = {
     estudios: "Licenciatura",
     estudios_en: "Diseño gráfico",
     religion: "Ninguna",
-    mascotas: "Un perro",
+    mascotas: "Sí", mascotas_cual: ["Perro"],
     motivo: "Sangrado al evacuar y comezón anal desde hace tres meses",
     hobbies: "Correr en el parque, cocinar y ver cine.",
     relato: "Desde hace tres meses nota sangre en el papel y comezón anal. Cree que pueden ser hemorroides y quiere una revisión.",
