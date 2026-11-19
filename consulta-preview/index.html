@@ -910,11 +910,11 @@ add({ id:"trabajo", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"text", required:true, title:"¿A qué te dedicas?" });
 add({ id:"estudios", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"mc", required:true, other:true, title:"Último grado de estudios",
-  options:["Sin estudios","Primaria","Secundaria","Preparatoria o bachillerato","Carrera técnica","Licenciatura","Especialidad","Maestría","Doctorado"] });
+  options:["Licenciatura","Posgrado o especialidad","Maestría","Doctorado","Preparatoria o bachillerato","Carrera técnica","Secundaria","Primaria","Sin estudios"] });
 add({ id:"estudios_en", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"text", required:false, title:"¿En qué?",
   placeholder:"Por ejemplo: Contaduría, Enfermería, Diseño gráfico",
-  showIf:{ id:"estudios", in:["Carrera técnica","Licenciatura","Especialidad","Maestría","Doctorado"] } });
+  showIf:{ id:"estudios", in:["Carrera técnica","Licenciatura","Posgrado o especialidad","Maestría","Doctorado"] } });
 add({ id:"tipo_sangre", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"mc", required:true, title:"Tipo de sangre",
   options:["O+","O-","A+","A-","B+","B-","AB+","AB-","Desconocido"] });
