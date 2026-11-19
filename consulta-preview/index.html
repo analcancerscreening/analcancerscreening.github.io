@@ -590,6 +590,10 @@ body { font-weight: 400; font-size: 1rem; line-height: 1.5; }
 .num-suffix-lbl{font-weight:700;font-size:1.05rem}
 .num-nose{margin-top:12px}
 .num-nose.selected{background:var(--green-soft);border-color:var(--green)}
+.pair-lbl{display:block;font-weight:700;margin:14px 0 6px}
+.pair-lbl:first-child{margin-top:0}
+.pair-otro{margin-top:8px}
+.pair-err{color:#b3261e;min-height:1em;margin-top:6px}
 </style>
 </head>
 <body class="is-home">
@@ -795,7 +799,7 @@ const ESTADOS = [
   "Guanajuato","Guerrero","Hidalgo","Jalisco","Michoacán","Morelos","Nayarit",
   "Nuevo León","Oaxaca","Puebla","Querétaro","Quintana Roo","San Luis Potosí",
   "Sinaloa","Sonora","Tabasco","Tamaulipas","Tlaxcala","Veracruz","Yucatán",
-  "Zacatecas","Fuera de Mexico"
+  "Zacatecas","Fuera de México"
 ];
 
 const DROGAS = ["G (GHB)","Tussy","Cocaína","Marihuana","Cristal","Fentanilo","Poppers","LSD","Hongos","Tachas","MDMA","M","Piedra"];
@@ -869,15 +873,16 @@ add({ id:"genero", showIfFn: () => false /* quitada a petición del Dr. Agus, 19
   title:"Género en el expediente",
   options:["Femenino","Intersexual","Masculino","No especificado","Otro","Transexual","Transgénero","Travesti"] });
 add({ id:"estado_nac", mode:"primera", section:"Ficha básica", huli:"ficha",
-  type:"dropdown", required:true, title:"Estado de nacimiento", options: ESTADOS });
+  type:"estados2", required:true, title:"¿Dónde naciste y dónde vives?", options: ESTADOS });
 add({ id:"estado_nac_otro", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"text", required:true, title:"Si naciste fuera de México, ¿en qué país o lugar?",
-  showIf:{ id:"estado_nac", in:["Fuera de México"] } });
+  showIf:{ id:"estado_nac", in:["Fuera de México"] }, showIfFn: () => false /* va junto con estado_nac, 20/11/2026 */ });
 add({ id:"estado_res", mode:"primera", section:"Ficha básica", huli:"ficha",
-  type:"dropdown", required:true, title:"Estado de residencia", options: ESTADOS });
+  type:"dropdown", required:true, title:"Estado de residencia", options: ESTADOS,
+  showIfFn: () => false /* va junto con estado_nac, a petición del Dr. Agus 20/11/2026 */ });
 add({ id:"estado_res_otro", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"text", required:true, title:"Si vives fuera de México, ¿en qué país o lugar?",
-  showIf:{ id:"estado_res", in:["Fuera de México"] } });
+  showIf:{ id:"estado_res", in:["Fuera de México"] }, showIfFn: () => false /* va junto con estado_nac */ });
 add({ id:"tiene_curp", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"mc", required:true, title:"¿Tienes CURP?",
   options:["No tengo CURP","Sí"] });
@@ -885,7 +890,7 @@ add({ id:"curp", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"text", required:true, title:"CURP", placeholder:"18 caracteres",
   showIf:{ id:"tiene_curp", in:["Sí"] } });
 add({ id:"telefono", mode:"primera", section:"Ficha básica", huli:"ficha",
-  type:"telcc", required:true, title:"Teléfono celular", hint:"Elige la clave de tu país y escribe tu número de 10 dígitos." });
+  type:"telcc", required:true, withEmail:true, title:"Teléfono celular y correo electrónico", hint:"Elige la clave de tu país y escribe tu número de 10 dígitos." });
 const LADAS = [
   ["🇲🇽 México","+52"],["🇺🇸 Estados Unidos","+1"],["🇨🇦 Canadá","+1"],["🇨🇴 Colombia","+57"],
   ["🇦🇷 Argentina","+54"],["🇨🇱 Chile","+56"],["🇵🇪 Perú","+51"],["🇬🇹 Guatemala","+502"],
@@ -896,7 +901,8 @@ function telPartes() {
   return m ? { cc: m[1], num: m[2] } : { cc: "+52", num: String(val("telefono") || "").replace(/\D/g, "").slice(-10) };
 }
 add({ id:"correo", mode:"primera", section:"Ficha básica", huli:"ficha",
-  type:"email", required:false, title:"Correo electrónico", placeholder:"tucorreo@ejemplo.com" });
+  type:"email", required:false, title:"Correo electrónico", placeholder:"tucorreo@ejemplo.com",
+  showIfFn: () => false /* va junto con el teléfono, a petición del Dr. Agus 20/11/2026 */ });
 add({ id:"civil", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"mc", required:true, other:true, title:"Estado civil",
   options:["Soltero(a)","Casado(a)","Viudo(a)","Separado(a)","Divorciado(a)","Concubino(a)"] });
@@ -2578,6 +2584,13 @@ function isAnswered(q) {
   }
   if (v == null || String(v).trim() === "") return false;
   if (q.type === "telcc" && !/^\+\d+ \d{10}$/.test(String(v))) return false;
+  if (q.type === "estados2") {
+    for (const id of ["estado_nac","estado_res"]) {
+      const e = String(val(id) || "");
+      if (!e) return false;
+      if (e === "Fuera de México" && !String(val(id + "_otro") || "").trim()) return false;
+    }
+  }
   if (ot && v === ot && !(state.others[q.id] || "").trim()) return false;
   return true;
 }
@@ -2639,6 +2652,8 @@ function canProceed(q) {
   if (ot && val(q.id) === ot && !(state.others[q.id] || "").trim()) return false;
   // Correo: "Siguiente" solo con un correo válido, a petición del Dr. Agus 19/11/2026
   if (q.type === "email" && val(q.id) !== PND && !EMAIL_RE.test(String(val(q.id) || "").trim())) return false;
+  // Teléfono y correo juntos (20/11/2026): el correo es opcional, pero si lo escriben debe ser válido
+  if (q.withEmail) { const c = String(val("correo") || "").trim(); if (c && !isPndToken(c) && !EMAIL_RE.test(c)) return false; }
   if (q.required) return isAnswered(q);
   return true;
 }
@@ -2847,6 +2862,24 @@ function renderInput(q) {
   else if (q.type === "scale") renderScale(box, q);
   else if (q.type === "pct") renderPct(box, q);
   else if (q.type === "numunit") renderNumUnit(box, q, rawVal);
+  else if (q.type === "estados2") {
+    const par = [["estado_nac","¿En qué estado naciste?","Escribe el país y la ciudad donde naciste"],
+                 ["estado_res","¿En qué estado vives?","Escribe el país y la ciudad donde vives"]];
+    par.forEach(([id, lbl, lblOtro], n) => {
+      const l = el("label", { className:"pair-lbl" }); l.textContent = lbl; box.appendChild(l);
+      const sel = el("select", { className:"field", id: n === 0 ? "inp" : "inp-" + id });
+      const ph = document.createElement("option"); ph.value = ""; ph.textContent = "Elige una opción"; sel.appendChild(ph);
+      q.options.forEach(o => { const opt = document.createElement("option"); opt.value = optionValue(o); opt.textContent = optionValue(o); sel.appendChild(opt); });
+      sel.value = String(val(id) || "");
+      const ot = el("input", { className:"field pair-otro", type:"text", id:"inp-" + id + "_otro" });
+      ot.placeholder = lblOtro; ot.value = String(val(id + "_otro") || "");
+      const showOt = () => { ot.style.display = sel.value === "Fuera de México" ? "" : "none"; };
+      showOt();
+      sel.addEventListener("change", () => { state.answers[id] = sel.value; showOt(); updateNav(q); });
+      ot.addEventListener("input", () => { state.answers[id + "_otro"] = ot.value; updateNav(q); });
+      box.appendChild(sel); box.appendChild(ot);
+    });
+  }
   else if (q.type === "dropdown") {
     const sel = el("select", { className:"field", id:"inp" });
     const ph = document.createElement("option");
@@ -2944,7 +2977,22 @@ function renderInput(q) {
       updateNav(q);
     };
     inp.addEventListener("input", sync); sel.addEventListener("change", sync);
+    if (q.withEmail) { const l1 = el("label", { className:"pair-lbl" }); l1.textContent = "Teléfono celular"; box.appendChild(l1); }
     wrap.appendChild(sel); wrap.appendChild(inp); box.appendChild(wrap);
+    if (q.withEmail) {
+      const l2 = el("label", { className:"pair-lbl" }); l2.textContent = "Correo electrónico";
+      const em = el("input", { className:"field", type:"email", id:"inp-correo" });
+      em.placeholder = "tucorreo@ejemplo.com"; em.autocomplete = "email"; em.inputMode = "email";
+      em.value = isPndToken(val("correo")) ? "" : String(val("correo") || "");
+      const err = el("p", { className:"q-hint pair-err" });
+      const syncE = () => {
+        state.answers.correo = em.value.trim();
+        err.textContent = (em.value.trim() && !EMAIL_RE.test(em.value.trim())) ? "Revisa tu correo, parece incompleto." : "";
+        updateNav(q);
+      };
+      em.addEventListener("input", syncE);
+      box.appendChild(l2); box.appendChild(em); box.appendChild(err);
+    }
   } else {
     const typ = (q.type === "tel" || q.type === "email") ? q.type : "text";
     const inp = el("input", { className:"field", type:typ, id:"inp" });
