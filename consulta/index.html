@@ -356,6 +356,9 @@ label.lab { display: block; font-size: 0.8rem; color: var(--muted); margin: 0 0 
 .btn.primary:focus-visible, .btn.ghost:focus-visible { outline: 3px solid var(--green-deep); outline-offset: 3px; }
 .btn.ghost { background: #fff; color: var(--green-deep); border: 2px solid var(--green-deep); }
 .btn.ghost:disabled { opacity: .45; cursor: not-allowed; }
+#screen-quiz .nav { flex-wrap: wrap; }
+.btn-resume { flex: 0 0 100%; order: -1; background: var(--green-soft, #fff); }
+.btn-resume[hidden] { display: none; }
 .btn.skip {
   display: block; width: 100%; margin-top: 10px;
   background: #fff; color: var(--ink-soft);
@@ -573,6 +576,7 @@ body.patient-view #screen-done .booty-done-gif{display:block;}
     <p id="q-err" class="err hidden">Esta pregunta es obligatoria.</p>
     <p id="q-finish" class="q-finish" hidden>Gracias, si terminaste dale clic aquí:</p>
     <div class="nav">
+      <button class="btn ghost btn-resume" id="btn-resume" type="button" hidden>Regresar a la última respuesta</button>
       <button class="btn ghost" id="btn-back" type="button">Atrás</button>
       <button class="btn primary" id="btn-next" type="button">Siguiente</button>
     </div>
@@ -2524,6 +2528,33 @@ function updateNav(q) {
   $("#btn-next").textContent = last ? "Terminar" : "Siguiente";
   $("#q-finish").hidden = !(last && showNext);
   $("#btn-back").hidden = state.i === 0;
+  const rb = $("#btn-resume");
+  if (rb) rb.hidden = resumeTargetIndex() <= state.i;
+}
+/* Botón "Regresar a la última respuesta" (Dr. Agus, 19/11/2026) */
+function noteFurthest() {
+  const qs = listVisible();
+  const cur = qs[state.i];
+  if (!cur) return;
+  const maxIdx = state.maxQid ? qs.findIndex(x => x.id === state.maxQid) : -1;
+  if (state.i > maxIdx) state.maxQid = cur.id;
+}
+function resumeTargetIndex() {
+  if (!state.maxQid) return -1;
+  const qs = listVisible();
+  let maxIdx = qs.findIndex(x => x.id === state.maxQid);
+  if (maxIdx < 0) {
+    // la pregunta más lejana ya no aplica: usa la última respondida
+    for (let k = qs.length - 1; k >= 0; k--) { if (isAnswered(qs[k])) { maxIdx = Math.min(k + 1, qs.length - 1); break; } }
+  }
+  if (maxIdx <= state.i) return -1;
+  for (let k = state.i + 1; k < maxIdx; k++) { if (qs[k].required && !isAnswered(qs[k])) return k; }
+  return maxIdx;
+}
+function goResume() {
+  clearAdvance();
+  const t = resumeTargetIndex();
+  if (t > state.i) { state.i = t; renderQuiz(); }
 }
 
 const RAINBOW = [
@@ -2950,7 +2981,7 @@ function goNext() {
   }
   state.i += 1;
   if (state.i >= listVisible().length) renderDone();
-  else renderQuiz();
+  else { noteFurthest(); renderQuiz(); }
 }
 function goBack() {
   clearAdvance();
@@ -2960,6 +2991,7 @@ function goBack() {
 function startMode(mode) {
   state.mode = mode;
   state.i = 0;
+  state.maxQid = null;
   state.answers = {};
   state.others = {};
   state.demo = false;
@@ -4386,6 +4418,7 @@ function bind() {
   const sim = $("#btn-simulado");
   if (sim) sim.addEventListener("click", loadSimulado);
   $("#btn-back").addEventListener("click", goBack);
+  $("#btn-resume").addEventListener("click", goResume);
   $("#btn-next").addEventListener("click", goNext);
   $("#tab-nota").addEventListener("click", () => showTab("nota"));
   $("#tab-resumen").addEventListener("click", () => showTab("resumen"));
