@@ -1512,7 +1512,7 @@ const VAC = [["vph","VPH"],["mpox","Mpox"],["menb","Meningitis B"],["hepa","Hepa
 add({ id:"vacunas", mode:"primera", section:"Antecedentes patológicos", huli:"app",
   type:"check", required:false, other:true, exclusive:["Ninguna","No lo sé"], advanceOnExclusive:true,
   title:"¿Tienes alguna de estas vacunas?",
-  options:VAC.map(v => v[1]).concat(["Ninguna","No lo sé"]) });
+  options:["Ninguna"].concat(VAC.map(v => v[1]), ["No lo sé"]) });
 VAC.forEach(([k, nom]) => {
   if (k === "vph") {
     add({ id:"vac_vph_tipo", mode:"primera", section:"Antecedentes patológicos", huli:"app",
