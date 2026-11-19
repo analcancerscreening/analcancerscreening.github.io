@@ -861,7 +861,7 @@ function identidadCongruente(opt) {
   });
 })();
 add({ id:"orientacion", mode:"primera", section:"Ficha básica", huli:"personalizadas",
-  type:"check", required:true, other:true,
+  type:"mc", required:true, other:true,
   title:"¿Cuál es tu orientación sexual?",
   options:["Homosexual","Heterosexual","Bisexual","Asexual"] });
 add({ id:"genero", showIfFn: () => false /* quitada a petición del Dr. Agus, 19/11/2026; se llena sola desde identidad */, mode:"primera", section:"Ficha básica", huli:"ficha",
@@ -4497,7 +4497,7 @@ const SIMULADO = {
     droga_dur_poppers: "5 años, uso ocasional, todavía lo usa a veces",
     drogas_notas: "No usa cristal, cocaína ni otras sustancias.",
     quien_refiere: "Un amigo que ya es paciente del consultorio",
-    orientacion: ["Homosexual"],
+    orientacion: "Homosexual",
     anorreceptivo: "Sí",
     dispareunia: "Sí",
     condon: "A veces",
