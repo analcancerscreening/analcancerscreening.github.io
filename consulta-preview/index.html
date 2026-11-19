@@ -2602,7 +2602,7 @@ add({ id:"alcohol_cantidad", mode:"primera", section:"Antecedentes no patológic
   showIf:{ id:"alcohol", in:["Sí","Antes tomaba, lo suspendí"] }, showIfFn: () => false /* va en la pantalla de alcohol */ });
 add({ id:"drogas", mode:"primera", section:"Antecedentes no patológicos", huli:"anp",
   type:"check", required:true, other:true, exclusive:["Ninguna"], advanceOnExclusive:true, grid:2, itsGrid:true,
-  title:"¿Usas alguna de estas sustancias?", grid:2,
+  title:"¿Usas o has usado alguna de estas sustancias?", grid:2,
   options: ["Ninguna"].concat(DROGAS) });
 DROGAS.forEach(d => {
   add({ id:"droga_dur_" + drogaKey(d), mode:"primera",
@@ -2610,12 +2610,12 @@ DROGAS.forEach(d => {
     type:"text", required:true,
     title:"¿Durante cuánto tiempo has usado " + d + "?",
     hint:"Por ejemplo: durante 3 años, dos veces al mes. Si ya lo dejaste, indica hace cuánto.",
-    showIf:{ id:"drogas", in:[d] } });
+    showIf:{ id:"drogas", in:[d] }, showIfFn: () => false /* sin tiempo ni frecuencia de drogas (Dr. Agus 20/11/2026) */ });
 });
 add({ id:"droga_dur_otro", mode:"primera", section:"Antecedentes no patológicos", huli:"anp",
   type:"text", required:true,
   title:"La otra sustancia que mencionaste: ¿durante cuánto tiempo la has usado?",
-  showIf:{ id:"drogas", in:["Otro"] } });
+  showIf:{ id:"drogas", in:["Otro"] }, showIfFn: () => false /* sin tiempo ni frecuencia de drogas (Dr. Agus 20/11/2026) */ });
 add({ id:"drogas_notas", showIfFn: () => false /* quitada a petición del Dr. Agus, 19/11/2026 */, mode:"primera", section:"Antecedentes no patológicos", huli:"anp",
   type:"textarea", required:false,
   title:"¿Quieres agregar alguna nota sobre el uso de estas sustancias?",
