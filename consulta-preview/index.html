@@ -1968,8 +1968,18 @@ add({ id:"abuso_aviso", mode:"primera", section:"Preguntas personalizadas", huli
   title:"Esta pregunta es sensible. Si no te sientes cómodo o cómoda, no es necesario responder." });
 add({ id:"abuso_sexual", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
   type:"mc", required:false,
-  title:"Algunas personas, desafortunadamente, han vivido experiencias íntimas que no desearon, como situaciones de abuso. ¿Has vivido algo así?",
+  title:"Algunas personas han tenido relaciones sexuales no consensuadas, es decir, sin haberlas querido o aceptado. ¿Te ha pasado?",
   options:["No","Sí","Prefiero no responder"] });
+add({ id:"abuso_edad", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
+  type:"number", required:true, suffix:"años de edad", maxLen:2, noSe:true, noSeLabel:"Prefiero no responder",
+  title:"¿A qué edad pasó?",
+  hint:"Escribe la edad con números. Si pasó varias veces, pon la edad de la primera vez.",
+  showIf:{ id:"abuso_sexual", in:["Sí"] } });
+add({ id:"abuso_repetido", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
+  type:"mc", required:true,
+  title:"¿Pasó más de una vez?",
+  options:["No","Sí","Prefiero no responder"],
+  showIf:{ id:"abuso_sexual", in:["Sí"] } });
 add({ id:"observaciones", mode:"primera", section:"Observaciones", huli:"observaciones",
   type:"textarea", required:false,
   title:"¿Quieres agregar algo más?" });
@@ -2371,7 +2381,7 @@ const BLOCK_OF = {};
   ["antecedentes", ["ahf","ahf_otros_ca"].concat(AHF_ENF.flatMap(([k]) => ["ahf_"+k+"_quien","ahf_"+k+"_edad"].concat(AHF_FAM.map(f => "ahf_"+k+"_edad_"+f[0])).concat(["ahf_"+k+"_vive","ahf_"+k+"_fallece"]))).concat(["ahf_notas","app_pat"].concat(APP_ENF.flatMap(([k]) => ["app_"+k+"_desde","app_"+k+"_med"])).concat(["app_vih_cd4","app_vih_cd4_fecha","app_vih_cv","app_vih_cv_fecha","app_detalle","app_notas","alergias"].concat(Array.from({length:5},(_,i)=>i+1).flatMap(n=>["alerg"+n+"_cual","alerg"+n+"_reac","alerg"+n+"_otra"])).concat(["cx_tiene","cx1_tipo","cx1_cual","cx1_tecnica","cx1_lado_hernia","cx1_malla","cx1_lado","cx1_cuando","cx1_porque","cx1_compl","cx1_otra","cx2_tipo","cx2_cual","cx2_tecnica","cx2_lado_hernia","cx2_malla","cx2_lado","cx2_cuando","cx2_porque","cx2_compl","cx2_otra","cx3_tipo","cx3_cual","cx3_tecnica","cx3_lado_hernia","cx3_malla","cx3_lado","cx3_cuando","cx3_porque","cx3_compl","cx_mas","hosp","vacunas","vac_vph_tipo","vac_vph_dosis","vac_vph_anio","vac_mpox_dosis","vac_mpox_anio","vac_menb_dosis","vac_menb_anio","vac_hepa_dosis","vac_hepa_anio","vac_hepb_dosis","vac_hepb_anio","fracturas","transfusiones","transf_anio","fuma","fuma_anios","fuma_cant","fuma_dejo","alcohol","alcohol_que","alcohol_freq","drogas","droga_dur_otro","drogas_notas"])))],
   ["sexual", ["intro_historia_sexual","anorreceptivo","dispareunia","condon","condon_freq","prep","doxy_pep","lubricante","enema","enema_cant","tamizaje_hep_b_si","tamizaje_hep_b","tamizaje_hep_b_res","tamizaje_hep_c_si","tamizaje_hep_c","tamizaje_hep_c_res","tamizaje_vih_si","tamizaje_vih","tamizaje_vih_res","tamizaje_sifilis_si","tamizaje_sifilis","tamizaje_sifilis_res","info_hisopo","hisopo_anal","hisopo_cual","hisopo_its_cuando","hisopo_its_res","hisopo_vph_cuando","hisopo_vph_res","hisopo_cito_cuando","hisopo_cito_res","debut","parejas","its","info_ca_anal_0","ca_anal_si","ca_anal_entendio","ca_anal_si2","ca_anal_cual","ca_anal_cito_cuando","ca_anal_cito_res","ca_anal_pcr_cuando","ca_anal_pcr_res","ca_anal_ara_cuando","ca_anal_ara_res","info_ca_colon_0","info_ca_colon_1","ca_colon_si","ca_colon_entendio","ca_colon_si2","ca_colon_cual","ca_colon_colono_cuando","ca_colon_colono_res","ca_colon_soh_cuando","ca_colon_soh_res","trabajo_sexual_recibido","trabajo_sexual_dado","sexo_riesgo","fisting","doble_penetracion","exposiciones_otra"]],
   ["obs", ["temas"]],
-  ["abuso", ["abuso_aviso","abuso_sexual"]],
+  ["abuso", ["abuso_aviso","abuso_sexual","abuso_edad","abuso_repetido"]],
   ["cierre", ["observaciones"]],
   ["seguimiento", ["sg_cirugia", "sg_cirugia_cuando", "sg_psyllium", "sg_psyllium_apego", "sg_banos_ind", "sg_banos_hecho", "sg_meds_ind", "sg_meds_ind_cual", "sg_meds_ind_apego", "sg_meds_otros", "sg_meds_otros_cual", "sg_motivo"]],
   ["sg_sintomas", ["sg_sangrado_color", "sg_sangrado_coagulos", "sg_sangrado_donde", "sg_dolor_tipo", "sg_dolor_cuando", "sg_dolor_duracion", "sg_dolor_noche"]],
@@ -2880,7 +2890,7 @@ function renderInput(q) {
     const inp = el("input", { className:"field", type:"text", id:"inp", inputMode:"numeric" });
     inp.setAttribute("pattern", "[0-9]*"); inp.autocomplete = "off";
     if (q.maxLen) inp.maxLength = q.maxLen;
-    inp.value = rawVal === "No sé" ? "" : rawVal;
+    inp.value = /^\d+$/.test(String(rawVal || "")) ? rawVal : "";
     let nsBtn = null;
     inp.addEventListener("input", () => {
       const d = inp.value.replace(/\D+/g, "");
@@ -2896,9 +2906,10 @@ function renderInput(q) {
     } else box.appendChild(inp);
     if (q.noSe) {
       nsBtn = el("button", { className:"btn ghost num-nose", type:"button" });
-      nsBtn.textContent = "No sé";
-      if (rawVal === "No sé") nsBtn.classList.add("selected");
-      nsBtn.addEventListener("click", () => { inp.value = ""; state.answers[q.id] = "No sé"; nsBtn.classList.add("selected"); goNext(); });
+      const nsLbl = q.noSeLabel || "No sé";
+      nsBtn.textContent = nsLbl;
+      if (rawVal === nsLbl) nsBtn.classList.add("selected");
+      nsBtn.addEventListener("click", () => { inp.value = ""; state.answers[q.id] = nsLbl; nsBtn.classList.add("selected"); goNext(); });
       box.appendChild(nsBtn);
     }
   } else if (q.type === "textarea") {
@@ -4006,7 +4017,15 @@ function composeSexoRiesgo() {
 function composeAbusoSexual() {
   const v = val("abuso_sexual");
   if (!v || v === "Prefiero no responder" || v === PND || declined("abuso_sexual")) return "";
-  if (v === "Sí") return "positivo";
+  if (v === "Sí") {
+    const parts = ["positivo"];
+    const e = String(val("abuso_edad") || "");
+    if (/^\d+$/.test(e)) parts.push("a los " + e + " años");
+    const r = val("abuso_repetido");
+    if (r === "Sí") parts.push("más de una vez");
+    else if (r === "No") parts.push("en una ocasión");
+    return parts.join(", ");
+  }
   if (v === "No") return "negado";
   return "";
 }
