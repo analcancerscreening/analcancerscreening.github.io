@@ -1192,7 +1192,7 @@ AHF_ENF.forEach(([k, nom]) => {
     title:"Si sabes, ¿a qué edad falleció? (" + nom + ")",
     showIf:{ id:"ahf_"+k+"_vive", in:["Falleció"] } });
 });
-add({ id:"ahf_notas", mode:"primera", section:"Antecedentes familiares", huli:"ahf",
+add({ id:"ahf_notas", showIfFn: () => false /* quitada a petición del Dr. Agus, 19/11/2026 */, mode:"primera", section:"Antecedentes familiares", huli:"ahf",
   type:"textarea", required:false,
   title:"¿Algo más sobre enfermedades en tu familia?",
    });
@@ -1240,7 +1240,7 @@ add({ id:"app_detalle", mode:"primera", section:"Antecedentes patológicos", hul
   type:"textarea", required:false,
   title:"Si tienes otra condición, ¿cuál es, desde cuándo y qué medicamento tomas?",
   showIfNot:{ id:"app_pat", only:["Ninguna"] } });
-add({ id:"app_notas", mode:"primera", section:"Antecedentes patológicos", huli:"app",
+add({ id:"app_notas", showIfFn: () => false /* quitada a petición del Dr. Agus, 19/11/2026 */, mode:"primera", section:"Antecedentes patológicos", huli:"app",
   type:"textarea", required:false,
   title:"¿Otra nota sobre enfermedades o tratamientos?" });
 add({ id:"alergias", mode:"primera", section:"Antecedentes patológicos", huli:"app",
@@ -1418,7 +1418,7 @@ function composeVacunas() {
   });
   return out.join(". ");
 }
-add({ id:"fracturas", mode:"primera", section:"Antecedentes patológicos", huli:"observaciones",
+add({ id:"fracturas", showIfFn: () => false /* quitada a petición del Dr. Agus, 19/11/2026 */, mode:"primera", section:"Antecedentes patológicos", huli:"observaciones",
   type:"text", required:true,
   title:"¿Has tenido alguna fractura?",
   hint:"Si no, escribe Ninguna." });
@@ -1481,10 +1481,10 @@ add({ id:"droga_dur_otro", mode:"primera", section:"Antecedentes no patológicos
   type:"text", required:true,
   title:"La otra sustancia que mencionaste: ¿durante cuánto tiempo la has usado?",
   showIf:{ id:"drogas", in:["Otro"] } });
-add({ id:"drogas_notas", mode:"primera", section:"Antecedentes no patológicos", huli:"anp",
+add({ id:"drogas_notas", showIfFn: () => false /* quitada a petición del Dr. Agus, 19/11/2026 */, mode:"primera", section:"Antecedentes no patológicos", huli:"anp",
   type:"textarea", required:false,
   title:"¿Quieres agregar alguna nota sobre el uso de estas sustancias?",
-  showIfFn: () => { const d = asList("drogas"); return d.length > 0 && !d.includes("Ninguna"); } });
+  /* antes: mostrar si hay drogas */ });
 
 
 /* Preguntas personalizadas (campos de Huli) */
