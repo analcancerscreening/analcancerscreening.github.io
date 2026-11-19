@@ -585,6 +585,11 @@ body { font-weight: 400; font-size: 1rem; line-height: 1.5; }
 .booty-capas img.booty-efecto{position:absolute!important;left:0!important;top:0!important;width:100%!important;height:100%!important;min-width:0!important;max-width:none!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;filter:none!important;pointer-events:none}
 #screen-done .booty-capas{display:block;width:fit-content;margin:0 auto 6px}
 #screen-done .booty-capas img.booty-done-gif{margin:0}
+.num-suffix{display:flex;align-items:center;gap:10px}
+.num-suffix .field{max-width:120px;text-align:center;font-size:1.25rem}
+.num-suffix-lbl{font-weight:700;font-size:1.05rem}
+.num-nose{margin-top:12px}
+.num-nose.selected{background:var(--green-soft);border-color:var(--green)}
 </style>
 </head>
 <body class="is-home">
@@ -743,13 +748,13 @@ function composeAhfNotas() {
         let t = String(x).replace(/^otro:\s*/i, "");
         t = t.charAt(0).toLowerCase() + t.slice(1);
         const ed = fam ? ans("ahf_"+k+"_edad_"+fam[0]) : "";
-        if (ed && ed !== "No sé") t += " (diagnóstico " + ({"Antes de los 50 años":"antes de los 50 años","De 50 a 59 años":"entre los 50 y 59 años","60 años o más":"a los 60 años o más"}[ed] || ed) + ")";
+        if (ed && ed !== "No sé") t += " (diagnóstico " + (/^\d+$/.test(ed) ? "a los " + ed + " años" : ed) + ")";
         return t;
       }).join(", "));
     }
     if (e) parts.push("diagnóstico " + e);
     if (v === "Sí, vive") parts.push("vive");
-    else if (v === "Falleció") parts.push("falleció" + (f ? " " + f : ""));
+    else if (v === "Falleció") parts.push("falleció" + (f && f !== "No sé" ? " " + (/^\d+$/.test(f) ? "a los " + f + " años" : f) : ""));
     else if (v && v !== "No sé") parts.push(v);
     if (parts.length) out.push(nom + ": " + parts.join(", ") + ".");
   });
@@ -1349,7 +1354,6 @@ const AHF_FAM = [["mama","Mamá","a tu mamá"],["papa","Papá","a tu papá"],["h
   ["abuela_p","Abuela paterna","a tu abuela paterna"],["abuelo_p","Abuelo paterno","a tu abuelo paterno"],
   ["tio_m","Tía o tío por parte de mamá","a tu tía o tío por parte de mamá"],["tio_p","Tía o tío por parte de papá","a tu tía o tío por parte de papá"],
   ["primo_m","Prima o primo por parte de mamá","a tu prima o primo por parte de mamá"],["primo_p","Prima o primo por parte de papá","a tu prima o primo por parte de papá"]];
-const AHF_EDAD_OPTS = ["Antes de los 50 años","De 50 a 59 años","60 años o más","No sé"];
 const ahfEsCancer = (k, padre) => padre === "ahf_otros_ca" || k === "colon";
 const ahfNFam = k => asList("ahf_"+k+"_quien").filter(x => x !== "No sé").length;
 AHF_ENF.forEach(([k, nom, padre]) => {
@@ -1361,28 +1365,22 @@ AHF_ENF.forEach(([k, nom, padre]) => {
     hint:"Puedes marcar más de uno.",
     options:AHF_FAM.map(f => f[1]).concat(["No sé"]),
     showIf:{ id:padre, in:[nom] }, showIfFn: () => ahfVis(padre) });
-  if (cancer) {
-    AHF_FAM.forEach(([fk, flbl, fa]) => {
-      add({ id:"ahf_"+k+"_edad_"+fk, mode:"primera", section:"Antecedentes familiares", huli:"ahf",
-        type:"mc", required:true,
-        title:"¿A qué edad le diagnosticaron " + low + " " + fa + "?",
-        options:AHF_EDAD_OPTS,
-        showIf:{ id:"ahf_"+k+"_quien", in:[flbl] }, showIfFn: () => ahfVis("ahf_"+k+"_quien") });
-    });
-  } else {
-    add({ id:"ahf_"+k+"_edad", mode:"primera", section:"Antecedentes familiares", huli:"ahf",
-      type:"text", required:false, placeholder:"Por ejemplo: mamá a los 50, abuelo a los 70",
-      title:"Si sabes, ¿a qué edad se lo diagnosticaron? (" + nom + ")",
-      showIf:{ id:padre, in:[nom] }, showIfFn: () => ahfVis(padre) });
-  }
+  AHF_FAM.forEach(([fk, flbl, fa]) => {
+    add({ id:"ahf_"+k+"_edad_"+fk, mode:"primera", section:"Antecedentes familiares", huli:"ahf",
+      type:"number", required:true, suffix:"años de edad", maxLen:3, noSe:true,
+      title:"¿A qué edad le diagnosticaron " + low + " " + fa + "?",
+      hint:"Escribe la edad con números. Si no la sabes, toca No sé.",
+      showIf:{ id:"ahf_"+k+"_quien", in:[flbl] }, showIfFn: () => ahfVis("ahf_"+k+"_quien") });
+  });
   add({ id:"ahf_"+k+"_vive", mode:"primera", section:"Antecedentes familiares", huli:"ahf",
     type:"mc", required:false, other:true,
     title:"¿Ese familiar vive? (" + nom + ")",
     options:["Sí, vive","Falleció","No sé"],
     showIf:{ id:padre, in:[nom] }, showIfFn: () => ahfVis(padre) && ahfNFam(k) <= 1 });
   add({ id:"ahf_"+k+"_fallece", mode:"primera", section:"Antecedentes familiares", huli:"ahf",
-    type:"text", required:false, placeholder:"Por ejemplo: a los 68 años",
-    title:"Si sabes, ¿a qué edad falleció? (" + nom + ")",
+    type:"number", required:true, suffix:"años de edad", maxLen:3, noSe:true,
+    title:"¿A qué edad falleció? (" + nom + ")",
+    hint:"Escribe la edad con números. Si no la sabes, toca No sé.",
     showIf:{ id:"ahf_"+k+"_vive", in:["Falleció"] }, showIfFn: () => ahfVis("ahf_"+k+"_vive") });
 });
 add({ id:"ahf_notas", showIfFn: () => false /* quitada a petición del Dr. Agus, 19/11/2026 */, mode:"primera", section:"Antecedentes familiares", huli:"ahf",
@@ -1827,8 +1825,9 @@ function composeTamizCaAnal() {
   return out.join(". ");
 }
 add({ id:"debut", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
-  type:"text", required:true,
+  type:"number", required:true, suffix:"años de edad", maxLen:2,
   title:"¿A qué edad iniciaste tu vida sexual?",
+  hint:"Escribe la edad con números.",
    });
 add({ id:"parejas", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
   type:"text", required:true,
@@ -2878,12 +2877,30 @@ function renderInput(q) {
       box.appendChild(hint);
     }
   } else if (q.type === "number") {
-    const inp = el("input", { className:"field", type:"number", id:"inp", inputMode:"numeric" });
-    if (q.min != null) inp.min = q.min;
-    if (q.max != null) inp.max = q.max;
-    inp.value = rawVal;
-    inp.addEventListener("input", () => state.answers[q.id] = inp.value);
-    box.appendChild(inp);
+    const inp = el("input", { className:"field", type:"text", id:"inp", inputMode:"numeric" });
+    inp.setAttribute("pattern", "[0-9]*"); inp.autocomplete = "off";
+    if (q.maxLen) inp.maxLength = q.maxLen;
+    inp.value = rawVal === "No sé" ? "" : rawVal;
+    let nsBtn = null;
+    inp.addEventListener("input", () => {
+      const d = inp.value.replace(/\D+/g, "");
+      if (d !== inp.value) inp.value = d;
+      state.answers[q.id] = d;
+      if (nsBtn) nsBtn.classList.remove("selected");
+    });
+    if (q.suffix) {
+      const wrap = el("div", { className:"num-suffix" });
+      wrap.appendChild(inp);
+      const sp = el("span", { className:"num-suffix-lbl" }); sp.textContent = q.suffix;
+      wrap.appendChild(sp); box.appendChild(wrap);
+    } else box.appendChild(inp);
+    if (q.noSe) {
+      nsBtn = el("button", { className:"btn ghost num-nose", type:"button" });
+      nsBtn.textContent = "No sé";
+      if (rawVal === "No sé") nsBtn.classList.add("selected");
+      nsBtn.addEventListener("click", () => { inp.value = ""; state.answers[q.id] = "No sé"; nsBtn.classList.add("selected"); goNext(); });
+      box.appendChild(nsBtn);
+    }
   } else if (q.type === "textarea") {
     const inp = el("textarea", { className:"field", id:"inp", rows: 5 });
     inp.placeholder = q.placeholder || "";
@@ -3608,7 +3625,7 @@ function huliFields() {
   addF("Preguntas personalizadas", "Ultimo tamizaje VIH referido verbalmente", composeTamiz("vih"), "tamizaje_vih_si");
   addF("Preguntas personalizadas", "Ultimo tamizaje Sifilis referido verbalmente", composeTamiz("sifilis"), "tamizaje_sifilis_si");
   addF("Preguntas personalizadas", "Ultimo tamizaje ITS referido verbalmente", composeTamizITS(), "hisopo_anal");
-  addF("Preguntas personalizadas", "Inicio de Vida Sexual", ans("debut"), "debut");
+  addF("Preguntas personalizadas", "Inicio de Vida Sexual", /^\d+$/.test(ans("debut") || "") ? ans("debut") + " años" : ans("debut"), "debut");
   addF("Preguntas personalizadas", "Número de parejas sexuales", ans("parejas"), "parejas");
   addF("Preguntas personalizadas", "Antecedente de infección de transmisión sexual", ans("its"), "its");
   addF("Preguntas personalizadas", "Tamizaje de cáncer anal", composeCa("anal"), "hisopo_anal");
@@ -4434,8 +4451,8 @@ const SIMULADO = {
     perdida_peso: "No",
     ejercicio: "Sí",
     ahf: ["Hipertensión","Cáncer de colon"],
-    ahf_has_quien: ["Papá"], ahf_has_edad: "a los 50 años", ahf_has_vive: "Sí, vive",
-    ahf_colon_quien: ["Abuela materna"], ahf_colon_edad_abuela_m: "60 años o más", ahf_colon_vive: "Falleció", ahf_colon_fallece: "a los 70 años",
+    ahf_has_quien: ["Papá"], ahf_has_edad_papa: "50", ahf_has_vive: "Sí, vive",
+    ahf_colon_quien: ["Abuela materna"], ahf_colon_edad_abuela_m: "65", ahf_colon_vive: "Falleció", ahf_colon_fallece: "70",
     app_pat: ["Asma","VIH"],
     app_asma_desde: "la infancia", app_asma_med: "salbutamol de rescate dos o tres veces al mes",
     app_vih_desde: "2019", app_vih_med: "Biktarvy",
@@ -4476,7 +4493,7 @@ const SIMULADO = {
     tamizaje_vih_si: "No",
     tamizaje_sifilis_si: "Sí", tamizaje_sifilis: "hace 4 meses", tamizaje_sifilis_res: "Negativo",
     hisopo_anal: "Sí", hisopo_cual: ["Perfil de ITS (clamidia, gonorrea y otras)"], hisopo_its_cuando: "hace 4 meses", hisopo_its_res: "Negativo",
-    debut: "17 años",
+    debut: "17",
     parejas: "Más de 30",
     its: ["Gonorrea"],
     ca_anal_si: "No", ca_colon_si: "No sé", ca_colon_entendio: "Sí, ya entendí", ca_colon_si2: "No",
