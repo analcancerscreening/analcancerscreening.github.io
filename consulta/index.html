@@ -511,7 +511,7 @@ select.field { appearance: auto; background: #fff; }
 }
 .dev-btn:hover { opacity: 1; }
 
-.img-heading{margin:0 0 10px;font-size:1.25rem;font-weight:800;color:var(--accent, #6a2c91);text-align:center;}
+.img-heading{margin:0 0 10px;font-size:1.25rem;font-weight:800;color:var(--green-deep);text-align:center;}
 .booty-done-gif{display:block;margin:0 auto 6px;width:180px;height:auto;}
 .papelitos{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:999;}
 .papelitos span{position:absolute;top:-20px;width:10px;height:10px;border-radius:2px;opacity:.95;animation-name:caer;animation-timing-function:linear;animation-fill-mode:forwards;}
@@ -1577,8 +1577,8 @@ function composeTamiz(k) {
 const HISOPO_OPTS = ["Perfil de ITS (clamidia, gonorrea y otras)","VPH (virus del papiloma humano)","Citología anal (Papanicolaou anal)"];
 const HISOPO_K = { "Perfil de ITS (clamidia, gonorrea y otras)":"its", "VPH (virus del papiloma humano)":"vph", "Citología anal (Papanicolaou anal)":"cito" };
 add({ id:"info_hisopo", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
-  type:"notice", required:false, image:"img_hisopo", imageHeading:"Hisopo, ¿qué es?", imageAlt:"Diagrama: el hisopo entra unos centímetros por el ano, gira y sale despacio.",
-  title:"Un hisopo es un palito largo con algodón en la punta, como un cotonete. Para algunas pruebas se mete unos centímetros en el ano para tomar una muestra: el perfil de ITS (clamidia, gonorrea y otras), la prueba de VPH y la citología anal (Papanicolaou anal). No duele; puede sentirse un poco raro." });
+  type:"notice", required:false, image:"img_hisopo", imageHeading:"Hisopado anal, ¿qué es?", imageAlt:"Diagrama: el hisopo entra unos centímetros por el ano, gira y sale despacio.",
+  title:"El hisopado anal consiste en meter un hisopo (un palito largo con algodón en la punta, como un cotonete) unos centímetros en el ano para tomar una muestra. Así se toman el perfil de ITS (clamidia, gonorrea y otras), la prueba de VPH y la citología anal (Papanicolaou anal). No duele; puede sentirse un poco raro." });
 add({ id:"hisopo_anal", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
   type:"mc", required:true,
   title:"¿Alguna vez te han hecho una prueba metiendo un hisopo dentro del ano?",
