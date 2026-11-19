@@ -728,6 +728,31 @@ body { font-weight: 400; font-size: 1rem; line-height: 1.5; }
 .ab-bubble{position:relative;flex:1;margin:0 0 0 10px;padding:12px 14px;background:var(--green-soft);border:2px solid var(--green);border-radius:16px;color:var(--green-deep);font-weight:700;line-height:1.35}
 .ab-bubble::before{content:"";position:absolute;left:-12px;top:50%;margin-top:-9px;border:9px solid transparent;border-right:12px solid var(--green);border-left:0}
 .ab-bubble::after{content:"";position:absolute;left:-8px;top:50%;margin-top:-7px;border:7px solid transparent;border-right:9px solid var(--green-soft);border-left:0}
+.rvx-down{animation:rvDown .45s cubic-bezier(.2,.8,.2,1) both}
+.rvx-side{animation:rvSide .45s cubic-bezier(.2,.8,.2,1) both}
+@media (prefers-reduced-motion:reduce){.rvx-down,.rvx-side{animation:none!important}}
+.seq-part + .seq-part{margin-top:6px}
+.mx-mapa path.on-nac{fill:var(--green);stroke:var(--green-deep)}
+.mx-mapa path.on-res{fill:var(--green-soft);stroke:var(--green);stroke-width:1.2}
+.mx-mapa .pin-nac path{fill:var(--green-deep);stroke:#fff;stroke-width:1.2}
+.mx-mapa .pin-nac circle{fill:#fff}
+.mx-mapa .pin-res path{fill:#fff;stroke:var(--green);stroke-width:2}
+.mx-mapa .pin-res circle{fill:var(--green)}
+.mx-leyenda{display:flex;justify-content:center;gap:16px;margin:4px 0 0;font-size:.85rem;color:var(--ink-soft)}
+.mx-leyenda span{display:inline-flex;align-items:center;gap:6px}
+.mx-leyenda i{display:inline-block;width:12px;height:12px;border-radius:50% 50% 50% 0;transform:rotate(-45deg)}
+.mx-leyenda .lg-nac i{background:var(--green-deep)}
+.mx-leyenda .lg-res i{background:#fff;border:2px solid var(--green);box-sizing:border-box}
+.mx-leyenda .lg-fuera{font-style:italic}
+.booty-mask{position:relative;width:min(210px,56vw);aspect-ratio:1;margin:2px auto 12px}
+.bq-lado{display:grid;grid-template-columns:40% 1fr;gap:12px;align-items:center;max-width:560px}
+.bq-lado .booty-mask{width:100%;max-width:210px;margin:0 auto}
+.bq-lado .chain-body .choices{margin:0}
+.bq-lado.sin-img{display:block;max-width:none}
+.bq-lado.bq-sin{display:block}
+.bq-lado.bq-sin .chain-body{width:60%;max-width:340px}
+.bq-lado .choices.choices-grid{grid-template-columns:1fr!important}
+.booty-mask .capa{position:absolute;inset:0;background-color:var(--tema,var(--green-deep));-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;mask-mode:alpha;pointer-events:none}
 .ni-lead{display:block}
 .nr-row{display:flex;gap:8px;align-items:stretch}
 .btn.skip.uf-nr{width:auto;display:inline-block;padding:0 18px;min-height:42px}
@@ -747,6 +772,8 @@ body { font-weight: 400; font-size: 1rem; line-height: 1.5; }
 .uf-units{display:flex;gap:8px;flex-wrap:wrap}
 .uf-u{flex:1 1 0;min-width:76px;padding:12px 8px;border-radius:14px;border:2px solid var(--line);background:#fff;font:inherit;font-weight:700;color:var(--ink);cursor:pointer}
 .uf-u.on{border-color:var(--green);background:var(--green-soft);color:var(--green-deep)}
+.uf-first-row{margin-bottom:8px}
+.uf-first-row .uf-u{flex:1 1 100%}
 .uf-num{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
 .uf-num[hidden]{display:none}
 .uf-num.uf-anim{animation:rvSide .35s cubic-bezier(.2,.8,.2,1) both}
@@ -1116,6 +1143,66 @@ function drawMxMapa(holder, estado) {
   holder.appendChild(svg);
 }
 
+/* Un solo mapa: marcador oscuro = naciste, marcador claro con borde = vives (Dr. Agus 20/11/2026) */
+var MX_CENTROS = null;
+function mxCentro(n) {
+  if (!MX_CENTROS) {
+    MX_CENTROS = {};
+    Object.keys(MX_MAPA).forEach(k => {
+      const t = MX_MAPA[k].match(/[a-zA-Z]|-?\d*\.?\d+/g) || [];
+      let x = 0, y = 0, cmd = "M", i = 0, x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9, sx = 0, sy = 0;
+      const ad = () => { x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y); };
+      while (i < t.length) {
+        if (/[a-zA-Z]/.test(t[i])) { cmd = t[i++]; if (cmd === "z" || cmd === "Z") { x = sx; y = sy; } continue; }
+        const a = +t[i++];
+        if (cmd === "M" || cmd === "L") { y = +t[i++]; x = a; if (cmd === "M") { sx = x; sy = y; cmd = "L"; } }
+        else if (cmd === "m" || cmd === "l") { x += a; y += +t[i++]; if (cmd === "m") { sx = x; sy = y; cmd = "l"; } }
+        else if (cmd === "H") x = a; else if (cmd === "h") x += a; else if (cmd === "V") y = a; else if (cmd === "v") y += a;
+        else { i++; continue; }
+        ad();
+      }
+      MX_CENTROS[k] = [(x0 + x1) / 2, (y0 + y1) / 2];
+    });
+    MX_CENTROS["Ciudad de México"] = [166, 134];
+  }
+  return MX_CENTROS[n];
+}
+function drawMxMapa2(holder, nac, res, leg) {
+  holder.innerHTML = ""; holder.className = "mx-mapa"; if (leg) leg.innerHTML = "";
+  const enMx = e => !!e && e !== "Fuera de México";
+  if (!nac && !res) { holder.style.display = "none"; if (leg) leg.style.display = "none"; return; }
+  holder.style.display = ""; if (leg) leg.style.display = "";
+  const lg = (cls, t) => { if (!leg) return; const sp = el("span", { className:cls }); sp.appendChild(el("i")); sp.appendChild(document.createTextNode(t)); leg.appendChild(sp); };
+  if (nac) lg("lg-nac", nac === "Fuera de México" ? "Naciste: fuera de México" : "Naciste");
+  if (res) lg("lg-res", res === "Fuera de México" ? "Vives: fuera de México" : "Vives");
+  if (!enMx(nac) && !enMx(res)) {
+    holder.className = "mx-mapa globo";
+    holder.innerHTML = '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="32" cy="32" r="27"/><ellipse cx="32" cy="32" rx="12" ry="27"/><path d="M5 32h54M10 18h44M10 46h44"/></svg>';
+    return;
+  }
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(NS, "svg"); svg.setAttribute("viewBox", "0 0 282 184");
+  const top = [];
+  Object.keys(MX_MAPA).forEach(n => {
+    const p = document.createElementNS(NS, "path"); p.setAttribute("d", MX_MAPA[n]);
+    if (n === nac && enMx(nac)) { p.setAttribute("class", "on-nac"); top.push(p); }
+    else if (n === res && enMx(res)) { p.setAttribute("class", "on-res"); top.unshift(p); }
+    else svg.appendChild(p);
+  });
+  top.forEach(p => svg.appendChild(p));
+  const pin = (estado, cls, dx) => {
+    const c = mxCentro(estado); if (!c) return;
+    const g = document.createElementNS(NS, "g"); g.setAttribute("class", cls);
+    g.setAttribute("transform", "translate(" + (c[0] + dx).toFixed(1) + " " + c[1].toFixed(1) + ")");
+    const pa = document.createElementNS(NS, "path"); pa.setAttribute("d", "M0 0C-2-4-6-7-6-11a6 6 0 0 1 12 0c0 4-4 7-6 11z");
+    const ci = document.createElementNS(NS, "circle"); ci.setAttribute("cx", "0"); ci.setAttribute("cy", "-11"); ci.setAttribute("r", "2.2");
+    g.appendChild(pa); g.appendChild(ci); svg.appendChild(g);
+  };
+  const mismo = enMx(nac) && nac === res;
+  if (enMx(res)) pin(res, "pin-res", mismo ? 5 : 0);
+  if (enMx(nac)) pin(nac, "pin-nac", mismo ? -5 : 0);
+  holder.appendChild(svg);
+}
 const DROGAS = ["G (GHB)","Tussy","Cocaína","Marihuana","Cristal","Fentanilo","Poppers","LSD","Hongos","Tachas","MDMA","M","Piedra"];
 function drogaKey(label) {
   const map = {
@@ -1354,7 +1441,7 @@ add({ id:"moco_desde", mode:"primera", section:"Hábito intestinal", huli:"gi",
   showIf:{ id:"moco", in:["Sí"] }, showIfFn: () => false /* va en la pantalla de moco; guarda "2 meses" */ });
 
 add({ id:"tiempo_bano", mode:"primera", section:"Hábito intestinal", huli:"gi",
-  type:"mc", required:true, grid:2,
+  type:"mc", required:true, grid:2, bootySlot:"booty_bano_tiempo",
   title:"¿Cuánto tiempo te quedas sentado en el baño?",
   options:["Menos de 5 minutos","5 a 10 minutos","10 a 15 minutos","15 a 20 minutos","Más de 20 minutos"] });
 
@@ -1363,7 +1450,7 @@ add({ id:"agua", mode:"primera", section:"Hábito intestinal", huli:"gi",
   options:["Más de 2 litros","1.5 a 2 litros","1 a 1.5 litros","Menos de 1 litro"] });
 
 add({ id:"comidas", mode:"primera", section:"Hábito intestinal", huli:"gi",
-  type:"mc", required:true, other:true,
+  type:"mc", required:true, /* solo 1, 2, 3 y Más de 3, sin "Otro" (Dr. Agus 20/11/2026) */
   title:"¿Cuántas comidas haces al día?", chips:true,
   options:["1","2","3","Más de 3"] });
 add({ id:"fruta", mode:"primera", section:"Hábito intestinal", huli:"gi",
@@ -1545,7 +1632,7 @@ add({ id:"cuerpo_extranio_tamano", mode:"primera", section:"Hábito intestinal",
 add({ id:"cuerpo_extranio_sale", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:false, other:true, cards:true, cardsSmall:true, otherImg:"icono_pregunta",
   title:"¿Esa bolita sale y se vuelve a meter?",
-  options:[{v:"Sale y se mete sola",img:"bol_sola"},{v:"Sale y la tengo que meter con el dedo",img:"bol_dedo"},{v:"Siempre está afuera, no se mete",img:"bol_afuera"}],
+  options:[{v:"Sale y se mete sola",img:"bol_sola"},{v:"Sale y la tengo que meter con el dedo",img:"bol_dedo"},{v:"Siempre está afuera, no se mete",img:"bol_afuera"},{v:"No sale",img:"bol_nosale"}],
   showIf:{ id:"cuerpo_extranio", in:["Sí"] } });
 
 add({ id:"cuerpo_extranio_duele", mode:"primera", section:"Hábito intestinal", huli:"gi",
@@ -1605,7 +1692,7 @@ add({ id:"fiebre_cuando", mode:"primera", section:"Hábito intestinal", huli:"gi
   showIf:{ id:"fiebre", in:["Sí"] } });
 
 add({ id:"perdida_peso", mode:"primera", section:"Hábito intestinal", huli:"gi",
-  type:"mc", required:true, bootySlot:"booty_peso",
+  type:"mc", required:true, bootySlot:"booty_peso", bootyPick: () => esLGBT() ? "booty_perdida_peso_drag" : "booty_peso",
   title:"¿Has bajado de peso?",
   options:["No","Sí"] });
 
@@ -1974,7 +2061,7 @@ function renderProg(box, q) {
     let nuevo = null;
     steps.forEach(st => {
       const n = nodes[st.id]; const show = vis.includes(st.id);
-      if (show && n.hidden) nuevo = nuevo || n;
+      if (show && n.hidden) { nuevo = nuevo || n; if (fromUser) rvx(n, vis.indexOf(st.id) % 2 === 1 ? "down" : "side"); }
       n.hidden = !show; n.lbl.textContent = st.label(); n.lbl.hidden = !n.lbl.textContent;
       if (!show && st.cond && !st.cond()) delete state.answers[st.id];
     });
@@ -2000,7 +2087,7 @@ function renderProg(box, q) {
     } else if (st.kind === "text") {
       const inp = el("input", { className:"field", type:"text", id:"prog-" + st.id }); inp.placeholder = st.placeholder || ""; inp.autocomplete = "off";
       inp.value = String(val(st.id) || "");
-      inp.addEventListener("input", () => { if (inp.value.trim()) state.answers[st.id] = inp.value; else delete state.answers[st.id]; refresh(false); });
+      inp.addEventListener("input", () => { if (inp.value.trim()) state.answers[st.id] = inp.value; else delete state.answers[st.id]; refresh(true); });
       inp.addEventListener("change", () => refresh(true));
       n.appendChild(inp);
     } else if (st.kind === "unitfirst") {
@@ -2022,7 +2109,7 @@ function renderProg(box, q) {
       const inp = el("input", { className:"field tiempo-inp", type:"text", id:"prog-" + st.id });
       inp.inputMode = "numeric"; inp.pattern = "[0-9]*"; inp.maxLength = st.maxLen || 3; inp.autocomplete = "off"; inp.placeholder = "0";
       inp.value = String(val(st.id) || "");
-      inp.addEventListener("input", () => { inp.value = inp.value.replace(/\D/g, "").slice(0, st.maxLen || 3); if (inp.value) state.answers[st.id] = String(+inp.value); else delete state.answers[st.id]; refresh(false); });
+      inp.addEventListener("input", () => { inp.value = inp.value.replace(/\D/g, "").slice(0, st.maxLen || 3); if (inp.value) state.answers[st.id] = String(+inp.value); else delete state.answers[st.id]; refresh(true); });
       row.appendChild(inp);
       if (st.suffix) { const sp = el("span", { className:"num-suffix-lbl" }); sp.textContent = st.suffix; row.appendChild(sp); }
       n.appendChild(row);
@@ -2153,9 +2240,13 @@ function renderAppCond(box, q) {
   const k = q.condK, nav = () => updateNav(q);
   const medQ = Q.find(x => x.id === "app_"+k+"_med");
   const lab = (t, cls) => { const l = el("label", { className:"pair-lbl" + (cls ? " " + cls : "") }); l.textContent = t; return l; };
+  const box0 = box, P1 = el("div", { className:"seq-part" }), P2 = el("div", { className:"seq-part" }), P3 = el("div", { className:"seq-part" });
+  box0.appendChild(P1); box0.appendChild(P2); box0.appendChild(P3);
+  box = P1;
   box.appendChild(lab(k === "otro" ? "¿Desde cuándo vives con " + appOtroNom() + "?" : q.condDesde));
   const h = el("p", { className:"q-hint wq-hint" }); h.textContent = "¿Hace cuánto te lo diagnosticaron? Escribe el número y toca la unidad para cambiar entre años y meses."; box.appendChild(h);
   box.appendChild(wTiempo("app_"+k+"_desde", nav));
+  box = P2;
   box.appendChild(lab(medQ ? (medQ.titleFn ? medQ.titleFn() : medQ.title) : "¿Qué medicamento tomas?"));
   const mid = "app_"+k+"_med";
   if (k === "vih") {
@@ -2178,11 +2269,14 @@ function renderAppCond(box, q) {
     nt.addEventListener("click", () => { const on = val(mid) === APP_NO_TX; inp.value = ""; if (on) delete state.answers[mid]; else state.answers[mid] = APP_NO_TX; nt.classList.toggle("selected", !on); nav(); });
     row.appendChild(inp); row.appendChild(nt); box.appendChild(row);
   }
+  box = P3;
   box.appendChild(lab("¿Ha estado controlada?"));
   const cblk = el("div"); box.appendChild(cblk);
   const cid = "app_"+k+"_control";
   const drawC = () => { cblk.innerHTML = ""; const g = ecGrid(2); APP_CONTROL.forEach(o => g.appendChild(ecChoice(o, o, val(cid) === o, () => { state.answers[cid] = o; drawC(); nav(); }))); cblk.appendChild(g); };
   drawC();
+  const medOk = () => { const m = String(val(mid) || "").trim(); if (!m) return false; if (k === "vih" && m === "Otro") return !!String(state.others.app_vih_med || "").trim(); return true; };
+  seqParts([{ node:P1, done: () => tiempoOk(val("app_"+k+"_desde")) }, { node:P2, done: medOk }, { node:P3, done: () => APP_CONTROL.includes(val(cid)) }]);
 }
 function vihLabsOk() {
   const cv = String(val("app_vih_cv") || ""), cd = String(val("app_vih_cd4") || "");
@@ -2218,9 +2312,11 @@ function renderVihLabs(box, q) {
   const redrawFechas = () => Object.keys(fechas).forEach(idF => {
     const { c, idVal, txt } = fechas[idF];
     c.innerHTML = "";
-    if (val(idVal) === "No lo sé") { delete state.answers[idF]; return; }
+    if (val(idVal) === "No lo sé") { delete state.answers[idF]; c.hidden = true; c.visto = false; return; }
+    if (!String(val(idVal) || "").trim()) { c.hidden = true; c.visto = false; return; }
     const l = el("span", { className:"ahf-q" }); l.textContent = txt; c.appendChild(l);
     c.appendChild(wFecha(idF, nav));
+    c.hidden = false; if (!c.visto && c.listo) rvx(c, "down"); c.visto = true;
   });
   const card = (t) => { const d = el("div", { className:"ahf-row vih-card" }); const s = el("strong"); s.textContent = t; d.appendChild(s); return d; };
   const c1 = card("Carga viral");
@@ -2233,6 +2329,9 @@ function renderVihLabs(box, q) {
   c2.appendChild(bloqueFecha("app_vih_cd4", "app_vih_cd4_fecha", "¿Cuándo te hiciste ese estudio de CD4?"));
   const pn = el("div", { className:"ahf-panel vih-panel" }); pn.appendChild(c1); pn.appendChild(c2); box.appendChild(pn);
   redrawFechas();
+  Object.keys(fechas).forEach(idF => { fechas[idF].c.listo = true; });
+  const cvOk = () => { const cv = String(val("app_vih_cv") || ""); return cv === "No lo sé" || ((cv === "Indetectable" || /^\d+$/.test(cv)) && fechaOk(val("app_vih_cv_fecha"))); };
+  seqParts([{ node:c1, done: cvOk }, { node:c2, done: () => true, dir:"side" }]);
 }
 function tiempoNota(v) {
   v = String(v || "").trim();
@@ -2908,6 +3007,8 @@ const DOLOR_TIPO_OPTS = ["Ardoroso","Punzante","Opresivo","Como presión"];
 const DOLOR_CUANDO_OPTS = ["En cualquier momento","Durante y después de evacuar","Solo durante la evacuación"];
 
 function sgTenia(key) { return { id:"sg_"+key+"_tenia", in:["Sí"] }; }
+// "Todavía no baja": se omiten "¿se quitó?", "¿cuándo?" y "última vez" de ese síntoma (Dr. Agus 20/11/2026)
+function sgYaBajo(key) { return function() { return val("sg_"+key+"_bajo_cuando") !== "Todavía no baja"; }; }
 function sgNoEliminado(key) {
   return function() { return val("sg_"+key+"_tenia") === "Sí" && val("sg_"+key+"_elimino") !== "Sí"; };
 }
@@ -2923,7 +3024,7 @@ function sgSiguePresente(key) {
 function motivoCubreSintoma() {
   const m = String(val("sg_motivo") || "").toLowerCase();
   if (!m.trim()) return true;
-  return /sangr|sangre|dolor|comez|prurit|moco|pujo|pujar|tenesm|humedad|escurr|bulto|bolita|abult|prolapso|cuerpo extra/.test(m);
+  return /sangr|sangre|dolor|comez|prurit|moco|pujo|pujar|tenesm|bulto|bolita|abult|prolapso|cuerpo extra|abdom|panza|c[oó]lico|retortij|intestino irritable|colitis/.test(m);
 }
 function motivoEsOtro() { return has("sg_motivo") && !motivoCubreSintoma(); }
 
@@ -2931,7 +3032,7 @@ function addSgPack(cfg) {
   const k = cfg.key;
   const pre = "sg_" + k + "_";
   add({ id: pre+"tenia", mode:"seguimiento", section:"Síntomas desde la última consulta", huli:"gi",
-    type:"mc", required:true, title: cfg.had, options:["No","Sí"] });
+    type:"mc", required:true, title: cfg.had, hint: cfg.hadHint || "", options:["No","Sí"] });
   const inicio = { id: pre+"inicio", mode:"seguimiento", section:"Síntomas desde la última consulta", huli:"gi",
     required:true, title: cfg.init, hint: cfg.initHint || "", showIf: sgTenia(k) };
   if (cfg.kind === "eva") {
@@ -2939,7 +3040,7 @@ function addSgPack(cfg) {
   } else {
     Object.assign(inicio, { type:"pct", left:"0%: ningún día", right:"100%: todos los días" });
   }
-  add(inicio);
+  if (!cfg.skipInicio) add(inicio);
   add({ id: pre+"reduccion", mode:"seguimiento", section:"Síntomas desde la última consulta", huli:"gi",
     type:"pct", left:"0%: nada", right:"100%: se quitó", required:true, title: cfg.reduc, showIf: sgTenia(k) });
   if (!cfg.skipActual) {
@@ -2953,20 +3054,20 @@ function addSgPack(cfg) {
     add(actual);
   }
   add({ id: pre+"bajo_cuando", mode:"seguimiento", section:"Síntomas desde la última consulta", huli:"gi",
-    type:"text", required:false,
+    type:"text", required:true, dur:["días","semanas","meses"], noRecuerdo:true, nrLabel:"Todavía no baja", nrFirst:true,
     title: cfg.bajo,
-    hint:"Por ejemplo: a los tres días, a la semana, o todavía no baja.",
+    hint:"Cuenta desde la consulta pasada: elige días, semanas o meses y escribe el número.",
     showIf: sgTenia(k) });
   add({ id: pre+"elimino", mode:"seguimiento", section:"Síntomas desde la última consulta", huli:"gi",
-    type:"mc", required:true, title: cfg.elimino, options:["No","Sí"], showIf: sgTenia(k) });
+    type:"mc", required:true, title: cfg.elimino, options:["No","Sí"], showIf: sgTenia(k), showIfFn: sgYaBajo(k) });
   add({ id: pre+"elimino_cuando", mode:"seguimiento", section:"Síntomas desde la última consulta", huli:"gi",
-    type:"text", required:false, title: cfg.eliminoCuando,
-    hint:"Una fecha aproximada está bien. Por ejemplo: hace dos semanas.",
+    type:"text", required:true, dur:["días","semanas","meses"], title: cfg.eliminoCuando,
+    hint:"¿Cuánto tiempo después de la consulta pasada? Elige días, semanas o meses y escribe el número.",
     showIf:{ id: pre+"elimino", in:["Sí"] } });
   add({ id: pre+"ultima", mode:"seguimiento", section:"Síntomas desde la última consulta", huli:"gi",
     type:"text", required:false, title: cfg.ultima,
     hint:"Por ejemplo: hace 10 días, ayer, o esta semana.",
-    showIf: sgTenia(k), showIfFn: sgNoEliminado(k) });
+    showIf: sgTenia(k), showIfFn: () => sgYaBajo(k)() && sgNoEliminado(k)() });
 }
 
 /* ===== Seguimiento ===== */
@@ -3115,7 +3216,8 @@ addSgPack({
 });
 addSgPack({
   key:"pujo", kind:"n7", skipActual:true,
-  had:"¿Cuando te vio el doctor la vez pasada, necesitabas pujar para evacuar?",
+  had:"¿Cuando te vio el doctor la vez pasada, necesitabas pujar muy fuerte y durante toda la evacuación?",
+  hadHint:"Todos necesitamos pujar un poco al evacuar. Aquí te preguntamos si necesitabas pujar muy fuerte y durante toda la evacuación.",
   init:"En esa ocasión, ¿qué porcentaje de los días necesitabas pujar?",
   reduc:"¿Qué tanto sientes que se redujo el pujo?",
   bajo:"¿Cuándo empezó a bajar el pujo, después de la consulta?",
@@ -3125,7 +3227,8 @@ addSgPack({
 });
 addSgPack({
   key:"tenesmo", kind:"n7", skipActual:true,
-  had:"¿Cuando te vio el doctor la vez pasada, sentías al terminar que aún querías evacuar?",
+  had:"¿Cuando te vio el doctor la vez pasada, sentías, al terminar de evacuar, que el recto seguía lleno y que aún querías evacuar?",
+  hadHint:"Lo sientes en el recto (la parte final del intestino, justo arriba del ano), no en el abdomen o la panza.",
   init:"En esa ocasión, ¿qué porcentaje de los días sentías eso?",
   reduc:"¿Qué tanto sientes que se redujo esa sensación de no terminar?",
   bajo:"¿Cuándo empezó a bajar, después de la consulta?",
@@ -3133,7 +3236,7 @@ addSgPack({
   eliminoCuando:"¿Cuándo se te quitó?",
   ultima:"¿Cuándo fue la última vez que la sentiste?"
 });
-addSgPack({
+if (false) addSgPack({ /* eliminada a petición del Dr. Agus 20/11/2026 ("esta la íbamos a eliminar") */
   key:"humedad", kind:"n7",
   had:"¿Cuando te vio el doctor la vez pasada, sentías el ano húmedo o se te escurría líquido?",
   init:"En esa ocasión, ¿qué porcentaje de los días lo sentías?",
@@ -3145,16 +3248,119 @@ addSgPack({
   ultima:"¿Cuándo fue la última vez que lo sentiste?"
 });
 addSgPack({
-  key:"bulto", kind:"n7",
+  key:"bulto", kind:"n7", skipInicio:true, skipActual:true, /* a la bolita no le aplica % de días (Dr. Agus 20/11/2026) */
   had:"¿Cuando te vio el doctor la vez pasada, habías notado una bolita, un bulto o algo que asomaba en el ano?",
-  init:"En esa ocasión, ¿qué porcentaje de los días lo notabas?",
   reduc:"¿Qué tanto sientes que se redujo ese abultamiento?",
-  now:"¿Y ahora, qué porcentaje de los días lo notas?",
   bajo:"¿Cuándo empezó a bajar, después de la consulta?",
   elimino:"¿Se te quitó por completo?",
   eliminoCuando:"¿Cuándo se te quitó?",
   ultima:"¿Cuándo fue la última vez que lo notaste?"
 });
+const sgBultoSigue = sgNoEliminado("bulto");
+const sgBultoDuele = () => sgBultoSigue() && val("sg_bulto_duele") === "Sí";
+add({ id:"sg_bulto_sale", mode:"seguimiento", section:"Síntomas desde la última consulta", huli:"gi",
+  type:"mc", required:true, other:true, cards:true, cardsSmall:true, otherImg:"icono_pregunta",
+  title:"Ahora, ¿esa bolita sale y se vuelve a meter?",
+  options:[{v:"Sale y se mete sola",img:"bol_sola"},{v:"Sale y la tengo que meter con el dedo",img:"bol_dedo"},{v:"Siempre está afuera, no se mete",img:"bol_afuera"},{v:"No sale",img:"bol_nosale"}],
+  showIf: sgTenia("bulto"), showIfFn: sgBultoSigue });
+add({ id:"sg_bulto_tamano", mode:"seguimiento", section:"Síntomas desde la última consulta", huli:"gi",
+  type:"mc", required:true, other:true, cards:true, cardsSmall:true, otherImg:"icono_pregunta",
+  title:"¿Qué tamaño tiene ahora, más o menos?",
+  options:[{v:"Ajonjolí",img:"tam_ajonjoli"},{v:"Arroz",img:"tam_arroz"},{v:"Chícharo",img:"tam_chicharo"},{v:"Uva",img:"tam_uva"},{v:"Fresa",img:"tam_fresa"},{v:"Más grande que una fresa (como un limón)",img:"tam_limon"}],
+  showIf: sgTenia("bulto"), showIfFn: sgBultoSigue });
+add({ id:"sg_bulto_duele", mode:"seguimiento", section:"Síntomas desde la última consulta", huli:"gi",
+  type:"mc", required:true, title:"¿Te duele esa bolita ahora?", options:["No","Sí"],
+  showIf: sgTenia("bulto"), showIfFn: sgBultoSigue });
+add({ id:"sg_bulto_dolor_eva", mode:"seguimiento", section:"Síntomas desde la última consulta", huli:"gi",
+  type:"scale", required:true, min:0, max:10, eva:true, title:"¿Qué tanto te duele ahora la bolita, de 0 a 10?",
+  hint:"Toca la cara de Booty o el punto de la línea que más se parezca a tu dolor.", left:"0: sin dolor", right:"10: el peor dolor",
+  showIfFn: sgBultoDuele });
+add({ id:"sg_bulto_dolor_tipo", mode:"seguimiento", section:"Síntomas desde la última consulta", huli:"gi",
+  type:"mc", required:true, other:true, cards:true, otherImg:"icono_pregunta", title:"¿Qué tipo de dolor es?",
+  options:[{v:"Ardoroso",img:"dolor_ardoroso"},{v:"Punzante",img:"dolor_punzante"},{v:"Opresivo",img:"dolor_opresivo"},{v:"Como presión",img:"dolor_presion"}],
+  optionHint: DOLOR_TIPO_HINT, showIfFn: sgBultoDuele });
+add({ id:"sg_bulto_dolor_cuando", mode:"seguimiento", section:"Síntomas desde la última consulta", huli:"gi",
+  type:"check", required:true, other:true, cards:true, cardsSmall:true, otherImg:"icono_pregunta", title:"¿Cuándo te duele ahora esa bolita?", hint:"Puedes marcar más de una.",
+  options:[{v:"Al asearme o tocarla",img:"ce_asear"},{v:"Al evacuar",img:"dcuando_durante"},{v:"En reposo",img:"ce_reposo"},{v:"En cualquier momento",img:"dcuando_cualquier"},{v:"Me despierta en la noche",img:"dcuando_noche"}],
+  showIfFn: sgBultoDuele });
+add({ id:"sg_bulto_dolor_duracion", mode:"seguimiento", section:"Síntomas desde la última consulta", huli:"gi",
+  type:"mc", required:true, other:true, grid:2, title:"Cada vez que te duele, ¿cuánto tiempo te dura el dolor?",
+  options: DOLOR_DURA_OPTS, showIfFn: sgBultoDuele });
+function composeSgBultoAhora() {
+  if (ans("sg_bulto_tenia") !== "Sí" || ans("sg_bulto_elimino") === "Sí") return "";
+  const b = [];
+  const sale = ans("sg_bulto_sale");
+  if (/se mete sola/i.test(sale)) b.push("ahora protruye y se reduce espontáneamente");
+  else if (/con el dedo/i.test(sale)) b.push("ahora protruye y requiere reducción manual");
+  else if (/Siempre está afuera/i.test(sale)) b.push("ahora permanente, no reductible");
+  else if (/No sale/i.test(sale)) b.push("ahora sin protrusión");
+  else if (sale) b.push("ahora " + lowerJoin(sale.replace(/^Otro:\s*/i, "")));
+  if (has("sg_bulto_tamano")) {
+    const TAM = { "Ajonjolí":"de un ajonjolí", "Arroz":"de un grano de arroz", "Chícharo":"de un chícharo", "Uva":"de una uva", "Fresa":"de una fresa", "Más grande que una fresa (como un limón)":"mayor que una fresa (como un limón)" };
+    const tv = val("sg_bulto_tamano");
+    b.push("tamaño actual aprox. " + (TAM[tv] || ("de " + lowerJoin(String(state.others.sg_bulto_tamano || tv).replace(/^Otro:\s*/i, "")))));
+  }
+  if (ans("sg_bulto_duele") === "No") b.push("no doloroso");
+  else if (ans("sg_bulto_duele") === "Sí") {
+    const d = [];
+    if (has("sg_bulto_dolor_eva")) d.push("intensidad " + ans("sg_bulto_dolor_eva") + "/10");
+    if (has("sg_bulto_dolor_tipo")) { let tp = ans("sg_bulto_dolor_tipo").replace(/^Otro:\s*/i, ""); if (/^Como presión/i.test(tp)) tp = "presión"; d.push("tipo " + lowerJoin(tp)); }
+    const dl = asList("sg_bulto_dolor_cuando"), w = [];
+    if (dl.includes("Al asearme o tocarla")) w.push("al aseo o a la palpación");
+    if (dl.includes("Al evacuar")) w.push("a la evacuación");
+    if (dl.includes("En reposo")) w.push("en reposo");
+    if (dl.includes("En cualquier momento")) w.push("en cualquier momento");
+    if ((state.others.sg_bulto_dolor_cuando || "").trim()) w.push(lowerJoin(state.others.sg_bulto_dolor_cuando.trim()));
+    if (w.length) d.push(w.length > 1 ? w.slice(0, -1).join(", ") + " y " + w[w.length - 1] : w[0]);
+    if (dl.includes("Me despierta en la noche")) d.push("lo despierta en la noche"); else if (dl.length) d.push("no lo despierta en la noche");
+    if (has("sg_bulto_dolor_duracion")) d.push("cada episodio dura " + lowerJoin(ans("sg_bulto_dolor_duracion").replace(/^Otro:\s*/i, "")));
+    b.push("doloroso" + (d.length ? " (" + d.join(", ") + ")" : ""));
+  }
+  return b.join(", ");
+}
+addSgPack({
+  key:"abdominal", kind:"n7", skipActual:true,
+  had:"¿Cuando te vio el doctor la vez pasada, tenías dolor abdominal?",
+  hadHint:"Nos referimos a dolor de panza tipo cólico (retortijón), no ardor ni dolor del ano.",
+  init:"En esa ocasión, ¿qué porcentaje de los días tenías dolor abdominal?",
+  reduc:"¿Qué tanto sientes que se redujo el dolor abdominal?",
+  bajo:"¿Cuándo empezó a bajar el dolor abdominal, después de la consulta?",
+  elimino:"¿El dolor abdominal se te quitó por completo?",
+  eliminoCuando:"¿Cuándo se te quitó el dolor abdominal?",
+  ultima:"¿Cuándo fue la última vez que tuviste dolor abdominal?"
+});
+/* Roma IV ahora (mismas preguntas SII de primera vez), solo si el dolor abdominal no se quitó (Dr. Agus 20/11/2026) */
+[["semana","Ahora, ¿tienes ese dolor abdominal al menos 1 día a la semana?"],
+ ["3meses","¿Durante los últimos 3 meses?"],
+ ["evacuar","¿El dolor se relaciona con evacuar (mejora o empeora al ir al baño)?"],
+ ["frecuencia","¿Con el dolor cambia cuántas veces evacúas?"],
+ ["forma","¿Con el dolor cambia la forma o consistencia de tus heces?"]].forEach(([s, t]) => {
+  const base = Q.find(q => q.id === "sii_" + s);
+  add({ id:"sg_abdominal_sii_" + s, mode:"seguimiento", section:"Síntomas desde la última consulta", huli:"gi",
+    type:"mc", required:true, cards:true, cardsSmall:true, bootySlot: base && base.bootySlot,
+    title:t, options:[{v:"Sí",img:"ic_si"},{v:"No",img:"ic_no"}],
+    showIf: sgTenia("abdominal"), showIfFn: sgNoEliminado("abdominal") });
+});
+function composeSgRoma() {
+  if (ans("sg_abdominal_tenia") !== "Sí") return "";
+  const sn = id => { const v = ans(id); return v === "Sí" ? "sí" : v === "No" ? "no" : "sin respuesta"; };
+  const ini = sgN7("sg_abdominal_inicio");
+  const pIni = parseInt(String(ans("sg_abdominal_inicio") || ""), 10);
+  const antes = isNaN(pIni) ? "" : "Roma IV antes: dolor abdominal " + (ini === "negado" ? "0%" : ini) + " de los días (" + (pIni >= 14 ? "≥1 día/semana" : "<1 día/semana") + "; resto de criterios en la nota de primera vez)";
+  let ahora;
+  if (ans("sg_abdominal_elimino") === "Sí") ahora = "Roma IV ahora: sin dolor abdominal, no cumple criterios para SII";
+  else {
+    const ids = ["semana","3meses","evacuar","frecuencia","forma"].map(x => "sg_abdominal_sii_" + x);
+    if (!ids.some(has)) ahora = "";
+    else {
+      const dolorOk = ans(ids[0]) === "Sí" && ans(ids[1]) === "Sí";
+      const n2 = ids.slice(2).filter(i => ans(i) === "Sí").length;
+      ahora = "Roma IV ahora: dolor ≥1 día/semana (" + sn(ids[0]) + "), en los últimos 3 meses (" + sn(ids[1]) + "), relacionado con la evacuación (" + sn(ids[2]) + "), cambio en frecuencia (" + sn(ids[3]) + "), cambio en forma (" + sn(ids[4]) + ")"
+        + (dolorOk && n2 >= 2 ? "; cumple criterios Roma IV para SII" : "; no cumple criterios Roma IV para SII");
+    }
+  }
+  return [antes, ahora].filter(Boolean).join("; ");
+}
 addSgPack({
   key:"motivo", kind:"n7",
   had:"Sobre el motivo principal que escribiste, ¿lo tenías cuando te vio el doctor la vez pasada?",
@@ -3203,9 +3409,9 @@ add({ id:"sg_tenesmo", mode:"seguimiento", section:"Evacuaciones de ahora", huli
   hint:"Lo sientes en el recto (la parte final del intestino, justo arriba del ano), no en el abdomen o la panza. Si no te pasa, toca 0%." });
 
 add({ id:"sg_comidas", mode:"seguimiento", section:"Evacuaciones de ahora", huli:"gi",
-  type:"mc", required:true, other:true,
+  type:"mc", required:true, chips:true, /* solo 1, 2, 3 y Más de 3 (Dr. Agus 20/11/2026) */
   title:"¿Cuántas comidas al día haces?",
-  options: PORCION_OPTS,
+  options:["1","2","3","Más de 3"],
   });
 add({ id:"sg_fruta", mode:"seguimiento", section:"Evacuaciones de ahora", huli:"gi",
   type:"mc", required:true,
@@ -3224,11 +3430,11 @@ add({ id:"sg_agua", mode:"seguimiento", section:"Evacuaciones de ahora", huli:"g
   options: AGUA_OPTS });
 
 add({ id:"sg_tiempo_antes", mode:"seguimiento", section:"Evacuaciones de ahora", huli:"gi",
-  type:"mc", required:true, other:true,
+  type:"mc", required:true, other:true, bootySlot:"booty_bano_tiempo",
   title:"Antes de la consulta, ¿cuánto tiempo te quedabas sentado en el baño?", grid:2,
   options: TIEMPO_BANO_OPTS });
 add({ id:"sg_tiempo_ahora", mode:"seguimiento", section:"Evacuaciones de ahora", huli:"gi",
-  type:"mc", required:true, other:true,
+  type:"mc", required:true, other:true, bootySlot:"booty_bano_tiempo",
   title:"¿Y ahora, cuánto tiempo te quedas sentado en el baño?", grid:2,
   options: TIEMPO_BANO_OPTS });
 
@@ -3313,6 +3519,80 @@ Q.forEach(q => { if (MERGED_INTO[q.id]) q.mergedInto = MERGED_INTO[q.id]; });
    cada bloque aparece al contestar el anterior y entra deslizándose (alternando abajo / de lado).
    Las derivadas conservan su id y su condición original; solo dejan de ser pantallas propias. ===== */
 var CHAIN_CTX = null;
+/* Regla general (Dr. Agus 20/11/2026): en toda pantalla con varias preguntas, la siguiente aparece deslizándose
+   solo cuando la anterior ya tiene respuesta. Si el doctor no pidió una dirección, se alterna (abajo / de lado). */
+/* Animaciones de Booty teñidas con el tema: capa "línea" + capa "rubor" (máscaras blancas con alfa). Ver booty/formulario/NOTA_CONSULTA_rubor_fiebre.md v4 */
+const BOOTY_MASK = {
+  booty_fiebre: { base:"assets/booty_icons/APROBADO_booty_fiebre_v4", label:"Booty con fiebre, termómetro y bolsa de hielo" },
+  booty_peso: { base:"assets/booty_icons/APROBADO_booty_perdida_peso_v3", label:"Booty y la pérdida de peso", sinRubor:true }, // una sola capa (v3 aprobada, bikini)
+  // variante drag (aprobada): pacientes LGBT. Si faltara el archivo, no se muestra imagen
+  booty_bano_tiempo: { base:"assets/booty_icons/APROBADO_booty_bano_tiempo", label:"Booty sentado en el baño", sinRubor:true },
+  booty_perdida_peso_drag: { base:"assets/booty_icons/APROBADO_booty_perdida_peso_drag", label:"Booty y la pérdida de peso", sinRubor:true }
+};
+/* Imagen de pérdida de peso (Dr. Agus 20/11/2026): LGBT -> drag; los demás (incluye hombre heterosexual,
+   sin respuesta o "Prefiero no responder") -> bikini (v3).
+   LGBT = orientacion respondida y distinta de "Heterosexual" (incluye Homosexual, Bisexual, Asexual u Otro),
+          o identidad trans / no binaria: Hombre transgénero, Mujer transgénero, No binarie, Género fluido. */
+function esLGBT() {
+  const o = String(val("orientacion") || ""), idn = String(val("identidad") || "");
+  const orOk = o && !isPndToken(o) && o !== "Heterosexual";
+  const idOk = ["Hombre transgénero","Mujer transgénero","No binarie","Género fluido"].includes(idn);
+  return !!(orOk || idOk);
+}
+function bootySlotDe(st) { return st.bootyPick ? st.bootyPick() : st.bootySlot; }
+function bootyTemaColor() {
+  // color del tema; si es muy claro (amarillo/pastel) se oscurece para mantener contraste
+  const pr = document.createElement("span"); pr.style.color = "var(--green)"; pr.style.display = "none"; document.body.appendChild(pr);
+  const m = getComputedStyle(pr).color.match(/\d+(\.\d+)?/g) || ["30","110","80"]; pr.remove();
+  let [r, g, b] = m.slice(0, 3).map(Number);
+  const lum = (r, g, b) => [r, g, b].map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }).reduce((a, v, i) => a + v * [0.2126, 0.7152, 0.0722][i], 0);
+  for (let k = 0; k < 12 && lum(r, g, b) > 0.16; k++) { r *= 0.85; g *= 0.85; b *= 0.85; }
+  return "rgb(" + Math.round(r) + " " + Math.round(g) + " " + Math.round(b) + ")";
+}
+var MASK_REUSE = { key:"", node:null };
+/* Pérdida de peso: las máscaras v3 (bikini) y drag recibidas no coinciden con el dibujo aprobado.
+   Mientras Booty las rehace, la imagen se oculta (ambas variantes) y los botones conservan su ancho corto.
+   Para reactivar: poner en true y subir los 4 webp correctos a assets/booty_icons/. */
+const PESO_MASCARAS_LISTAS = true;
+function bootyOculto(slot) { return !PESO_MASCARAS_LISTAS && (slot === "booty_peso" || slot === "booty_perdida_peso_drag"); }
+function bootyMask(slot) {
+  const d = BOOTY_MASK[slot];
+  const suf = (window.devicePixelRatio || 1) > 1.25 ? "" : "_240";
+  const v = "?v=" + Date.now();
+  const L = d.base + "_linea_mascara" + suf + ".webp" + v, R = d.sinRubor ? "" : d.base + "_rubor_mascara" + suf + ".webp" + v;
+  const box = el("div", { className:"booty-mask" }); box.setAttribute("role", "img"); box.setAttribute("aria-label", d.label);
+  const carga = u => new Promise(ok => { const im = new Image(); im.onload = () => { (im.decode ? im.decode() : Promise.resolve()).then(() => ok(true), () => ok(true)); }; im.onerror = () => ok(false); im.src = u; });
+  Promise.all([L, R].filter(Boolean).map(carga)).then(res => {
+    if (res.includes(false)) { const p = box.parentNode; box.remove(); if (p && p.classList.contains("bq-lado")) p.classList.add("sin-img"); return; } // archivo aún no existe: sin imagen
+    box.style.setProperty("--tema", bootyTemaColor());
+    const a = el("div", { className:"capa linea" }), b = el("div", { className:"capa rubor" });
+    a.style.webkitMaskImage = a.style.maskImage = 'url("' + L + '")';
+    b.style.webkitMaskImage = b.style.maskImage = 'url("' + R + '")';
+    box.appendChild(a); if (R) box.appendChild(b); // las capas se montan juntas para que vayan sincronizadas
+  });
+  return box;
+}
+var SEQ = { fns: [], box: null };
+var USER_ACT = false;
+var OTHER_SEEN = {};
+function seqReset(box) { SEQ.fns = []; SEQ.box = box; }
+function rvx(n, dir) { if (!n || reduced()) return; n.classList.remove("rvx-down", "rvx-side"); void n.offsetWidth; n.classList.add("rvx-" + dir); }
+function seqDir(i, dir) { return dir || (i % 2 === 1 ? "down" : "side"); }
+function seqParts(parts) {
+  let primera = true, scrollT = null;
+  const refresh = (fromUser) => {
+    let previasOk = true, nuevo = null;
+    parts.forEach((p, i) => {
+      const show = previasOk && (!p.cond || p.cond());
+      if (show && p.node.hidden && fromUser && !primera) { rvx(p.node, seqDir(i, p.dir)); nuevo = nuevo || p.node; }
+      p.node.hidden = !show;
+      if (show || !p.cond) previasOk = previasOk && show && p.done();
+    });
+    primera = false;
+    if (nuevo) { clearTimeout(scrollT); scrollT = setTimeout(() => { const r = nuevo.getBoundingClientRect(); if (r.top > window.innerHeight * 0.6) nuevo.scrollIntoView({ behavior: reduced() ? "auto" : "smooth", block: "center" }); }, 220); }
+  };
+  SEQ.fns.push(refresh); refresh(false); return refresh;
+}
 function defChain(hostId, ids, anim) {
   const host = Q.find(q => q.id === hostId);
   if (!host || host.chain || host.chainOf || host.type === "prog") return;
@@ -3362,7 +3642,14 @@ const ABAJO = ids => Object.fromEntries(ids.map(i => [i, "down"]));
   ["sg_evac_dia", ["sg_evac_cada"]],
   ["sg_toallas_usaba", ["sg_toallas_suspendio"]]
 ].forEach(([h, ids]) => defChain(h, ids));
-["sangrado","dolor","comezon","moco","pujo","tenesmo","humedad","bulto","motivo"].forEach(k => defChain("sg_"+k+"_tenia", pref("sg_"+k+"_", ["sg_"+k+"_tenia"])));
+// pujo y tenesmo: el porcentaje de "ahora" (sg_pujar / sg_tenesmo) va en la misma pantalla, justo después de la reducción (Dr. Agus 20/11/2026)
+const SG_AHORA = { pujo:"sg_pujar", tenesmo:"sg_tenesmo" };
+["sangrado","dolor","comezon","moco","pujo","tenesmo","bulto","abdominal","motivo"].forEach(k => {
+  const ids = pref("sg_"+k+"_", ["sg_"+k+"_tenia"]);
+  if (SG_AHORA[k]) { const i = ids.indexOf("sg_"+k+"_reduccion"); ids.splice(i + 1, 0, SG_AHORA[k]); }
+  defChain("sg_"+k+"_tenia", ids);
+});
+defChain("sg_tiempo_antes", ["sg_tiempo_ahora"]);
 // Estilos pedidos explícitamente: toallitas + aseo bajan; el bloque de medicamentos entra de lado
 defChain("toallas", ["aseo_vigoroso","meds_topicos","meds_topicos_cual"], { aseo_vigoroso:"down", meds_topicos:"side", meds_topicos_cual:"side" });
 // Sexo anal: todas sus preguntas en una pantalla, bajando; Booty (futuro) cruza los brazos al aparecer la de dolor
@@ -3408,7 +3695,7 @@ function chainCond(st, h) {
 function stepOk(st) {
   st._inChain = true;
   try {
-    if (st.dur && val(st.id) && !isPndToken(val(st.id)) && !uniCodec(st.dur).done(val(st.id))) return false;
+    if (st.dur && val(st.id) && !isPndToken(val(st.id)) && !(st.noRecuerdo && val(st.id) === (st.nrLabel || NR)) && !uniCodec(st.dur).done(val(st.id))) return false;
     return canProceed(st) && (!st.required || isAnswered(st));
   } finally { st._inChain = false; }
 }
@@ -3426,14 +3713,30 @@ function drawStep(st, sub) {
   else if (st.type === "check") renderChoices(sub, st, true);
   else if (st.type === "pct") renderPct(sub, st);
   else if (st.type === "scale") renderScale(sub, st);
+  else if (st.dur && st.nrFirst) {
+    // "Todavía no baja" va primero, con el mismo estilo que las unidades (Dr. Agus 20/11/2026).
+    // Si lo eligen se ocultan las unidades y el número; si lo vuelven a tocar, reaparecen.
+    const nrL = st.nrLabel, on = val(st.id) === nrL;
+    const top = el("div", { className:"uf-units uf-first-row" });
+    const nb = el("button", { className:"uf-u uf-first" + (on ? " on" : ""), type:"button" }); nb.textContent = nrL;
+    nb.setAttribute("aria-pressed", on ? "true" : "false"); top.appendChild(nb); sub.appendChild(top);
+    const uf = unitFirst(st.id, st.dur, { onChange: () => { nb.classList.remove("on"); nb.setAttribute("aria-pressed","false"); refresh(true); } });
+    uf.hidden = on; sub.appendChild(uf);
+    nb.addEventListener("click", () => {
+      if (val(st.id) === nrL) delete state.answers[st.id];
+      else { state.answers[st.id] = nrL; if (state.ufUnit) delete state.ufUnit[st.id]; }
+      drawStep(st, sub); refresh(true);
+    });
+  }
   else if (st.dur) {
-    sub.appendChild(unitFirst(st.id, st.dur, { onChange: (u) => { if (nrB) { nrB.classList.remove("selected"); nrB.setAttribute("aria-pressed","false"); } refresh(u); } }));
+    sub.appendChild(unitFirst(st.id, st.dur, { onChange: (u) => { if (nrB) { nrB.classList.remove("selected"); nrB.setAttribute("aria-pressed","false"); } refresh(true); } }));
     var nrB = null;
     if (st.noRecuerdo) {
-      const on = val(st.id) === "No me acuerdo";
-      nrB = el("button", { className:"btn skip nr-btn uf-nr" + (on ? " selected" : ""), type:"button" }); nrB.textContent = "No me acuerdo";
+      const nrL = st.nrLabel || "No me acuerdo";
+      const on = val(st.id) === nrL;
+      nrB = el("button", { className:"btn skip nr-btn uf-nr" + (on ? " selected" : ""), type:"button" }); nrB.textContent = nrL;
       nrB.setAttribute("aria-pressed", on ? "true" : "false");
-      nrB.addEventListener("click", () => { state.answers[st.id] = "No me acuerdo"; if (state.ufUnit) delete state.ufUnit[st.id]; drawStep(st, sub); refresh(true); });
+      nrB.addEventListener("click", () => { state.answers[st.id] = nrL; if (state.ufUnit) delete state.ufUnit[st.id]; drawStep(st, sub); refresh(true); });
       sub.appendChild(nrB);
     }
   }
@@ -3448,8 +3751,9 @@ function drawStep(st, sub) {
     inp.addEventListener("input", () => {
       if (num) inp.value = st.numeric ? inp.value.replace(/[^\d.,]/g, "").slice(0, 5) : inp.value.replace(/\D/g, "").slice(0, 3);
       if (inp.value.trim()) state.answers[st.id] = inp.value; else delete state.answers[st.id];
-      refresh(false);
+      refresh(true);
     });
+    if (st.altBtn) setTimeout(() => { if (inp.isConnected) sub.appendChild(altBoton(st, inp, () => refresh(true))); }, 0);
     inp.addEventListener("change", () => refresh(true));
     if (st.suffix) { const row = el("div", { className:"tiempo-row" }); row.appendChild(inp); const sp = el("span", { className:"num-suffix-lbl" }); sp.textContent = st.suffix; row.appendChild(sp); sub.appendChild(row); }
     else if (st.noRecuerdo) {
@@ -3490,8 +3794,13 @@ function renderChain(box, h) {
       inner.appendChild(lb);
       if (st.hint) { const hh = el("div", { className:"chain-hint" }); hh.textContent = st.hint; inner.appendChild(hh); }
     }
-    if (st.bootySlot) { const b = el("div", { className:"sx-booty" }); b.hidden = true; b.setAttribute("data-img", st.bootySlot); b.setAttribute("aria-hidden", "true"); inner.appendChild(b); }
-    n.sub = el("div", { className:"chain-body" }); inner.appendChild(n.sub);
+    const slotM = bootySlotDe(st), ocultoM = bootyOculto(slotM), mb = slotM && BOOTY_MASK[slotM] && !ocultoM ? bootyMask(slotM) : null;
+    if (mb || ocultoM) { /* Booty a la izquierda y los botones a su lado, más cortos (Dr. Agus 20/11/2026) */ }
+    else if (st.bootySlot) { const b = el("div", { className:"sx-booty" }); b.hidden = true; b.setAttribute("data-img", st.bootySlot); b.setAttribute("aria-hidden", "true"); inner.appendChild(b); }
+    n.sub = el("div", { className:"chain-body" });
+    if (mb) { const lado = el("div", { className:"bq-lado" }); lado.appendChild(mb); lado.appendChild(n.sub); inner.appendChild(lado); }
+    else if (ocultoM) { const lado = el("div", { className:"bq-lado bq-sin" }); lado.appendChild(n.sub); inner.appendChild(lado); }
+    else inner.appendChild(n.sub);
     n.addEventListener("animationend", e => { if (e.target === n) n.classList.remove("rv-down", "rv-side"); });
     nodes[st.id] = n; wrap.appendChild(n);
     drawStep(st, n.sub);
@@ -3527,8 +3836,10 @@ function renderChain(box, h) {
     updateNav(h);
   };
   wrap.addEventListener("pointerup", () => setTimeout(() => ctx.refresh(true), 0));
-  wrap.addEventListener("keyup", () => ctx.refresh(false));
-  wrap.addEventListener("input", (e) => { if (e.target.classList && e.target.classList.contains("other-field")) ctx.refresh(false); });
+  // al escribir (números, "¿Cuál?") la siguiente pregunta también entra deslizándose, no solo al tocar (Dr. Agus 20/11/2026)
+  wrap.addEventListener("keyup", () => ctx.refresh(true));
+  wrap.addEventListener("input", (e) => { if (e.target.classList && e.target.classList.contains("other-field")) ctx.refresh(true); });
+  wrap.addEventListener("change", () => setTimeout(() => ctx.refresh(true), 0));
   ctx.refresh(false);
 }
 
@@ -3577,6 +3888,34 @@ Q.forEach(q => {
   }
   if (q.id !== "hisopo_cual") q.required = true;
 });
+/* TODAS las preguntas obligatorias (Dr. Agus 20/11/2026). Las que se ocultan por lógica no se exigen.
+   Fechas / "cuándo" abiertas: botón "No me acuerdo" (se guarda y sale en la nota solo si lo tocan).
+   Campos que pueden no aplicar: botón alternativo que NO guarda texto (la nota no cambia). */
+const REQ_NR = ["cx1_cual","cx2_cual","cx3_cual","cx1_cuando","cx2_cuando","cx3_cuando","cx1_porque","cx2_porque","cx3_porque",
+  "vac_vph_anio","vac_mpox_anio","vac_menb_anio","vac_hepa_anio","vac_hepb_anio","transf_anio","sangre_ultimo",
+  "comezon_inicio","cuerpo_extranio_inicio","meds_topicos_cual","sg_meds_ind_cual"];
+Q.forEach(q => { if (/^sg_\w+_ultima$/.test(q.id)) REQ_NR.push(q.id); });
+const REQ_ALT = { apellido2:"No tengo segundo apellido", cx1_lado:"No aplica", cx2_lado:"No aplica", cx3_lado:"No aplica",
+  cx_mas:"No tengo más cirugías", app_detalle:"No tengo otra condición", exposiciones_otra:"No, ninguna", observaciones:"No, nada más" };
+const REQ_CAMBIADAS = [];
+Q.forEach(q => {
+  if (q.required || q.type === "notice") return;
+  if (MERGED_INTO[q.id]) return;                                   // se exigen dentro de su pantalla compuesta
+  if (q.showIfFn && /=>\s*false/.test(String(q.showIfFn))) return; // preguntas retiradas (nunca se muestran)
+  q.required = true; REQ_CAMBIADAS.push(q.id);
+  if (REQ_NR.includes(q.id)) q.noRecuerdo = true;
+  if (REQ_ALT[q.id]) q.altBtn = REQ_ALT[q.id];
+  if (/^cx\d_lado_hernia$/.test(q.id) && !q.options.map(optionValue).includes(NR)) q.options = q.options.concat([NR]);
+});
+["apellido2","exposiciones_otra"].forEach(id => { const qq = Q.find(q => q.id === id); if (qq) qq.hint = ""; });
+function altOn(q) { return !!(q.altBtn && state.altSkip && state.altSkip[q.id]); }
+function altBoton(q, fi, onPick) {
+  const b = el("button", { className:"btn skip nr-btn alt-btn" + (altOn(q) ? " selected" : ""), type:"button" });
+  b.textContent = q.altBtn; b.setAttribute("aria-pressed", altOn(q) ? "true" : "false");
+  b.addEventListener("click", () => { (state.altSkip = state.altSkip || {})[q.id] = true; delete state.answers[q.id]; if (fi) fi.value = ""; b.classList.add("selected"); b.setAttribute("aria-pressed","true"); onPick(); });
+  if (fi) fi.addEventListener("input", () => { if (fi.value.trim() && state.altSkip) { delete state.altSkip[q.id]; b.classList.remove("selected"); b.setAttribute("aria-pressed","false"); } });
+  return b;
+}
 ["ca_colon_colono_cuando","ca_colon_soh_cuando"].forEach(id => { const qc = Q.find(q => q.id === id); if (qc) { qc.dur = ["días","meses","años"]; qc.noRecuerdo = true; } });
 // Texto para la nota de una respuesta de fecha/cuándo de seguimiento (respeta respuestas viejas)
 function fuFecha(c) {
@@ -3746,6 +4085,7 @@ function optionValue(o) { return typeof o === "string" ? o : o.v; }
 
 function isAnswered(q) {
   if (q.chain && !q._inChain) return chainOk(q);
+  if (altOn(q)) return true;
   const v = val(q.id);
   if (isPndToken(v) || (Array.isArray(v) && v.some(isPndToken))) return true;
   const ot = otherToken(q);
@@ -3849,7 +4189,7 @@ function canProceed(q) {
   // Correo: "Siguiente" solo con un correo válido, a petición del Dr. Agus 19/11/2026
   if (q.type === "email" && val(q.id) !== PND && !EMAIL_RE.test(String(val(q.id) || "").trim())) return false;
   // Teléfono y correo juntos (20/11/2026): el correo es opcional, pero si lo escriben debe ser válido
-  if (q.withEmail) { const c = String(val("correo") || "").trim(); if (c && !isPndToken(c) && !EMAIL_RE.test(c)) return false; }
+  if (q.withEmail) { const c = String(val("correo") || "").trim(); if (!EMAIL_RE.test(c)) return false; } // correo obligatorio (Dr. Agus 20/11/2026)
   if (q.withCurp && !curpOk()) return false;
   if (q.withCivil && !civilOk()) return false;
   if (q.type === "mascrel" && !(mascOk() && religionOk())) return false;
@@ -3866,6 +4206,7 @@ function scheduleAdvance() {
   advTimer = setTimeout(goNext, reduced() ? 150 : 380);
 }
 function updateNav(q) {
+  if (SEQ.fns.length && SEQ.box && SEQ.box.isConnected) SEQ.fns.slice().forEach(f => { try { f(true); } catch (e) {} });
   if (CHAIN_CTX && CHAIN_CTX.nodes[q.id] && CHAIN_CTX.wrap.isConnected) {
     // una derivada cambió (deslizador, escala, texto): revisa si ya toca mostrar la siguiente
     if (q !== CHAIN_CTX.host && !CHAIN_CTX.busy) { const cx = CHAIN_CTX; clearTimeout(cx.t); cx.t = setTimeout(() => { if (CHAIN_CTX === cx) cx.refresh(true); }, 80); }
@@ -4086,11 +4427,24 @@ function renderInput(q) {
     // dentro de una pantalla encadenada: redibuja solo esa pregunta y revela lo que siga
     drawStep(q, CHAIN_CTX.nodes[q.id].sub); CHAIN_CTX.refresh(true); return;
   }
-  const box = $("#q-input");
+  let box = $("#q-input");
   box.innerHTML = "";
+  seqReset(box);
   if (q.chain) { renderChain(box, q); return; }
   const rawVal = (val(q.id) === PND || (q.noRecuerdo && val(q.id) === "No me acuerdo")) ? "" : (val(q.id) || "");
-  if (q.type === "mc") renderChoices(box, q, false);
+  const slotQ = bootySlotDe(q);
+  if (q.type === "mc" && slotQ && bootyOculto(slotQ)) {
+    const lado = el("div", { className:"bq-lado bq-sin" }), sub = el("div", { className:"chain-body" });
+    lado.appendChild(sub); box.appendChild(lado); renderChoices(sub, q, false);
+  }
+  else if (q.type === "mc" && slotQ && BOOTY_MASK[slotQ]) {
+    const key = q.id + ":" + state.i + ":" + slotQ;
+    if (!MASK_REUSE.node || MASK_REUSE.key !== key) MASK_REUSE = { key, node: bootyMask(slotQ) };
+    const lado = el("div", { className:"bq-lado" }), sub = el("div", { className:"chain-body" });
+    lado.appendChild(MASK_REUSE.node); lado.appendChild(sub); box.appendChild(lado);
+    renderChoices(sub, q, false);
+  }
+  else if (q.type === "mc") renderChoices(box, q, false);
   else if (q.type === "check") renderChoices(box, q, true);
   else if (q.type === "scale") renderScale(box, q);
   else if (q.type === "pct") renderPct(box, q);
@@ -4118,16 +4472,24 @@ function renderInput(q) {
       });
       holder.appendChild(w);
     }
+    let rhVisto = !!state.sangreG && val(q.id) !== "Desconocido";
     function draw() {
       holder.innerHTML = "";
       const des = val(q.id) === "Desconocido";
+      const rhOn = !des && !!state.sangreG;
       grupo("Grupo", 4, [["O","O"],["A","A"],["B","B"],["AB","AB"]], v => !des && state.sangreG === v, v => { if (val(q.id) === "Desconocido") delete state.answers[q.id]; state.sangreG = v; sync(); });
-      grupo("Rh", 2, [["+","Positivo (+)"],["-","Negativo (−)"]], v => !des && state.sangreR === v, v => { if (val(q.id) === "Desconocido") delete state.answers[q.id]; state.sangreR = v; sync(); });
       const w = el("div", { className:"choices" }); w.style.marginTop = "14px";
       const b = el("button", { className:"choice" + (des ? " selected" : ""), type:"button" });
       const tx = el("span", { className:"txt" }); tx.textContent = "No sé mi tipo de sangre"; b.appendChild(tx);
       b.addEventListener("click", () => { state.sangreG = ""; state.sangreR = ""; state.answers[q.id] = "Desconocido"; draw(); updateNav(q); scheduleAdvance(); });
       w.appendChild(b); holder.appendChild(w);
+      if (rhOn) {
+        const n0 = holder.children.length;
+        grupo("Rh", 2, [["+","Positivo (+)"],["-","Negativo (−)"]], v => !des && state.sangreR === v, v => { if (val(q.id) === "Desconocido") delete state.answers[q.id]; state.sangreR = v; sync(); });
+        const nodos = Array.from(holder.children).slice(n0);
+        if (!rhVisto) nodos.forEach(nd => rvx(nd, "down"));
+      }
+      rhVisto = rhOn;
     }
     draw();
   }
@@ -4175,7 +4537,17 @@ function renderInput(q) {
   else if (q.type === "estados2") {
     const par = [["estado_nac","¿En qué estado naciste?","Escribe el país y la ciudad donde naciste"],
                  ["estado_res","¿En qué estado vives?","Escribe el país y la ciudad donde vives"]];
+    const box0 = box, partes = [];
+    const mapa = el("div", { className:"mx-mapa" }); mapa.setAttribute("aria-hidden", "true");
+    const leg = el("div", { className:"mx-leyenda" });
+    const pintaMapa = () => {
+      const resOn = partes[1] && !partes[1].node.hidden;
+      drawMxMapa2(mapa, String(val("estado_nac") || ""), resOn ? String(val("estado_res") || "") : "", leg);
+    };
     par.forEach(([id, lbl, lblOtro], n) => {
+      const parte = el("div", { className:"seq-part" }); box0.appendChild(parte);
+      partes.push({ node:parte, done: () => !!String(val(id) || "").trim(), dir: n === 1 ? "down" : undefined });
+      const box = parte;
       const l = el("label", { className:"pair-lbl" }); l.textContent = lbl; box.appendChild(l);
       const sel = el("select", { className:"field", id: n === 0 ? "inp" : "inp-" + id });
       const ph = document.createElement("option"); ph.value = ""; ph.textContent = "Elige una opción"; sel.appendChild(ph);
@@ -4183,13 +4555,15 @@ function renderInput(q) {
       sel.value = String(val(id) || "");
       const ot = el("input", { className:"field pair-otro", type:"text", id:"inp-" + id + "_otro" });
       ot.placeholder = lblOtro; ot.value = String(val(id + "_otro") || "");
-      const mapa = el("div", { className:"mx-mapa" }); mapa.setAttribute("aria-hidden", "true");
-      const showOt = () => { ot.style.display = sel.value === "Fuera de México" ? "" : "none"; drawMxMapa(mapa, sel.value); };
+      const showOt = () => { ot.style.display = sel.value === "Fuera de México" ? "" : "none"; };
       showOt();
-      sel.addEventListener("change", () => { state.answers[id] = sel.value; showOt(); updateNav(q); });
+      sel.addEventListener("change", () => { state.answers[id] = sel.value; showOt(); updateNav(q); pintaMapa(); });
       ot.addEventListener("input", () => { state.answers[id + "_otro"] = ot.value; updateNav(q); });
-      box.appendChild(sel); box.appendChild(ot); box.appendChild(mapa);
+      box.appendChild(sel); box.appendChild(ot);
     });
+    box0.appendChild(mapa); box0.appendChild(leg);
+    seqParts(partes);
+    pintaMapa();
   }
   else if (q.type === "dropdown") {
     const sel = el("select", { className:"field", id:"inp" });
@@ -4288,14 +4662,19 @@ function renderInput(q) {
       updateNav(q);
     };
     inp.addEventListener("input", sync); sel.addEventListener("change", sync);
+    const box0 = box, partes = [];
+    const parte = (done) => { const p = el("div", { className:"seq-part" }); box0.appendChild(p); partes.push({ node:p, done }); return p; };
     if (q.withCivil) {
+      box = parte(civilOk);
       const lc = el("label", { className:"pair-lbl" }); lc.textContent = "Estado civil"; box.appendChild(lc);
       const cq = Q.find(x => x.id === "civil"); if (cq) renderCivil(box, cq, q);
     }
+    box = parte(() => /^\+\d+ \d{10}$/.test(String(val(q.id) || "")));
     if (q.withEmail) { const l1 = el("label", { className:"pair-lbl" }); l1.textContent = "Teléfono celular"; box.appendChild(l1); }
     if (q.telHint) { const th = el("p", { className:"q-hint tel-hint" }); th.textContent = q.telHint; box.appendChild(th); }
     wrap.appendChild(sel); wrap.appendChild(inp); box.appendChild(wrap);
     if (q.withEmail) {
+      box = parte(() => { const c = String(val("correo") || "").trim(); return EMAIL_RE.test(c); });
       const l2 = el("label", { className:"pair-lbl" }); l2.textContent = "Correo electrónico";
       const em = el("input", { className:"field", type:"email", id:"inp-correo" });
       em.placeholder = "tucorreo@ejemplo.com"; em.autocomplete = "email"; em.inputMode = "email";
@@ -4310,6 +4689,7 @@ function renderInput(q) {
       box.appendChild(l2); box.appendChild(em); box.appendChild(err);
     }
     if (q.withCurp) {
+      box = parte(curpOk);
       const l3 = el("label", { className:"pair-lbl" }); l3.textContent = "CURP"; l3.htmlFor = "inp-curp";
       const cu = el("input", { className:"field", type:"text", id:"inp-curp" });
       cu.maxLength = 18; cu.autocomplete = "off"; cu.autocapitalize = "characters"; cu.spellcheck = false;
@@ -4331,6 +4711,8 @@ function renderInput(q) {
       });
       box.appendChild(l3); box.appendChild(cu); box.appendChild(nc);
     }
+    box = box0;
+    seqParts(partes);
   } else {
     const typ = (q.type === "tel" || q.type === "email") ? q.type : "text";
     const inp = el("input", { className:"field", type:typ, id:"inp" });
@@ -4361,6 +4743,10 @@ function renderInput(q) {
       fi.parentNode.insertBefore(row, fi); row.appendChild(fi); row.appendChild(nr);
       fi.addEventListener("input", () => { if (fi.value && nr.classList.contains("selected")) { nr.classList.remove("selected"); nr.setAttribute("aria-pressed","false"); } });
     } else box.appendChild(nr);
+  }
+  if (q.altBtn) {
+    const fi = box.querySelector("#inp");
+    box.appendChild(altBoton(q, fi, () => { updateNav(q); if (canProceed(q)) scheduleAdvance(); }));
   }
   if (q.sensitive && q.type !== "mc" && q.type !== "check" && q.type !== "notice" && q.type !== "pct") {
     const skip = el("button", { className:"btn skip", type:"button" });
@@ -4412,8 +4798,10 @@ function ahfPrimerVacio(q) {
   }
   return null;
 }
+var AHF_SEEN = {};
 function renderAhfFam(box, q) {
   const k = q.ahfK, sel = ahfFamSel(k), cur = asList(q.id);
+  if (AHF_SEEN[k]) Array.from(AHF_SEEN[k]).forEach(fk => { if (!sel.some(f => f[0] === fk)) AHF_SEEN[k].delete(fk); });
   // limpia datos de familiares desmarcados
   AHF_FAM.forEach(([fk, flbl]) => { if (!cur.includes(flbl)) { delete state.answers["ahf_"+k+"_edad_"+fk]; delete state.answers["ahf_"+k+"_fallece_"+fk]; } });
   ahfSyncViejo(k);
@@ -4469,9 +4857,16 @@ function renderAhfFam(box, q) {
       hd.appendChild(slot); hd.appendChild(nm); r.appendChild(hd);
       const l1 = el("label", { className:"ahf-q" }); l1.textContent = "¿A qué edad le diagnosticaron?"; l1.htmlFor = "ahf-ed-" + fk; r.appendChild(l1);
       r.appendChild(numFila("ahf-ed-" + fk, "ahf_"+k+"_edad_"+fk, ["No sé"], "Edad"));
-      const l2 = el("label", { className:"ahf-q" }); l2.textContent = "¿Falleció? ¿A qué edad?"; l2.htmlFor = "ahf-fa-" + fk; r.appendChild(l2);
-      r.appendChild(numFila("ahf-fa-" + fk, "ahf_"+k+"_fallece_"+fk, ["Vive","No sé"], "Edad"));
+      const p2 = el("div", { className:"seq-part" });
+      const l2 = el("label", { className:"ahf-q" }); l2.textContent = "¿Falleció? ¿A qué edad?"; l2.htmlFor = "ahf-fa-" + fk; p2.appendChild(l2);
+      p2.appendChild(numFila("ahf-fa-" + fk, "ahf_"+k+"_fallece_"+fk, ["Vive","No sé"], "Edad"));
+      r.appendChild(p2);
       pn.appendChild(r);
+      const AS = (AHF_SEEN[k] = AHF_SEEN[k] || new Set());
+      if (USER_ACT && !AS.has(fk)) rvx(r, AS.size % 2 === 1 ? "down" : "side");
+      AS.add(fk);
+      const edK = "ahf_"+k+"_edad_"+fk;
+      seqParts([{ node:el("div"), done: () => !!String(val(edK) || "").trim() }, { node:p2, done: () => true, dir:"down" }]);
     });
     wrap.appendChild(pn);
   }
@@ -4524,9 +4919,11 @@ function ecOtroInput(id, idInp, onIn) {
   ow.appendChild(oi); return ow;
 }
 function renderMascRel(box, q) {
-  const blk = el("div", { className:"mascrel" }); box.appendChild(blk);
+  const blk = el("div", { className:"mascrel seq-part" }); box.appendChild(blk);
+  const rblk = el("div", { className:"seq-part" }); box.appendChild(rblk);
   const cq = Q.find(x => x.id === "mascotas_cual"), rq = Q.find(x => x.id === "religion");
   const nav = () => updateNav(q);
+  let petsVisto = val("mascotas") === "Sí";
   const draw = () => {
     blk.innerHTML = "";
     const l1 = el("label", { className:"pair-lbl" }); l1.textContent = "¿Hay mascotas en casa?"; blk.appendChild(l1);
@@ -4540,6 +4937,7 @@ function renderMascRel(box, q) {
     if (val("mascotas") === "Sí") {
       const l2 = el("label", { className:"pair-lbl" }); l2.textContent = "¿Qué mascotas? Marca todas y cuántas tienes."; blk.appendChild(l2);
       const pg = ecGrid(2); pg.classList.add("masc-grid");
+      if (!petsVisto) { rvx(l2, "down"); rvx(pg, "down"); }
       const sel = asList("mascotas_cual");
       cq.options.map(optionValue).concat(["Otro"]).forEach(p => {
         const on = sel.includes(p);
@@ -4573,13 +4971,18 @@ function renderMascRel(box, q) {
       sel.forEach(p => { const d = el("div", { className:"mascota-anim" }); d.setAttribute("data-pet", p); an.appendChild(d); });
       blk.appendChild(an);
     }
-    const l3 = el("label", { className:"pair-lbl masc-rel-lbl" }); l3.textContent = rq.title; blk.appendChild(l3);
-    const rg = ecGrid(rq.grid || 2);
-    rq.options.map(optionValue).concat(["Otro"]).forEach(r => rg.appendChild(ecChoice(r, r, val("religion") === r, () => { state.answers.religion = r; draw(); nav(); if (r === "Otro") { const o = document.getElementById("rel-otro-inp"); if (o) o.focus(); } })));
-    blk.appendChild(rg);
-    if (val("religion") === "Otro") blk.appendChild(ecOtroInput("religion", "rel-otro-inp", nav));
+    petsVisto = val("mascotas") === "Sí";
   };
-  draw();
+  const drawR = () => {
+    rblk.innerHTML = "";
+    const l3 = el("label", { className:"pair-lbl masc-rel-lbl" }); l3.textContent = rq.title; rblk.appendChild(l3);
+    const rg = ecGrid(rq.grid || 2);
+    rq.options.map(optionValue).concat(["Otro"]).forEach(r => rg.appendChild(ecChoice(r, r, val("religion") === r, () => { state.answers.religion = r; drawR(); nav(); if (r === "Otro") { const o = document.getElementById("rel-otro-inp"); if (o) { rvx(o.parentNode, "down"); o.focus(); } } })));
+    rblk.appendChild(rg);
+    if (val("religion") === "Otro") rblk.appendChild(ecOtroInput("religion", "rel-otro-inp", nav));
+  };
+  draw(); drawR();
+  seqParts([{ node:blk, done: mascOk }, { node:rblk, done: religionOk }]);
 }
 function renderMascNombres(box, q) {
   const u = mascUnidades();
@@ -4602,17 +5005,23 @@ function renderMascNombres(box, q) {
     });
     row.appendChild(inp); row.appendChild(tb); return row;
   };
+  const partes = [];
   u.forEach((x, k) => {
     const e = arr[k];
-    const card = el("div", { className:"masc-nom" });
+    const card = el("div", { className:"masc-nom seq-part" });
     const l = el("label", { className:"pair-lbl" }); l.textContent = x.lbl; card.appendChild(l);
     card.appendChild(fila(e, "nombre", "Nombre", "No tiene nombre", "Sin nombre", k));
+    partes.push({ node:card, done: () => !!String(e.nombre || "").trim() });
     if (x.perro) {
-      const lr = el("span", { className:"masc-raza-lbl" }); lr.textContent = "Raza"; card.appendChild(lr);
-      card.appendChild(fila(e, "raza", "Raza", "No sé / mestizo", "No sé / mestizo", k));
+      const pr = el("div", { className:"seq-part" });
+      const lr = el("span", { className:"masc-raza-lbl" }); lr.textContent = "Raza"; pr.appendChild(lr);
+      pr.appendChild(fila(e, "raza", "Raza", "No sé / mestizo", "No sé / mestizo", k));
+      card.appendChild(pr);
+      partes.push({ node:pr, done: () => !!String(e.raza || "").trim(), dir:"down" });
     }
     box.appendChild(card);
   });
+  seqParts(partes);
 }
 // host: pregunta de la pantalla combinada (telefono). Sin host = pantalla propia con avance automático.
 function renderCivil(box, q, host) {
@@ -4644,6 +5053,7 @@ function renderCivil(box, q, host) {
     g1.appendChild(bOtro); blk.appendChild(g1);
     if (abierto) {
       const g2 = grid(); g2.classList.add("ec-mas");
+      if (!ecVisto) rvx(g2, "down");
       q.ecMas.forEach(([v, lbl]) => g2.appendChild(mk(v, lbl, cur === v, () => { state.ecOpen = true; elegir(v); })));
       blk.appendChild(g2);
     }
@@ -4655,7 +5065,10 @@ function renderCivil(box, q, host) {
     ow.appendChild(oinp); blk.appendChild(ow);
     const bty = el("div", { className:"ec-booty" }); bty.hidden = true; bty.setAttribute("aria-hidden", "true");
     blk.appendChild(bty); // lugar reservado para la animación futura de Booty en pareja
+    if (cur === "Otro" && !ecOtroVisto) rvx(ow, "down");
+    ecVisto = abierto; ecOtroVisto = cur === "Otro";
   };
+  let ecVisto = q.ecMas.some(([v]) => v === val(q.id)) || state.ecOpen === true, ecOtroVisto = val(q.id) === "Otro";
   draw();
 }
 // Estado civil completo: una opción final y, si es "Otro", el texto lleno
@@ -4721,6 +5134,8 @@ function renderChoices(box, q, multi) {
   box.appendChild(wrap);
   const needOther = ot && current.includes(ot);
   const ow = el("div", { className:"other-wrap" + (needOther ? "" : " hidden"), id:"other-wrap" });
+  if (needOther && USER_ACT && !OTHER_SEEN[q.id]) rvx(ow, "down");
+  OTHER_SEEN[q.id] = !!needOther;
   ow.appendChild(el("label", { className:"lab" })).textContent = q.otherLbl || "Especifica:";
   const oinp = el("input", { className:"other-field", type:"text", id:"other-inp" });
   oinp.value = state.others[q.id] || "";
@@ -4728,7 +5143,8 @@ function renderChoices(box, q, multi) {
   ow.appendChild(oinp);
   box.appendChild(ow);
 }
-function toggleChoice(q, opt, multi) {
+function toggleChoice(q, opt, multi) { USER_ACT = true; try { return toggleChoice0(q, opt, multi); } finally { USER_ACT = false; } }
+function toggleChoice0(q, opt, multi) {
   clearAdvance();
   if (multi) {
     let arr = asList(q.id).slice();
@@ -6116,6 +6532,13 @@ function sgVeces(id) {
   if (/^Más de/i.test(v)) return v.toLowerCase() + "/día";
   return v + "/día";
 }
+function sgDespues(v) {
+  const m = String(v || "").match(/^(\d+) (día|días|semana|semanas|mes|meses)$/);
+  if (!m) return lowerJoin(v);
+  const n = +m[1], u = m[2];
+  if (n === 1) return (/^d/.test(u) ? "al día" : /^s/.test(u) ? "a la semana" : "al mes") + " de la consulta";
+  return (/^s/.test(u) ? "a las " : "a los ") + n + " " + u + " de la consulta";
+}
 function composeSgSintomaLine(key, label, opts) {
   opts = opts || {};
   if (ans("sg_"+key+"_tenia") !== "Sí") return "";
@@ -6136,13 +6559,16 @@ function composeSgSintomaLine(key, label, opts) {
   }
   if (has("sg_"+key+"_bajo_cuando")) {
     const b = ans("sg_"+key+"_bajo_cuando");
-    if (!/todavía no/i.test(b)) bits.push("comenzó a disminuir " + lowerJoin(b).replace(/^a la /, "a la ").replace(/^a los /, "a los "));
+    if (!/todavía no/i.test(b)) bits.push("comenzó a disminuir " + sgDespues(b).replace(/^a la /, "a la ").replace(/^a los /, "a los "));
     else bits.push("todavía no disminuye");
   }
-  if (ans("sg_"+key+"_elimino") === "Sí") {
-    bits.push("se eliminó" + (has("sg_"+key+"_elimino_cuando") ? " " + lowerJoin(ans("sg_"+key+"_elimino_cuando")) : ""));
+  const noBaja = ans("sg_"+key+"_bajo_cuando") === "Todavía no baja";
+  if (!noBaja && ans("sg_"+key+"_elimino") === "Sí") {
+    bits.push("se eliminó" + (has("sg_"+key+"_elimino_cuando") ? " " + sgDespues(ans("sg_"+key+"_elimino_cuando")) : ""));
   }
-  if (has("sg_"+key+"_ultima")) bits.push("última ocasión " + lowerJoin(ans("sg_"+key+"_ultima")));
+  if (!noBaja && has("sg_"+key+"_ultima")) bits.push("última ocasión " + lowerJoin(ans("sg_"+key+"_ultima")));
+  if (key === "abdominal") { const sr = composeSgRoma(); if (sr) bits.push(sr); }
+  if (key === "bulto") { const ba = composeSgBultoAhora(); if (ba) bits.push(ba); }
   if (key === "sangrado") {
     if (has("sg_sangrado_color")) bits.push(colorNote(ans("sg_sangrado_color")));
     const d = dondeNote("sg_sangrado_donde");
@@ -6196,10 +6622,10 @@ function composeNotaSeguimiento() {
   if (sPujo) sx.push(sPujo);
   const sTen = composeSgSintomaLine("tenesmo", "Tenesmo", { actualId:"sg_tenesmo" });
   if (sTen) sx.push(sTen);
-  const sHum = composeSgSintomaLine("humedad", "Humedad");
-  if (sHum) sx.push(sHum);
   const sBulto = composeSgSintomaLine("bulto", "Abultamiento");
   if (sBulto) sx.push(sBulto);
+  const sAbd = composeSgSintomaLine("abdominal", "Dolor abdominal");
+  if (sAbd) sx.push(sAbd);
   if (motivoEsOtro()) {
     const sMot = composeSgSintomaLine("motivo", "Motivo principal");
     if (sMot) sx.push(sMot);
@@ -6613,7 +7039,7 @@ const SIMULADO_SEGUIMIENTO = {
   sg_sangrado_inicio: "70%",
   sg_sangrado_reduccion: "80%",
   sg_sangrado_actual: "10%",
-  sg_sangrado_bajo_cuando: "a la semana de la consulta",
+  sg_sangrado_bajo_cuando: "1 semana",
   sg_sangrado_elimino: "No",
   sg_sangrado_ultima: "hace 10 días",
   sg_sangrado_color: "Rojo brillante, como si me acabara de cortar o sangrara la nariz",
@@ -6623,7 +7049,7 @@ const SIMULADO_SEGUIMIENTO = {
   sg_dolor_inicio: "7",
   sg_dolor_reduccion: "70%",
   sg_dolor_actual: "2",
-  sg_dolor_bajo_cuando: "a los 4 días de la consulta",
+  sg_dolor_bajo_cuando: "4 días",
   sg_dolor_elimino: "No",
   sg_dolor_ultima: "hace 3 días",
   sg_dolor_tipo: "Ardoroso",
@@ -6633,24 +7059,24 @@ const SIMULADO_SEGUIMIENTO = {
   sg_comezon_inicio: "40%",
   sg_comezon_reduccion: "100%",
   sg_comezon_actual: "0%",
-  sg_comezon_bajo_cuando: "a la semana de la consulta",
+  sg_comezon_bajo_cuando: "1 semana",
   sg_comezon_elimino: "Sí",
   sg_comezon_elimino_cuando: "hace 2 semanas",
   sg_moco_tenia: "No",
   sg_pujo_tenia: "Sí",
   sg_pujo_inicio: "60%",
   sg_pujo_reduccion: "50%",
-  sg_pujo_bajo_cuando: "a la semana de la consulta",
+  sg_pujo_bajo_cuando: "1 semana",
   sg_pujo_elimino: "No",
   sg_pujo_ultima: "hace 2 días",
   sg_tenesmo_tenia: "Sí",
   sg_tenesmo_inicio: "40%",
   sg_tenesmo_reduccion: "60%",
-  sg_tenesmo_bajo_cuando: "a la semana de la consulta",
+  sg_tenesmo_bajo_cuando: "1 semana",
   sg_tenesmo_elimino: "No",
   sg_tenesmo_ultima: "hace 4 días",
-  sg_humedad_tenia: "No",
   sg_bulto_tenia: "No",
+  sg_abdominal_tenia: "No",
   sg_evac_dia: "2",
   sg_bristol: "4",
   sg_pujar: "30%",
