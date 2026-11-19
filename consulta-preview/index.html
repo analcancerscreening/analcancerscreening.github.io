@@ -875,7 +875,7 @@ add({ id:"estado_res_otro", mode:"primera", section:"Ficha básica", huli:"ficha
   showIf:{ id:"estado_res", in:["Fuera de México"] } });
 add({ id:"tiene_curp", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"mc", required:true, title:"¿Tienes CURP?",
-  options:["Sí","No tengo CURP"] });
+  options:["No tengo CURP","Sí"] });
 add({ id:"curp", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"text", required:true, title:"CURP", placeholder:"18 caracteres",
   showIf:{ id:"tiene_curp", in:["Sí"] } });
@@ -950,7 +950,7 @@ add({ id:"tenesmo", mode:"primera", section:"Hábito intestinal", huli:"gi",
 add({ id:"sangre", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:true, other:true,
   title:"¿Hay sangre cuando evacúas?",
-  options:["Sí","No","A veces"] });
+  options:["No","Sí","A veces"] });
 
 add({ id:"sangre_inicio", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"text", required:false,
@@ -976,7 +976,7 @@ add({ id:"sangre_color", mode:"primera", section:"Hábito intestinal", huli:"gi"
 add({ id:"coagulos", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:true, other:true,
   title:"Además de sangre, ¿hay coágulos?",
-  options:["Sí","No"],
+  options:["No","Sí"],
   showIf:{ id:"sangre", in:["Sí","A veces"] } });
 
 add({ id:"sangre_donde", mode:"primera", section:"Hábito intestinal", huli:"gi",
@@ -988,7 +988,7 @@ add({ id:"sangre_donde", mode:"primera", section:"Hábito intestinal", huli:"gi"
 add({ id:"moco", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:true, other:true,
   title:"¿Hay moco al limpiarte o en la materia fecal?",
-  options:["Sí","No"] });
+  options:["No","Sí"] });
 
 add({ id:"moco_desde", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:false, other:true,
@@ -1021,7 +1021,7 @@ add({ id:"verdura", mode:"primera", section:"Hábito intestinal", huli:"gi",
   options: FV_OPTS });
 
 add({ id:"dolor_evac", mode:"primera", section:"Hábito intestinal", huli:"gi",
-  type:"mc", required:true, title:"¿Hay dolor al evacuar?", options:["Sí","No"] });
+  type:"mc", required:true, title:"¿Hay dolor al evacuar?", options:["No","Sí"] });
 
 add({ id:"dolor_eva", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"scale", required:false, min:0, max:10, eva:true,
@@ -1050,7 +1050,7 @@ add({ id:"dolor_duracion", mode:"primera", section:"Hábito intestinal", huli:"g
 add({ id:"dolor_noche", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:true,
   title:"¿El dolor te despierta en la noche?",
-  options:["Sí","No"],
+  options:["No","Sí"],
   showIf:{ id:"dolor_evac", in:["Sí"] } });
 
 add({ id:"irritantes", mode:"primera", section:"Hábito intestinal", huli:"gi",
@@ -1067,7 +1067,7 @@ add({ id:"irritantes", mode:"primera", section:"Hábito intestinal", huli:"gi",
 
 add({ id:"suplementos", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:true, title:"¿Tomas algún suplemento?",
-  options:["Sí","No"] });
+  options:["No","Sí"] });
 add({ id:"suplementos_cual", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"text", required:true, title:"¿Qué suplemento tomas?",
   hint:"Si son varios, escríbelos todos.", placeholder:"Por ejemplo: fibra, probióticos, vitaminas",
@@ -1092,7 +1092,7 @@ add({ id:"comezon_rascado", mode:"primera", section:"Hábito intestinal", huli:"
 add({ id:"toallas", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:true,
   title:"¿Usas toallas húmedas para limpiarte?",
-  options:["A veces","Siempre","No"] });
+  options:["No","A veces","Siempre"] });
 
 add({ id:"meds_topicos", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:true,
@@ -1143,7 +1143,7 @@ add({ id:"cuerpo_extranio_sale", mode:"primera", section:"Hábito intestinal", h
 add({ id:"cuerpo_extranio_duele", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:true,
   title:"¿Te duele esa bolita?",
-  options:["Sí","No"],
+  options:["No","Sí"],
   showIf:{ id:"cuerpo_extranio", in:["Sí"] } });
 
 add({ id:"cuerpo_extranio_dolor", mode:"primera", section:"Hábito intestinal", huli:"gi",
@@ -1196,7 +1196,7 @@ add({ id:"perdida_peso_tiempo", mode:"primera", section:"Hábito intestinal", hu
 add({ id:"ejercicio", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:true,
   title:"¿Haces ejercicio?",
-  options:["Sí","No"] });
+  options:["No","Sí"] });
 
 const COUNT_OPTS = ["0","1","2","3","4","5 o más"];
 const WEXNER_FREQ = [
@@ -1246,19 +1246,19 @@ add({ id:"macrosomia", mode:"primera", section:"Antecedentes ginecoobstétricos"
   type:"mc", required:true,
   title:"¿Alguno de tus bebés pesó más de 3.5 kg al nacer?",
   hint:"Se refiere a un bebé más grande de lo habitual.",
-  options:["Sí","No","No sé"],
+  options:["No","Sí","No sé"],
   showIf: SOLO_MUJER,
   showIfFn: hasPartosVaginales });
 add({ id:"parto_instrumentado", mode:"primera", section:"Antecedentes ginecoobstétricos", huli:"gi",
   type:"mc", required:true,
   title:"¿En algún parto te ayudaron a sacar al bebé con fórceps o pinzas?",
-  options:["Sí","No","No sé"],
+  options:["No","Sí","No sé"],
   showIf: SOLO_MUJER,
   showIfFn: hasPartosVaginales });
 add({ id:"pap", mode:"primera", section:"Antecedentes ginecoobstétricos", huli:"gi",
   type:"mc", required:true,
   title:"¿Te has hecho un Papanicolaou?",
-  options:["Sí","Nunca"],
+  options:["Nunca","Sí"],
   showIf: SOLO_MUJER });
 add({ id:"pap_cuando", mode:"primera", section:"Antecedentes ginecoobstétricos", huli:"gi",
   type:"text", required:true,
@@ -1268,17 +1268,17 @@ add({ id:"pap_cuando", mode:"primera", section:"Antecedentes ginecoobstétricos"
 add({ id:"pap_conoce", mode:"primera", section:"Antecedentes ginecoobstétricos", huli:"gi",
   type:"mc", required:true,
   title:"¿Conoces el resultado de ese Papanicolaou?",
-  options:["Sí","No","No me acuerdo"],
+  options:["No","Sí","No me acuerdo"],
   showIf:{ id:"pap", in:["Sí"] } });
 add({ id:"pap_precancer", mode:"primera", section:"Antecedentes ginecoobstétricos", huli:"gi",
   type:"mc", required:true,
   title:"¿El resultado fue precancerígeno o hubo alguna lesión que hubiera que vigilar?",
-  options:["Sí","No","No lo sé"],
+  options:["No","Sí","No lo sé"],
   showIf:{ id:"pap_conoce", in:["Sí"] } });
 add({ id:"mamo", mode:"primera", section:"Antecedentes ginecoobstétricos", huli:"gi",
   type:"mc", required:true,
   title:"¿Te has hecho una mastografía, el estudio de las mamas?",
-  options:["Sí","No","No sé si me corresponde"],
+  options:["No","Sí","No sé si me corresponde"],
   showIf: SOLO_MUJER });
 add({ id:"mamo_cuando", mode:"primera", section:"Antecedentes ginecoobstétricos", huli:"gi",
   type:"text", required:true,
@@ -1288,7 +1288,7 @@ add({ id:"mamo_cuando", mode:"primera", section:"Antecedentes ginecoobstétricos
 add({ id:"mamo_hallazgo", mode:"primera", section:"Antecedentes ginecoobstétricos", huli:"gi",
   type:"mc", required:true,
   title:"¿Hubo algún hallazgo en esa mastografía?",
-  options:["Sí","No","No lo sé"],
+  options:["No","Sí","No lo sé"],
   showIf:{ id:"mamo", in:["Sí"] } });
 
 add({ id:"wexner_solidas", mode:"primera", section:"Escala de Wexner", huli:"gi",
@@ -1439,7 +1439,7 @@ add({ id:"app_notas", showIfFn: () => false /* quitada a petición del Dr. Agus,
 add({ id:"alergias", mode:"primera", section:"Antecedentes patológicos", huli:"app",
   type:"mc", required:true,
   title:"¿Tienes alergia a algún medicamento o alimento?",
-  options:["Sí","Ninguna"] });
+  options:["Ninguna","Sí"] });
 const ALERG_N = 5;
 function alergActiva(n) {
   if (val("alergias") !== "Sí") return false;
@@ -1487,7 +1487,7 @@ function cxActiva(n) {
   return true;
 }
 add({ id:"cx_tiene", mode:"primera", section:"Antecedentes patológicos", huli:"app",
-  type:"mc", required:true, title:"¿Te han operado alguna vez?", options:["Sí","No"] });
+  type:"mc", required:true, title:"¿Te han operado alguna vez?", options:["No","Sí"] });
 for (let n = 1; n <= CX_N; n++) {
   const act = () => cxActiva(n);
   const tipo = () => val("cx"+n+"_tipo");
@@ -1527,7 +1527,7 @@ for (let n = 1; n <= CX_N; n++) {
     options:["No","No sé"], optionHint:{ "Otro":"Escribe cuál" }, showIfFn: act });
   if (n < CX_N) {
     add({ id:"cx"+n+"_otra", mode:"primera", section:"Antecedentes patológicos", huli:"app",
-      type:"mc", required:true, title:"¿Te han hecho otra cirugía?", options:["Sí","No"], showIfFn: act });
+      type:"mc", required:true, title:"¿Te han hecho otra cirugía?", options:["No","Sí"], showIfFn: act });
   }
 }
 add({ id:"cx_mas", mode:"primera", section:"Antecedentes patológicos", huli:"app",
@@ -1618,7 +1618,7 @@ add({ id:"fracturas", showIfFn: () => false /* quitada a petición del Dr. Agus,
 add({ id:"transfusiones", mode:"primera", section:"Antecedentes patológicos", huli:"observaciones",
   type:"mc", required:true,
   title:"¿Has recibido transfusiones de sangre?",
-  options:["Sí","No"] });
+  options:["No","Sí"] });
 add({ id:"transf_anio", mode:"primera", section:"Antecedentes patológicos", huli:"observaciones",
   type:"text", required:false,
   title:"¿En qué año fue tu transfusión?",
@@ -1691,16 +1691,16 @@ add({ id:"intro_historia_sexual", mode:"primera", section:"Preguntas personaliza
 add({ id:"anorreceptivo", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
   type:"mc", required:true,
   title:"¿Tienes sexo anal receptivo?",
-  options:["Sí","No"],
+  options:["No","Sí"],
   showIfFn: muestraSexualidadAnal });
 add({ id:"dispareunia", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
   type:"mc", required:true,
   title:"¿Te duele, o suele dolerte de vez en cuando, en el sexo anal?",
-  options:["Sí","No"],
+  options:["No","Sí"],
   showIf:{ id:"anorreceptivo", in:["Sí"] },
   showIfFn: muestraSexualidadAnal });
 add({ id:"condon", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
-  type:"mc", required:true, title:"¿Usas condón?", options:["Sí","No","A veces"] });
+  type:"mc", required:true, title:"¿Usas condón?", options:["No","Sí","A veces"] });
 add({ id:"condon_freq", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
   type:"scale", required:true, min:0, max:10,
   title:"De 10 ocasiones, ¿cuántas usas condón?",
@@ -1709,24 +1709,24 @@ add({ id:"condon_freq", mode:"primera", section:"Preguntas personalizadas", huli
 add({ id:"prep", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
   type:"mc", required:true, title:"¿Usas PrEP?",
   hint:"Profilaxis previa a la exposición para VIH.",
-  options:["Diario","A demanda","Inyectable","Intermitente","No uso"],
+  options:["No uso","Diario","A demanda","Inyectable","Intermitente"],
   showIfFn: muestraSexualidadAnal });
 add({ id:"doxy_pep", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
   type:"mc", required:true, title:"¿Usas Doxy PEP?",
   hint:"Doxiciclina después de una exposición, para reducir el riesgo de algunas infecciones de transmisión sexual.",
-  options:["Sí","No"],
+  options:["No","Sí"],
   showIfFn: muestraSexualidadAnal });
 add({ id:"lubricante", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
   type:"check", required:true, exclusive:["No uso nunca"], advanceOnExclusive:true, other:true,
   title:"¿Qué lubricante usas?",
   hint:"Puedes marcar más de una.",
-  options:["Agua","Silicón","Aceite","Saliva","A veces sí, a veces no","No uso nunca"],
+  options:["No uso nunca","Agua","Silicón","Aceite","Saliva","A veces sí, a veces no"],
   showIf:{ id:"anorreceptivo", in:["Sí"] },
   showIfFn: muestraSexualidadAnal });
 add({ id:"enema", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
   type:"check", required:true, exclusive:["No uso"], advanceOnExclusive:true, other:"Otro irritante",
   title:"¿Haces lavados (enemas) antes de relaciones anales? Si sí, ¿con qué?",
-  options:["Jabón y agua","Agua corriente","Medicamento","A veces sí, a veces no","No uso","Otro irritante"],
+  options:["No uso","Jabón y agua","Agua corriente","Medicamento","A veces sí, a veces no","Otro irritante"],
   showIf:{ id:"anorreceptivo", in:["Sí"] },
   showIfFn: muestraSexualidadAnal });
 add({ id:"enema_cant", mode:"primera", section:"Preguntas personalizadas", huli:"observaciones",
@@ -1741,7 +1741,7 @@ TAMIZ.forEach(([k, nom]) => {
   add({ id:"tamizaje_"+k+"_si", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
     type:"mc", required:true,
     title:"¿Te has hecho alguna vez la prueba " + nom + "?",
-    options:["Sí","No","No recuerdo"] });
+    options:["No","Sí","No recuerdo"] });
   add({ id:"tamizaje_"+k, mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
     type:"text", required:false,
     placeholder: k === "its" ? "Por ejemplo: clamidia y gonorrea, hace 4 meses" : "Por ejemplo: hace 4 meses, o marzo 2026",
@@ -1775,7 +1775,7 @@ add({ id:"hisopo_anal", mode:"primera", section:"Preguntas personalizadas", huli
   type:"mc", required:true,
   title:"¿Alguna vez te han hecho una prueba metiendo un hisopo dentro del ano?",
   hint:"Un hisopo es un palito largo con algodón en la punta, como un cotonete. Se mete unos centímetros en el ano para tomar una muestra.",
-  options:["Sí","No","No recuerdo"] });
+  options:["No","Sí","No recuerdo"] });
 add({ id:"hisopo_cual", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
   type:"check", required:true, exclusive:["No sé cuál"], advanceOnExclusive:true,
   title:"¿Cuál o cuáles pruebas te hicieron con ese hisopo?",
@@ -1882,12 +1882,12 @@ Object.keys(CA_BLOCKS).forEach(b => {
       type:"notice", required:false, image:inf.image, imageHeading:inf.heading, imageAlt:inf.alt, title:inf.title, showIfFn: B.gate });
   });
   add({ id:"ca_"+b+"_si", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
-    type:"mc", required:true, title:B.pregunta, options:["Sí","No","No sé"], showIfFn: B.gate });
+    type:"mc", required:true, title:B.pregunta, options:["No","Sí","No sé"], showIfFn: B.gate });
   add({ id:"ca_"+b+"_entendio", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
-    type:"mc", required:true, title:B.explica, options:["Sí, ya entendí","No me quedó claro"],
+    type:"mc", required:true, title:B.explica, options:["No me quedó claro","Sí, ya entendí"],
     showIfFn: () => B.gate() && val("ca_"+b+"_si") === "No sé" });
   add({ id:"ca_"+b+"_si2", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
-    type:"mc", required:true, title:"Entonces, ¿te has hecho alguno de esos estudios?", options:["Sí","No"],
+    type:"mc", required:true, title:"Entonces, ¿te has hecho alguno de esos estudios?", options:["No","Sí"],
     showIfFn: () => B.gate() && val("ca_"+b+"_si") === "No sé" && val("ca_"+b+"_entendio") === "Sí, ya entendí" });
   add({ id:"ca_"+b+"_cual", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
     type:"check", required:true, other:true, title:"¿Cuál o cuáles te hiciste?", options:B.opciones,
@@ -1934,11 +1934,11 @@ function composeCa(b) {
 add({ id:"trabajo_sexual_recibido", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
   type:"mc", required:true,
   title:"¿Has recibido dinero a cambio de sexo?",
-  options:["Sí","No"] });
+  options:["No","Sí"] });
 add({ id:"trabajo_sexual_dado", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
   type:"mc", required:true,
   title:"¿Has dado dinero a cambio de sexo?",
-  options:["Sí","No"] });
+  options:["No","Sí"] });
 add({ id:"sexo_riesgo", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
   type:"check", required:true, exclusive:["Ninguno"], advanceOnExclusive:true,
   title:"¿Has ido a alguno de estos lugares o actividades?",
@@ -1947,13 +1947,13 @@ add({ id:"sexo_riesgo", mode:"primera", section:"Preguntas personalizadas", huli
 add({ id:"fisting", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
   type:"mc", required:true,
   title:"¿Has practicado fisting (recibir el puño o la mano en el ano)?",
-  options:["Sí","No"],
+  options:["No","Sí"],
   showIf:{ id:"anorreceptivo", in:["Sí"] },
   showIfFn: muestraSexualidadAnal });
 add({ id:"doble_penetracion", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
   type:"mc", required:true,
   title:"¿Has recibido doble penetración anal?",
-  options:["Sí","No"],
+  options:["No","Sí"],
   showIf:{ id:"anorreceptivo", in:["Sí"] },
   showIfFn: muestraSexualidadAnal });
 add({ id:"exposiciones_otra", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
@@ -1963,20 +1963,14 @@ add({ id:"exposiciones_otra", mode:"primera", section:"Preguntas personalizadas"
 add({ id:"temas", mode:"primera", section:"Preguntas personalizadas", huli:"observaciones",
   type:"check", required:true, other:true, exclusive:["Ninguna"], advanceOnExclusive:true,
   title:"¿Quieres platicar de alguno de estos temas?",
-  options:[
-    "Prevencion de cancer anal con Papanicolaou (citología anal) y anoscopia de alta resolución",
-    "Medidas de sexo anal sin dolor",
-    "DoxyPEP para evitar sífilis, clamidia y gonorrea",
-    "Reducción de riesgo para evitar adquirir infecciones de transmisión sexual",
-    "Ninguna"
-  ] });
+  options:["Ninguna","Prevencion de cancer anal con Papanicolaou (citología anal) y anoscopia de alta resolución","Medidas de sexo anal sin dolor","DoxyPEP para evitar sífilis, clamidia y gonorrea","Reducción de riesgo para evitar adquirir infecciones de transmisión sexual"] });
 add({ id:"abuso_aviso", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
   type:"notice", required:false,
   title:"Esta pregunta es sensible. Si no te sientes cómodo o cómoda, no es necesario responder." });
 add({ id:"abuso_sexual", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
   type:"mc", required:false,
   title:"Algunas personas, desafortunadamente, han vivido experiencias íntimas que no desearon, como situaciones de abuso. ¿Has vivido algo así?",
-  options:["Sí","No","Prefiero no responder"] });
+  options:["No","Sí","Prefiero no responder"] });
 add({ id:"observaciones", mode:"primera", section:"Observaciones", huli:"observaciones",
   type:"textarea", required:false,
   title:"¿Quieres agregar algo más?" });
@@ -2021,7 +2015,7 @@ function addSgPack(cfg) {
   const k = cfg.key;
   const pre = "sg_" + k + "_";
   add({ id: pre+"tenia", mode:"seguimiento", section:"Síntomas desde la última consulta", huli:"gi",
-    type:"mc", required:true, title: cfg.had, options:["Sí","No"] });
+    type:"mc", required:true, title: cfg.had, options:["No","Sí"] });
   const inicio = { id: pre+"inicio", mode:"seguimiento", section:"Síntomas desde la última consulta", huli:"gi",
     required:true, title: cfg.init, hint: cfg.initHint || "", showIf: sgTenia(k) };
   if (cfg.kind === "eva") {
@@ -2048,7 +2042,7 @@ function addSgPack(cfg) {
     hint:"Por ejemplo: a los tres días, a la semana, o todavía no baja.",
     showIf: sgTenia(k) });
   add({ id: pre+"elimino", mode:"seguimiento", section:"Síntomas desde la última consulta", huli:"gi",
-    type:"mc", required:true, title: cfg.elimino, options:["Sí","No"], showIf: sgTenia(k) });
+    type:"mc", required:true, title: cfg.elimino, options:["No","Sí"], showIf: sgTenia(k) });
   add({ id: pre+"elimino_cuando", mode:"seguimiento", section:"Síntomas desde la última consulta", huli:"gi",
     type:"text", required:false, title: cfg.eliminoCuando,
     hint:"Una fecha aproximada está bien. Por ejemplo: hace dos semanas.",
@@ -2063,7 +2057,7 @@ function addSgPack(cfg) {
 add({ id:"sg_cirugia", mode:"seguimiento", section:"Desde la última consulta", huli:"gi",
   type:"mc", required:true,
   title:"¿Tuviste cirugía conmigo desde la consulta anterior?",
-  options:["Sí","No"] });
+  options:["No","Sí"] });
 add({ id:"sg_cirugia_cuando", mode:"seguimiento", section:"Desde la última consulta", huli:"gi",
   type:"text", required:true,
   title:"¿Cuándo fue esa cirugía?",
@@ -2073,7 +2067,7 @@ add({ id:"sg_cirugia_cuando", mode:"seguimiento", section:"Desde la última cons
 add({ id:"sg_psyllium", mode:"seguimiento", section:"Desde la última consulta", huli:"gi",
   type:"mc", required:true,
   title:"Si el doctor te indicó psyllium plantago, el suplemento de fibra, ¿lo tomaste diario?",
-  options:["Sí","No","No me lo indicó"] });
+  options:["No","Sí","No me lo indicó"] });
 add({ id:"sg_psyllium_apego", mode:"seguimiento", section:"Desde la última consulta", huli:"gi",
   type:"pct", required:true, left:"0%: nada", right:"100%: diario",
   title:"¿Qué tanto lo seguiste?",
@@ -2083,7 +2077,7 @@ add({ id:"sg_psyllium_apego", mode:"seguimiento", section:"Desde la última cons
 add({ id:"sg_banos_ind", mode:"seguimiento", section:"Desde la última consulta", huli:"gi",
   type:"mc", required:true,
   title:"Si te indicó baños de asiento, ¿cuántas veces al día te los indicó?",
-  options: ["1","2","3","Más de 3","No me los indicó"] });
+  options:["No me los indicó","1","2","3","Más de 3"] });
 add({ id:"sg_banos_hecho", mode:"seguimiento", section:"Desde la última consulta", huli:"gi",
   type:"mc", required:true,
   title:"¿Cuántas veces al día los hiciste, en promedio?",
@@ -2093,7 +2087,7 @@ add({ id:"sg_banos_hecho", mode:"seguimiento", section:"Desde la última consult
 add({ id:"sg_meds_ind", mode:"seguimiento", section:"Desde la última consulta", huli:"gi",
   type:"mc", required:true,
   title:"¿El doctor te indicó alguna crema, pomada o medicamento en la consulta anterior?",
-  options:["Sí","No"] });
+  options:["No","Sí"] });
 add({ id:"sg_meds_ind_cual", mode:"seguimiento", section:"Desde la última consulta", huli:"gi",
   type:"text", required:false,
   title:"¿Cuál o cuáles te indicó?",
@@ -2140,7 +2134,7 @@ add({ id:"sg_sangrado_color", mode:"seguimiento", section:"Síntomas desde la ú
 add({ id:"sg_sangrado_coagulos", mode:"seguimiento", section:"Síntomas desde la última consulta", huli:"gi",
   type:"mc", required:true, other:true,
   title:"Además de sangre, ¿hay coágulos?",
-  options:["Sí","No"],
+  options:["No","Sí"],
   showIf: sgTenia("sangrado"), showIfFn: sgSiguePresente("sangrado") });
 add({ id:"sg_sangrado_donde", mode:"seguimiento", section:"Síntomas desde la última consulta", huli:"gi",
   type:"check", required:true, other:true,
@@ -2178,7 +2172,7 @@ add({ id:"sg_dolor_duracion", mode:"seguimiento", section:"Síntomas desde la ú
 add({ id:"sg_dolor_noche", mode:"seguimiento", section:"Síntomas desde la última consulta", huli:"gi",
   type:"mc", required:true,
   title:"¿El dolor te despierta en la noche?",
-  options:["Sí","No"],
+  options:["No","Sí"],
   showIf: sgTenia("dolor"), showIfFn: sgSiguePresente("dolor") });
 
 addSgPack({
@@ -2325,11 +2319,11 @@ add({ id:"sg_tiempo_ahora", mode:"seguimiento", section:"Evacuaciones de ahora",
 add({ id:"sg_toallas_usaba", mode:"seguimiento", section:"Evacuaciones de ahora", huli:"gi",
   type:"mc", required:true,
   title:"¿Usabas toallas húmedas para limpiarte?",
-  options:["A veces","Siempre","No"] });
+  options:["No","A veces","Siempre"] });
 add({ id:"sg_toallas_suspendio", mode:"seguimiento", section:"Evacuaciones de ahora", huli:"gi",
   type:"mc", required:true,
   title:"¿Ya las suspendiste?",
-  options:["Sí","No","A veces"],
+  options:["No","Sí","A veces"],
   showIf:{ id:"sg_toallas_usaba", in:["Sí","Siempre","A veces"] } });
 
 
