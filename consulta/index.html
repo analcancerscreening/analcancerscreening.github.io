@@ -594,6 +594,7 @@ const DOLOR_TIPO_HINT = {
   "Opresivo": "Como si te apretaran o estrujaran la zona",
   "Como presión": "Pesadez, como si algo empujara hacia afuera"
 };
+const DOLOR_DURA_OPTS = ["Menos de 5 minutos","De 5 a 30 minutos","De 30 minutos a 1 hora","De 1 a 3 horas","Más de 3 horas"];
 const BRISTOL = {
   "1": "Trozos duros separados, como nueces (cuesta evacuar)",
   "2": "Con forma de salchicha, pero terronosa",
@@ -833,6 +834,11 @@ add({ id:"dolor_cuando", mode:"primera", section:"Hábito intestinal", huli:"gi"
   title:"¿Cuándo se presenta el dolor?",
   options:["En cualquier momento","Durante y después de evacuar","Solo durante la evacuación"],
   showIf:{ id:"dolor_evac", in:["Sí"] } });
+add({ id:"dolor_duracion", mode:"primera", section:"Hábito intestinal", huli:"gi",
+  type:"mc", required:false, other:true,
+  title:"Después de evacuar, ¿cuánto tiempo te dura el dolor?",
+  options: DOLOR_DURA_OPTS,
+  showIf:{ id:"dolor_cuando", in:["Durante y después de evacuar"] } });
 
 add({ id:"irritantes", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"check", required:true, exclusive:["Ninguno"],
@@ -1463,6 +1469,11 @@ add({ id:"sg_dolor_cuando", mode:"seguimiento", section:"Síntomas desde la últ
   title:"¿Cuándo se presenta el dolor?",
   options: DOLOR_CUANDO_OPTS,
   showIf: sgTenia("dolor"), showIfFn: sgSiguePresente("dolor") });
+add({ id:"sg_dolor_duracion", mode:"seguimiento", section:"Síntomas desde la última consulta", huli:"gi",
+  type:"mc", required:false, other:true,
+  title:"Después de evacuar, ¿cuánto tiempo te dura el dolor?",
+  options: DOLOR_DURA_OPTS,
+  showIf:{ id:"sg_dolor_cuando", in:["Durante y después de evacuar"] } });
 
 addSgPack({
   key:"comezon", kind:"n7",
@@ -1635,7 +1646,7 @@ const BLOCK_OF = {};
   ["contacto", ["quien_refiere","nombre","apellido1","apellido2","fnac","sexo_bio","identidad","genero","estado_nac","estado_nac_otro","tiene_curp","curp","telefono","correo"]],
   ["ficha", ["civil","trabajo","estado_res","estado_res_otro","tipo_sangre","estudios","estudios_en","religion","mascotas"]],
   ["motivo", ["motivo","hobbies","relato"]],
-  ["habito", ["evac_dia","bristol","pujar","tenesmo","sangre","sangre_inicio","sangre_ultimo","sangre_color","coagulos","sangre_donde","moco","moco_desde","tiempo_bano","agua","comidas","fruta","verdura","dieta","dolor_evac","dolor_eva","dolor_tipo","dolor_cuando","irritantes","suplementos","comezon","comezon_inicio","comezon_rascado","toallas","meds_topicos","meds_topicos_cual","humedad","humedad_det","aseo_vigoroso","banos_asiento","banos_asiento_freq","cuerpo_extranio","cuerpo_extranio_inicio","cuerpo_extranio_dolor","fiebre","fiebre_det","perdida_peso","perdida_peso_det","ejercicio"]],
+  ["habito", ["evac_dia","bristol","pujar","tenesmo","sangre","sangre_inicio","sangre_ultimo","sangre_color","coagulos","sangre_donde","moco","moco_desde","tiempo_bano","agua","comidas","fruta","verdura","dieta","dolor_evac","dolor_eva","dolor_tipo","dolor_cuando","dolor_duracion","irritantes","suplementos","comezon","comezon_inicio","comezon_rascado","toallas","meds_topicos","meds_topicos_cual","humedad","humedad_det","aseo_vigoroso","banos_asiento","banos_asiento_freq","cuerpo_extranio","cuerpo_extranio_inicio","cuerpo_extranio_dolor","fiebre","fiebre_det","perdida_peso","perdida_peso_det","ejercicio"]],
   ["gineco", ["fum_estado","fum","gestas","partos","partos_cesarea","abortos","macrosomia","parto_instrumentado","pap","pap_cuando","pap_conoce","pap_precancer","mamo","mamo_cuando","mamo_hallazgo"]],
   ["wexner", ["wexner_solidas","wexner_liquidas","wexner_gases","wexner_toallas","wexner_estilo"]],
   ["antecedentes", ["ahf","ahf_notas","app_pat","app_detalle","app_notas","alergias","cirugias_hosp","vacunas","fracturas","transfusiones","fuma","fuma_detalle","alcohol","alcohol_que","alcohol_freq","drogas","droga_dur_otro","drogas_notas"]],
@@ -1644,7 +1655,7 @@ const BLOCK_OF = {};
   ["abuso", ["abuso_aviso","abuso_sexual"]],
   ["cierre", ["observaciones"]],
   ["seguimiento", ["sg_cirugia", "sg_cirugia_cuando", "sg_psyllium", "sg_psyllium_apego", "sg_banos_ind", "sg_banos_hecho", "sg_motivo"]],
-  ["sg_sintomas", ["sg_sangrado_color", "sg_sangrado_coagulos", "sg_sangrado_donde", "sg_dolor_tipo", "sg_dolor_cuando"]],
+  ["sg_sintomas", ["sg_sangrado_color", "sg_sangrado_coagulos", "sg_sangrado_donde", "sg_dolor_tipo", "sg_dolor_cuando", "sg_dolor_duracion"]],
   ["sg_evac", ["sg_evac_dia", "sg_bristol", "sg_pujar", "sg_tenesmo", "sg_comidas", "sg_fruta", "sg_verdura", "sg_agua", "sg_tiempo_antes", "sg_tiempo_ahora", "sg_toallas_usaba", "sg_toallas_suspendio"]]
 ].forEach(pair => pair[1].forEach(id => { BLOCK_OF[id] = pair[0]; }));
 
@@ -2733,7 +2744,7 @@ function composeDolorNote() {
   if (has("dolor_cuando")) {
     const c = ans("dolor_cuando");
     if (/Solo durante/i.test(c)) parts.push("asociado a la evacuación");
-    else if (/Durante y después/i.test(c)) parts.push("durante y después de evacuar");
+    else if (/Durante y después/i.test(c)) parts.push("durante y después de evacuar" + (has("dolor_duracion") ? " (dura " + lowerJoin(ans("dolor_duracion").replace(/^Otro:\s*/i, "")) + " después de evacuar)" : ""));
     else parts.push(lowerJoin(c.replace(/^Otro:\s*/i, "")));
   }
   return parts.join(", ") || "sí";
@@ -3010,7 +3021,7 @@ function composeSgSintomaLine(key, label, opts) {
   }
   if (key === "dolor") {
     if (has("sg_dolor_tipo")) bits.push("tipo " + lowerJoin(ans("sg_dolor_tipo")));
-    if (has("sg_dolor_cuando")) bits.push(lowerJoin(ans("sg_dolor_cuando")));
+    if (has("sg_dolor_cuando")) bits.push(lowerJoin(ans("sg_dolor_cuando")) + (has("sg_dolor_duracion") ? " (dura " + lowerJoin(ans("sg_dolor_duracion").replace(/^Otro:\s*/i, "")) + " después de evacuar)" : ""));
   }
   if (!bits.length) return label + ": lo presentaba en la consulta anterior.";
   return label + ": " + bits.join(", ") + ".";
