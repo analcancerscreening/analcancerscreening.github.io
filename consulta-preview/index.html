@@ -924,7 +924,7 @@ add({ id:"relato", mode:"primera", section:"Motivo de consulta", huli:"motivo",
 add({ id:"evac_dia", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:true, other:true,
   title:"¿Cuántas veces evacúas al día?",
-  options:["No todos los días","1","1 a 2","2","2 a 3","3","3 a 4","4","4 a 5","5 o más"] });
+  options:["No todos los días","1","2","3","4","5 o más"] });
 add({ id:"evac_cada", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:true, other:true,
   title:"¿Cada cuántos días evacúas?",
@@ -2272,7 +2272,7 @@ addSgPack({
 add({ id:"sg_evac_dia", mode:"seguimiento", section:"Evacuaciones de ahora", huli:"gi",
   type:"mc", required:true, other:true,
   title:"¿Cuántas veces evacúas al día ahora?",
-  options:["No todos los días","1","1 a 2","2","2 a 3","3","3 a 4","4","4 a 5","5 o más"] });
+  options:["No todos los días","1","2","3","4","5 o más"] });
 add({ id:"sg_evac_cada", mode:"seguimiento", section:"Evacuaciones de ahora", huli:"gi",
   type:"mc", required:true, other:true,
   title:"¿Cada cuántos días evacúas ahora?",
@@ -4565,7 +4565,7 @@ const SIMULADO_SEGUIMIENTO = {
   sg_tenesmo_ultima: "hace 4 días",
   sg_humedad_tenia: "No",
   sg_bulto_tenia: "No",
-  sg_evac_dia: "1 a 2",
+  sg_evac_dia: "2",
   sg_bristol: "4",
   sg_pujar: "30%",
   sg_tenesmo: "10%",
