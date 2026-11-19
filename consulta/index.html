@@ -828,6 +828,11 @@ add({ id:"estado_nac", mode:"primera", section:"Ficha básica", huli:"ficha",
 add({ id:"estado_nac_otro", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"text", required:true, title:"Si naciste fuera de México, ¿en qué país o lugar?",
   showIf:{ id:"estado_nac", in:["Fuera de México"] } });
+add({ id:"estado_res", mode:"primera", section:"Ficha básica", huli:"ficha",
+  type:"dropdown", required:true, title:"Estado de residencia", options: ESTADOS });
+add({ id:"estado_res_otro", mode:"primera", section:"Ficha básica", huli:"ficha",
+  type:"text", required:true, title:"Si vives fuera de México, ¿en qué país o lugar?",
+  showIf:{ id:"estado_res", in:["Fuera de México"] } });
 add({ id:"tiene_curp", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"mc", required:true, title:"¿Tienes CURP?",
   options:["Sí","No tengo CURP"] });
@@ -859,11 +864,6 @@ add({ id:"estudios_en", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"text", required:false, title:"¿En qué?",
   placeholder:"Por ejemplo: Contaduría, Enfermería, Diseño gráfico",
   showIf:{ id:"estudios", in:["Carrera técnica","Licenciatura","Especialidad","Maestría","Doctorado"] } });
-add({ id:"estado_res", mode:"primera", section:"Ficha básica", huli:"ficha",
-  type:"dropdown", required:true, title:"Estado de residencia", options: ESTADOS });
-add({ id:"estado_res_otro", mode:"primera", section:"Ficha básica", huli:"ficha",
-  type:"text", required:true, title:"Si vives fuera de México, ¿en qué país o lugar?",
-  showIf:{ id:"estado_res", in:["Fuera de México"] } });
 add({ id:"tipo_sangre", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"mc", required:true, title:"Tipo de sangre",
   options:["O+","O-","A+","A-","B+","B-","AB+","AB-","Desconocido"] });
@@ -2305,8 +2305,8 @@ const BLOCK_INTRO = {
 })();
 const BLOCK_OF = {};
 [
-  ["contacto", ["quien_refiere","hobbies","nombre","apellido1","apellido2","fnac","sexo_bio","identidad","orientacion","genero","estado_nac","estado_nac_otro","tiene_curp","curp","telefono","correo"]],
-  ["ficha", ["civil","trabajo","estado_res","estado_res_otro","tipo_sangre","estudios","estudios_en","religion","mascotas"]],
+  ["contacto", ["quien_refiere","hobbies","nombre","apellido1","apellido2","fnac","sexo_bio","identidad","orientacion","genero","estado_nac","estado_nac_otro","estado_res","estado_res_otro","tiene_curp","curp","telefono","correo"]],
+  ["ficha", ["civil","trabajo","tipo_sangre","estudios","estudios_en","religion","mascotas"]],
   ["motivo", ["motivo","relato"]],
   ["habito", ["evac_dia","evac_cada","bristol","pujar","tenesmo","sangre","sangre_inicio","sangre_ultimo","sangre_color","coagulos","sangre_donde","moco","moco_desde","tiempo_bano","agua","comidas","fruta","verdura","dolor_evac","dolor_eva","dolor_tipo","dolor_cuando","dolor_duracion","dolor_noche","irritantes","suplementos","suplementos_cual","comezon","comezon_inicio","comezon_rascado","toallas","meds_topicos","meds_topicos_cual","humedad","humedad_det","aseo_vigoroso","cuerpo_extranio","cuerpo_extranio_inicio","cuerpo_extranio_sale","cuerpo_extranio_duele","cuerpo_extranio_dolor","fiebre","fiebre_det","fiebre_veces","perdida_peso","perdida_peso_det","perdida_peso_kg","perdida_peso_tiempo","ejercicio"]],
   ["gineco", ["fum_estado","fum","gestas","partos","partos_cesarea","abortos","macrosomia","parto_instrumentado","pap","pap_cuando","pap_conoce","pap_precancer","mamo","mamo_cuando","mamo_hallazgo"]],
@@ -2570,9 +2570,12 @@ function canProceed(q) {
   if (!q) return false;
   const ot = otherToken(q);
   if (ot && val(q.id) === ot && !(state.others[q.id] || "").trim()) return false;
+  // Correo: "Siguiente" solo con un correo válido, a petición del Dr. Agus 19/11/2026
+  if (q.type === "email" && val(q.id) !== PND && !EMAIL_RE.test(String(val(q.id) || "").trim())) return false;
   if (q.required) return isAnswered(q);
   return true;
 }
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 function scheduleAdvance() {
   clearAdvance();
   advTimer = setTimeout(goNext, reduced() ? 150 : 380);
@@ -2812,6 +2815,7 @@ function renderInput(q) {
     if (q.id === "curp") { inp.maxLength = 18; inp.autocomplete = "off"; inp.style.textTransform = "uppercase"; }
     inp.addEventListener("input", () => {
       state.answers[q.id] = q.id === "curp" ? inp.value.toUpperCase() : inp.value;
+      if (q.type === "email") updateNav(q);
     });
     box.appendChild(inp);
   }
