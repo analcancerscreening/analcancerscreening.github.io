@@ -25,7 +25,7 @@
   --amber-bg: #f8efd8;
   --red: #8f2d2d;
   --red-bg: #f8e8e8;
-  --shadow: 0 10px 30px rgba(36, 87, 72, 0.08);
+  --shadow: 0 10px 30px var(--shadow-c, rgba(36, 87, 72, 0.08));
   --radius: 18px;
   --font: "Segoe UI", "Helvetica Neue", system-ui, -apple-system, Arial, sans-serif;
   --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
@@ -147,7 +147,7 @@ header.top {
 
 .progress-wrap { margin: 2px 0 16px; }
 .progress-bar {
-  height: 6px; background: #e1ebe6; border-radius: 99px; overflow: hidden;
+  height: 6px; background: var(--track, #e1ebe6); border-radius: 99px; overflow: hidden;
 }
 .progress-bar span {
   display: block; height: 100%; width: 0;
@@ -186,7 +186,7 @@ header.top {
   line-height: 1.45;
   margin: 0 0 16px;
 }
-.req { color: var(--red); font-weight: 700; }
+.req { color: var(--green); font-weight: 700; }
 .q-hint { color: var(--ink-soft); margin: 0 0 16px; font-size: 0.95rem; white-space: pre-line; }
 .q-media { margin: 0 0 16px; text-align: center; }
 .q-media img {
@@ -381,7 +381,7 @@ label.lab { display: block; font-size: 0.8rem; color: var(--muted); margin: 0 0 
 }
 
 .tabs {
-  display: flex; gap: 6px; background: #e7eee9; padding: 5px; border-radius: 14px; margin-bottom: 14px;
+  display: flex; gap: 6px; background: var(--track, #e7eee9); padding: 5px; border-radius: 14px; margin-bottom: 14px;
 }
 .tab {
   flex: 1; border: none; background: transparent; border-radius: 10px;
@@ -505,7 +505,7 @@ select.field { appearance: auto; background: #fff; }
 .numunit select.field { flex: 1 1 auto; min-width: 0; }
 .dev-btn {
   display: inline-block; margin-top: 10px;
-  background: none; border: none; color: #8aa098;
+  background: none; border: none; color: var(--muted);
   font-size: 0.72rem; text-decoration: underline;
   text-underline-offset: 2px; cursor: pointer; opacity: .7;
 }
@@ -551,7 +551,7 @@ body.patient-view #screen-done .booty-done-gif{display:block;}
     </div>
     <div class="demo-row">
       <button class="linkish" id="btn-demo-primera" type="button">Ver un ejemplo ficticio de primera vez</button>
-      <span style="color:#9aa"> · </span>
+      <span style="color:var(--muted)"> · </span>
       <button class="linkish" id="btn-demo-seg" type="button">Ver un ejemplo ficticio de seguimiento</button>
     </div>
     <div class="demo-row"><button class="dev-btn" id="btn-simulado" type="button">Cargar paciente simulado</button></div>
@@ -2427,7 +2427,7 @@ const BOOTY_BASE_HUE = 205;
 function applyRainbow(i) {
   const r = document.documentElement.style;
   if (i == null) {
-    ["--green","--green-deep","--green-hover","--green-soft","--green-mid","--booty-hue","--bg","--bg-tint"].forEach(k => r.removeProperty(k));
+    ["--green","--green-deep","--green-hover","--green-soft","--green-mid","--booty-hue","--bg","--bg-tint","--line","--ink","--ink-soft","--muted","--track","--shadow-c"].forEach(k => r.removeProperty(k));
     return;
   }
   const c = RAINBOW[((i % RAINBOW.length) + RAINBOW.length) % RAINBOW.length];
@@ -2439,6 +2439,12 @@ function applyRainbow(i) {
   r.setProperty("--booty-hue", ((c.h - BOOTY_BASE_HUE + 360) % 360) + "deg");
   r.setProperty("--bg", `hsl(${c.h} 35% 96%)`);
   r.setProperty("--bg-tint", `hsl(${c.h} 45% 90%)`);
+  r.setProperty("--line", `hsl(${c.h} 35% 84%)`);
+  r.setProperty("--track", `hsl(${c.h} 30% 90%)`);
+  r.setProperty("--ink", `hsl(${c.h} 30% 11%)`);
+  r.setProperty("--ink-soft", `hsl(${c.h} 20% 23%)`);
+  r.setProperty("--muted", `hsl(${c.h} 12% 41%)`);
+  r.setProperty("--shadow-c", `hsl(${c.h} 40% 30% / 0.08)`);
 }
 function imgVariant(key){
   const iden = String(val("identidad") || "");
