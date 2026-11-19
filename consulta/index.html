@@ -1497,7 +1497,7 @@ add({ id:"alcohol_freq", mode:"primera", section:"Antecedentes no patológicos",
 add({ id:"drogas", mode:"primera", section:"Antecedentes no patológicos", huli:"anp",
   type:"check", required:true, other:true, exclusive:["Ninguna"], advanceOnExclusive:true,
   title:"¿Usas alguna de estas sustancias?",
-  options: DROGAS.concat(["Ninguna"]) });
+  options: ["Ninguna"].concat(DROGAS) });
 DROGAS.forEach(d => {
   add({ id:"droga_dur_" + drogaKey(d), mode:"primera",
     section:"Antecedentes no patológicos", huli:"anp",
