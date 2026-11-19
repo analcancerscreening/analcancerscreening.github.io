@@ -785,10 +785,10 @@ add({ id:"mascotas", mode:"primera", section:"Ficha básica", huli:"observacione
   type:"text", required:true, title:"¿Hay mascotas en casa?" });
 
 add({ id:"motivo", mode:"primera", section:"Motivo de consulta", huli:"motivo",
-  type:"text", required:true, title:"Motivo de consulta", placeholder:"¿Por qué vienes a consulta?" });
+  type:"textarea", required:true, title:"¿Qué te llevó a pedir consulta?", hint:"Cuéntanos con tus palabras qué sientes o qué te preocupa." });
 add({ id:"relato", mode:"primera", section:"Motivo de consulta", huli:"motivo",
   type:"textarea", required:true,
-  title:"¿Qué te llevó a pedir consulta?" });
+  title:"¿Qué te llevó a pedir consulta?", showIfFn: () => false /* unida con motivo, 19/11/2026 */ });
 
 
 /* Habito intestinal */
