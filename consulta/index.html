@@ -827,6 +827,11 @@ add({ id:"evac_dia", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:true, other:true,
   title:"¿Cuántas veces evacúas al día?",
   options:["No todos los días","1","1 a 2","2","2 a 3","3","3 a 4","4","4 a 5","5 o más"] });
+add({ id:"evac_cada", mode:"primera", section:"Hábito intestinal", huli:"gi",
+  type:"mc", required:true, other:true,
+  title:"¿Cada cuántos días evacúas?",
+  options:["Cada 2 días","Cada 3 días","Cada 4 días","Cada 5 días","Cada 6 días","Cada 7 días o más"],
+  showIf:{ id:"evac_dia", in:["No todos los días"] } });
 
 add({ id:"bristol", mode:"primera", section:"Hábito intestinal", huli:"gi",
   type:"mc", required:true,
@@ -2107,6 +2112,11 @@ add({ id:"sg_evac_dia", mode:"seguimiento", section:"Evacuaciones de ahora", hul
   type:"mc", required:true, other:true,
   title:"¿Cuántas veces evacúas al día ahora?",
   options:["No todos los días","1","1 a 2","2","2 a 3","3","3 a 4","4","4 a 5","5 o más"] });
+add({ id:"sg_evac_cada", mode:"seguimiento", section:"Evacuaciones de ahora", huli:"gi",
+  type:"mc", required:true, other:true,
+  title:"¿Cada cuántos días evacúas ahora?",
+  options:["Cada 2 días","Cada 3 días","Cada 4 días","Cada 5 días","Cada 6 días","Cada 7 días o más"],
+  showIf:{ id:"sg_evac_dia", in:["No todos los días"] } });
 add({ id:"sg_bristol", mode:"seguimiento", section:"Evacuaciones de ahora", huli:"gi",
   type:"mc", required:true,
   title:"¿Cuál imagen se parece más a tu materia fecal ahora?",
@@ -2200,7 +2210,7 @@ const BLOCK_OF = {};
   ["contacto", ["quien_refiere","hobbies","nombre","apellido1","apellido2","fnac","sexo_bio","identidad","genero","estado_nac","estado_nac_otro","tiene_curp","curp","telefono","correo"]],
   ["ficha", ["civil","trabajo","estado_res","estado_res_otro","tipo_sangre","estudios","estudios_en","religion","mascotas"]],
   ["motivo", ["motivo","relato"]],
-  ["habito", ["evac_dia","bristol","pujar","tenesmo","sangre","sangre_inicio","sangre_ultimo","sangre_color","coagulos","sangre_donde","moco","moco_desde","tiempo_bano","agua","comidas","fruta","verdura","dolor_evac","dolor_eva","dolor_tipo","dolor_cuando","dolor_duracion","irritantes","suplementos","suplementos_cual","comezon","comezon_inicio","comezon_rascado","toallas","meds_topicos","meds_topicos_cual","humedad","humedad_det","aseo_vigoroso","cuerpo_extranio","cuerpo_extranio_inicio","cuerpo_extranio_sale","cuerpo_extranio_dolor","fiebre","fiebre_det","fiebre_veces","perdida_peso","perdida_peso_det","ejercicio"]],
+  ["habito", ["evac_dia","evac_cada","bristol","pujar","tenesmo","sangre","sangre_inicio","sangre_ultimo","sangre_color","coagulos","sangre_donde","moco","moco_desde","tiempo_bano","agua","comidas","fruta","verdura","dolor_evac","dolor_eva","dolor_tipo","dolor_cuando","dolor_duracion","irritantes","suplementos","suplementos_cual","comezon","comezon_inicio","comezon_rascado","toallas","meds_topicos","meds_topicos_cual","humedad","humedad_det","aseo_vigoroso","cuerpo_extranio","cuerpo_extranio_inicio","cuerpo_extranio_sale","cuerpo_extranio_dolor","fiebre","fiebre_det","fiebre_veces","perdida_peso","perdida_peso_det","ejercicio"]],
   ["gineco", ["fum_estado","fum","gestas","partos","partos_cesarea","abortos","macrosomia","parto_instrumentado","pap","pap_cuando","pap_conoce","pap_precancer","mamo","mamo_cuando","mamo_hallazgo"]],
   ["wexner", ["wexner_solidas","wexner_liquidas","wexner_gases","wexner_toallas","wexner_estilo"]],
   ["antecedentes", ["ahf"].concat(AHF_ENF.flatMap(([k]) => ["ahf_"+k+"_quien","ahf_"+k+"_edad","ahf_"+k+"_vive","ahf_"+k+"_fallece"])).concat(["ahf_notas","app_pat"].concat(APP_ENF.flatMap(([k]) => ["app_"+k+"_desde","app_"+k+"_med"])).concat(["app_vih_cd4","app_vih_cd4_fecha","app_vih_cv","app_vih_cv_fecha","app_detalle","app_notas","alergias"].concat(Array.from({length:5},(_,i)=>i+1).flatMap(n=>["alerg"+n+"_cual","alerg"+n+"_reac","alerg"+n+"_otra"])).concat(["cx_tiene","cx1_tipo","cx1_cual","cx1_tecnica","cx1_lado_hernia","cx1_malla","cx1_lado","cx1_cuando","cx1_porque","cx1_compl","cx1_otra","cx2_tipo","cx2_cual","cx2_tecnica","cx2_lado_hernia","cx2_malla","cx2_lado","cx2_cuando","cx2_porque","cx2_compl","cx2_otra","cx3_tipo","cx3_cual","cx3_tecnica","cx3_lado_hernia","cx3_malla","cx3_lado","cx3_cuando","cx3_porque","cx3_compl","cx_mas","hosp","vacunas","vac_vph_tipo","vac_vph_dosis","vac_vph_anio","vac_mpox_dosis","vac_mpox_anio","vac_menb_dosis","vac_menb_anio","vac_hepa_dosis","vac_hepa_anio","vac_hepb_dosis","vac_hepb_anio","fracturas","transfusiones","transf_anio","fuma","fuma_anios","fuma_cant","fuma_dejo","alcohol","alcohol_que","alcohol_freq","drogas","droga_dur_otro","drogas_notas"])))],
@@ -2210,7 +2220,7 @@ const BLOCK_OF = {};
   ["cierre", ["observaciones"]],
   ["seguimiento", ["sg_cirugia", "sg_cirugia_cuando", "sg_psyllium", "sg_psyllium_apego", "sg_banos_ind", "sg_banos_hecho", "sg_meds_ind", "sg_meds_ind_cual", "sg_meds_ind_apego", "sg_meds_otros", "sg_meds_otros_cual", "sg_motivo"]],
   ["sg_sintomas", ["sg_sangrado_color", "sg_sangrado_coagulos", "sg_sangrado_donde", "sg_dolor_tipo", "sg_dolor_cuando", "sg_dolor_duracion"]],
-  ["sg_evac", ["sg_evac_dia", "sg_bristol", "sg_pujar", "sg_tenesmo", "sg_comidas", "sg_fruta", "sg_verdura", "sg_agua", "sg_tiempo_antes", "sg_tiempo_ahora", "sg_toallas_usaba", "sg_toallas_suspendio"]]
+  ["sg_evac", ["sg_evac_dia", "sg_evac_cada", "sg_bristol", "sg_pujar", "sg_tenesmo", "sg_comidas", "sg_fruta", "sg_verdura", "sg_agua", "sg_tiempo_antes", "sg_tiempo_ahora", "sg_toallas_usaba", "sg_toallas_suspendio"]]
 ].forEach(pair => pair[1].forEach(id => { BLOCK_OF[id] = pair[0]; }));
 
 const SENSITIVE_IDS = new Set([
@@ -3417,7 +3427,12 @@ function evacFreqNote(id) {
     const rest = v.replace(/^Otro:\s*/i, "").trim();
     return /al d[ií]a/i.test(rest) ? rest : (rest + " al día");
   }
-  if (/no todos/i.test(v)) return "no todos los días";
+  if (/no todos/i.test(v)) {
+    const c = ans((id || "evac_dia").replace(/_dia$/, "_cada"));
+    if (!c) return "no todos los días";
+    const t = c.replace(/^Otro:\s*/i, "").trim().toLowerCase();
+    return "no todos los días (" + (/^cada/.test(t) ? t : "cada " + t) + ")";
+  }
   const compact = v.replace(/\s*a\s*/g, "-").replace(/\s+/g, " ").trim();
   if (/al d[ií]a/i.test(compact)) return compact;
   return compact + " al día";
