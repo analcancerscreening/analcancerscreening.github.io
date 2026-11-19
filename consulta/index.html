@@ -1000,7 +1000,7 @@ add({ id:"cuerpo_extranio_sale", mode:"primera", section:"Hábito intestinal", h
   showIf:{ id:"cuerpo_extranio", in:["Sí"] } });
 
 add({ id:"cuerpo_extranio_dolor", mode:"primera", section:"Hábito intestinal", huli:"gi",
-  type:"check", required:false, exclusive:["No duele"],
+  type:"check", required:false, exclusive:["No duele"], advanceOnExclusive:true,
   title:"¿Cuándo te duele esa bolita?",
   hint:"Puedes marcar más de una.",
   options:["Al asearme o tocarla","Al evacuar","En reposo","Duele más al evacuar","No duele"],
@@ -1167,7 +1167,7 @@ add({ id:"wexner_estilo", mode:"primera", section:"Escala de Wexner", huli:"gi",
 /* Antecedentes familiares patológicos */
 const AHF_ENF = [["dm", "Diabetes"], ["has", "Hipertensión"], ["colon", "Cáncer de colon"], ["recto", "Cáncer de recto"], ["ano", "Cáncer de ano"], ["estomago", "Cáncer de estómago"], ["cacu", "Cáncer cervicouterino"], ["endometrio", "Cáncer de endometrio"], ["mama", "Cáncer de mama"]];
 add({ id:"ahf", mode:"primera", section:"Antecedentes familiares", huli:"ahf",
-  type:"check", required:true, other:true, exclusive:["Niega antecedentes relevantes"],
+  type:"check", required:true, other:true, exclusive:["Niega antecedentes relevantes"], advanceOnExclusive:true,
   title:"En tu familia (papás, hermanos, abuelos, tíos), ¿alguien ha tenido alguna de estas enfermedades?",
     options:AHF_ENF.map(e => e[1]).concat(["Niega antecedentes relevantes"]) });
 AHF_ENF.forEach(([k, nom]) => {
@@ -1198,7 +1198,7 @@ add({ id:"ahf_notas", mode:"primera", section:"Antecedentes familiares", huli:"a
 /* Antecedentes patológicos */
 const APP_ENF = [["dm","Diabetes"],["has","Hipertensión"],["asma","Asma"],["vih","VIH"],["dlp","Dislipidemia"],["hipot","Hipotiroidismo"]];
 add({ id:"app_pat", mode:"primera", section:"Antecedentes patológicos", huli:"app",
-  type:"check", required:true, other:true, exclusive:["Ninguna"],
+  type:"check", required:true, other:true, exclusive:["Ninguna"], advanceOnExclusive:true,
   title:"¿Vives con alguna condición médica que requiera tratamiento?",
     options:APP_ENF.map(e => e[1]).concat(["Ninguna"]) });
 APP_ENF.forEach(([k, nom]) => {
@@ -1340,7 +1340,7 @@ function composeCirugias() {
 }
 const VAC = [["vph","VPH"],["mpox","Mpox"],["menb","Meningitis B"],["hepa","Hepatitis A"],["hepb","Hepatitis B"]];
 add({ id:"vacunas", mode:"primera", section:"Antecedentes patológicos", huli:"app",
-  type:"check", required:false, other:true, exclusive:["Ninguna","No lo sé"],
+  type:"check", required:false, other:true, exclusive:["Ninguna","No lo sé"], advanceOnExclusive:true,
   title:"¿Tienes alguna de estas vacunas?",
   options:VAC.map(v => v[1]).concat(["Ninguna","No lo sé"]) });
 VAC.forEach(([k, nom]) => {
@@ -1547,7 +1547,7 @@ add({ id:"hisopo_anal", mode:"primera", section:"Preguntas personalizadas", huli
   hint:"Un hisopo es un palito largo con algodón en la punta, como un cotonete. Se mete unos centímetros en el ano para tomar una muestra.",
   options:["Sí","No","No recuerdo"] });
 add({ id:"hisopo_cual", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
-  type:"check", required:true, exclusive:["No sé cuál"],
+  type:"check", required:true, exclusive:["No sé cuál"], advanceOnExclusive:true,
   title:"¿Cuál o cuáles pruebas te hicieron con ese hisopo?",
   options:HISOPO_OPTS.concat(["No sé cuál"]),
   showIf:{ id:"hisopo_anal", in:["Sí"] } });
@@ -1731,7 +1731,7 @@ add({ id:"doble_penetracion", mode:"primera", section:"Preguntas personalizadas"
   showIf:{ id:"anorreceptivo", in:["Sí"] },
   showIfFn: muestraSexualidadAnal });
 add({ id:"temas", mode:"primera", section:"Preguntas personalizadas", huli:"observaciones",
-  type:"check", required:true, other:true, exclusive:["Ninguna"],
+  type:"check", required:true, other:true, exclusive:["Ninguna"], advanceOnExclusive:true,
   title:"¿Quieres platicar de alguno de estos temas?",
   options:[
     "Prevencion de cancer anal con Papanicolaou (citología anal) y anoscopia de alta resolución",
