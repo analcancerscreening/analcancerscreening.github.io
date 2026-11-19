@@ -640,7 +640,7 @@ add({ id:"apellido2", mode:"primera", also:"seguimiento", section:"Ficha básica
 add({ id:"fnac", mode:"primera", also:"seguimiento", section:"Ficha básica", huli:"ficha",
   type:"date", required:true, title:"Fecha de nacimiento" });
 add({ id:"sexo_bio", mode:"primera", section:"Ficha básica", huli:"ficha",
-  type:"mc", required:true, title:"Sexo biológico",
+  type:"mc", required:true, title:"Sexo asignado al nacimiento",
   options:["Hombre","Mujer","Intersexual"] });
 add({ id:"identidad", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"mc", required:true, other:true,
@@ -2521,7 +2521,7 @@ function huliFields() {
   addF("Ficha básica", "Nombre", ans("nombre"));
   addF("Ficha básica", "Primer apellido", ans("apellido1"));
   addF("Ficha básica", "Segundo apellido", ans("apellido2"));
-  addF("Ficha básica", "Sexo biológico", ans("sexo_bio"));
+  addF("Ficha básica", "Sexo asignado al nacimiento", ans("sexo_bio"));
   addF("Ficha básica", "Género", ans("genero"));
   addF("Ficha básica", "Fecha de nacimiento", composeFechaNac());
   addF("Ficha básica", "Estado de nacimiento", composeEstadoNac());
