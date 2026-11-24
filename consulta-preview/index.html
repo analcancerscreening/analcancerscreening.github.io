@@ -1395,12 +1395,12 @@ add({ id:"telefono", mode:"primera", also:"seguimiento", section:"Ficha básica"
   title:"Estado civil, teléfono, correo, CURP y fecha de nacimiento",
   titleFn: () => state.mode === "seguimiento" ? "Datos del paciente" : "Estado civil, teléfono, correo, CURP y fecha de nacimiento",
   telHint:"Elige la clave de tu país y escribe tu número de 10 dígitos." });
-add({ id:"peso", mode:"seguimiento", section:"Ficha básica", huli:"ficha",
+add({ id:"peso", mode:"primera", also:"seguimiento", section:"Ficha básica", huli:"ficha",
   type:"text", required:true, title:"Peso", suffix:"kg",
-  showIfFn: () => false /* va en Datos del paciente, 24/11/2026 */ });
-add({ id:"talla", mode:"seguimiento", section:"Ficha básica", huli:"ficha",
+  showIfFn: () => false /* va en la pantalla de teléfono/datos, 24/11/2026 */ });
+add({ id:"talla", mode:"primera", also:"seguimiento", section:"Ficha básica", huli:"ficha",
   type:"text", required:true, title:"Talla (m)", suffix:"m",
-  showIfFn: () => false /* va en Datos del paciente, 24/11/2026 */ });
+  showIfFn: () => false /* va en la pantalla de teléfono/datos, 24/11/2026 */ });
 const LADAS = [
   ["🇲🇽 México","+52"],["🇺🇸 Estados Unidos","+1"],["🇨🇦 Canadá","+1"],["🇵🇷 Puerto Rico","+1"],
   ["🇦🇷 Argentina","+54"],
@@ -4549,7 +4549,7 @@ function isAnswered(q) {
   if (q.type === "telcc" && !telOk(v)) return false;
   if (q.withEmail && !EMAIL_RE.test(String(val("correo") || "").trim())) return false;
   if (q.type === "telcc" && state.mode === "seguimiento" && !nombreOk()) return false;
-  if (q.type === "telcc" && state.mode === "seguimiento" && !pesoTallaOk()) return false;
+  if (q.type === "telcc" && !pesoTallaOk()) return false;
   if (q.withCurp && !curpOk()) return false;
   if (q.withFnac && !fnacOk()) return false;
   if (q.withCivil && state.mode !== "seguimiento" && !civilOk()) return false;
@@ -4749,7 +4749,7 @@ function canProceed(q) {
   if (q.withFnac && !fnacOk()) return false;
   if (q.withCivil && state.mode !== "seguimiento" && !civilOk()) return false;
   if (q.type === "telcc" && state.mode === "seguimiento" && !nombreOk()) return false;
-  if (q.type === "telcc" && state.mode === "seguimiento" && !pesoTallaOk()) return false;
+  if (q.type === "telcc" && !pesoTallaOk()) return false;
   if (q.id === "fnac" && !fnacOk()) return false;
   if (q.type === "mascrel" && !(mascOk() && religionOk())) return false;
   if (q.type === "mascnombres" && !mascNombresOk()) return false;
@@ -5388,7 +5388,7 @@ function renderInput(q) {
       if (nc) nc.addEventListener("click", () => syncFnac());
       maybePrefillFnac();
     }
-    if (sg) {
+    {
       const medida = (id, lbl, suf, ph) => {
         box = parte(() => medidaOk(id));
         const l = el("label", { className:"pair-lbl" }); l.textContent = lbl; l.htmlFor = "inp-" + id;
