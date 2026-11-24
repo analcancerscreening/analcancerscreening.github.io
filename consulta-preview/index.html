@@ -2845,7 +2845,7 @@ add({ id:"anorreceptivo", mode:"primera", section:"Preguntas personalizadas", hu
 add({ id:"dispareunia", mode:"primera", section:"Preguntas personalizadas", huli:"personalizadas",
   type:"mc", required:true, chips:true, chipsRow2:[],
   bootySlot:"booty_reposo",
-  bootyPick: function(){ return val("dispareunia") === "Sí" ? "booty_mueca" : "booty_reposo"; },
+  bootyPick: function(){ return val("dispareunia") === "Sí" ? "booty_dolor" : "booty_reposo"; },
   title:"¿Te duele, o suele dolerte de vez en cuando, en el sexo anal?",
   options:["No","Sí"],
   showIf:{ id:"anorreceptivo", in:["Sí"] },
@@ -3752,7 +3752,8 @@ const BOOTY_MASK = {
   booty_apenado: { base:"assets/booty_icons/APROBADO_booty_apenado_v7b", label:"Booty apenado, cubriéndose la cara con las aletas", capas:["relleno","rubor","linea"], fallback:"assets/booty_icons/APROBADO_booty_apenado_v7b_t.png" },
   // Reposo oficial (Dr. Agus 24/11/2026). Tres capas como apenado v7b: relleno (blanco) → rubor → línea, color de tema, precarga sincronizada. El rubor está vacío a propósito.
   booty_reposo: { base:"assets/booty_icons/APROBADO_booty_reposo", label:"Booty en reposo, sonriendo", capas:["relleno","rubor","linea"], fallback:"assets/booty_icons/APROBADO_booty_reposo_t.png" },
-  booty_mueca: { emoji:"😣", label:"Booty con gesto de dolor (ilustración pendiente)" },
+  // Dolor oficial (Dr. Agus 24/11/2026). Tres capas como apenado v7b y reposo: relleno (blanco) → rubor → línea, color de tema. El rubor está vacío a propósito.
+  booty_dolor: { base:"assets/booty_icons/APROBADO_booty_dolor", label:"Booty con gesto de dolor", capas:["relleno","rubor","linea"], fallback:"assets/booty_icons/APROBADO_booty_dolor_t.png" },
   booty_abrazo: { base:"assets/booty_icons/booty_abrazo", label:"Booty dando un abrazo cálido", sinRubor:true, fallback:"assets/booty_icons/booty_abrazo_t.png" },
   booty_panza_dolor: { base:"assets/booty_icons/booty_panza_dolor_v2", label:"Booty con malestar, tocándose la panza", sinRubor:true, fallback:"assets/booty_icons/booty_panza_dolor_v2_t.png" },
   booty_baile: { img:"assets/booty_baile_loop.gif", label:"Booty bailando, sin malestar" }
