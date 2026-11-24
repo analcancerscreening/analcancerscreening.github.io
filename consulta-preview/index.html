@@ -3750,7 +3750,8 @@ const BOOTY_MASK = {
   booty_perdida_peso_drag: { base:"assets/booty_icons/APROBADO_booty_perdida_peso_drag", label:"Booty y la pérdida de peso", sinRubor:true },
   // Apenado v7b (oficial, Dr. Agus 24/11/2026). Tres capas: relleno → rubor → línea, color de tema, precarga sincronizada.
   booty_apenado: { base:"assets/booty_icons/APROBADO_booty_apenado_v7b", label:"Booty apenado, cubriéndose la cara con las aletas", capas:["relleno","rubor","linea"], fallback:"assets/booty_icons/APROBADO_booty_apenado_v7b_t.png" },
-  booty_reposo: { base:"assets/booty_icons/booty_reposo_v1", label:"Booty en reposo, sonriendo", sinRubor:true, fallback:"assets/booty_icons/BOOTY_REPOSO_original.png" },
+  // Reposo oficial (Dr. Agus 24/11/2026). Tres capas como apenado v7b: relleno (blanco) → rubor → línea, color de tema, precarga sincronizada. El rubor está vacío a propósito.
+  booty_reposo: { base:"assets/booty_icons/APROBADO_booty_reposo", label:"Booty en reposo, sonriendo", capas:["relleno","rubor","linea"], fallback:"assets/booty_icons/APROBADO_booty_reposo_t.png" },
   booty_mueca: { emoji:"😣", label:"Booty con gesto de dolor (ilustración pendiente)" },
   booty_abrazo: { base:"assets/booty_icons/booty_abrazo", label:"Booty dando un abrazo cálido", sinRubor:true, fallback:"assets/booty_icons/booty_abrazo_t.png" },
   booty_panza_dolor: { base:"assets/booty_icons/booty_panza_dolor_v2", label:"Booty con malestar, tocándose la panza", sinRubor:true, fallback:"assets/booty_icons/booty_panza_dolor_v2_t.png" },
