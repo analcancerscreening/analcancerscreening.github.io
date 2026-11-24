@@ -556,6 +556,12 @@ select.field { appearance: auto; background: #fff; }
 .numunit select.field { flex: 1 1 auto; min-width: 0; }
 .numunit.telcc select.field { flex: 0 0 34%; }
 .numunit.telcc input.field { flex: 1 1 auto; }
+.datos-top{margin-bottom:8px}
+.curp-alts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.curp-alts .num-nose{margin-top:0}
+.booty-mask .booty-anim-c{position:absolute;inset:0;width:100%;height:100%;display:block}
+.booty-mask.booty-anim-on .capa{visibility:hidden}
+.booty-mask.ratio-480-600{aspect-ratio:480/600}
 .dev-btn {
   display: inline-block; margin-top: 10px;
   background: none; border: none; color: var(--muted);
@@ -1136,7 +1142,7 @@ IMAGES.colono_polipos = "data:image/svg+xml;utf8,%3Csvg%20viewBox%3D%220%200%201
 IMAGES.colono_anormal = "data:image/svg+xml;utf8,%3Csvg%20viewBox%3D%220%200%20120%2090%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M18%2054c8-16%2020-24%2040-24%2010%200%2016%202%2022%200%208-3%2014-2%2022%208%22%20fill%3D%22none%22%20stroke%3D%22%237FA7D9%22%20stroke-width%3D%2214%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M18%2054c8-16%2020-24%2040-24%2010%200%2016%202%2022%200%208-3%2014-2%2022%208%22%20fill%3D%22none%22%20stroke%3D%22%23F4F8FC%22%20stroke-width%3D%228%22%20stroke-linecap%3D%22round%22/%3E%3Ccircle%20cx%3D%2218%22%20cy%3D%2254%22%20r%3D%227%22%20fill%3D%22%23D7E6F6%22%20stroke%3D%22%237FA7D9%22%20stroke-width%3D%223%22/%3E%3Ccircle%20cx%3D%22102%22%20cy%3D%2238%22%20r%3D%227%22%20fill%3D%22%23D7E6F6%22%20stroke%3D%22%237FA7D9%22%20stroke-width%3D%223%22/%3E%3Cpath%20d%3D%22M64%2022c6-8%2016-8%2018%202%203%208-2%2014-8%2016-8%202-14-4-10-18z%22%20fill%3D%22%23C45C5C%22%20stroke%3D%22%238B2E2E%22%20stroke-width%3D%222%22/%3E%3C/svg%3E";
 IMAGES.colono_otro = "data:image/svg+xml;utf8,%3Csvg%20viewBox%3D%220%200%20120%2090%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Ccircle%20cx%3D%2260%22%20cy%3D%2245%22%20r%3D%2228%22%20fill%3D%22%23FFF6D8%22%20stroke%3D%22%23E0A800%22%20stroke-width%3D%223%22/%3E%3Ccircle%20cx%3D%2248%22%20cy%3D%2245%22%20r%3D%224%22%20fill%3D%22%235C677D%22/%3E%3Ccircle%20cx%3D%2260%22%20cy%3D%2245%22%20r%3D%224%22%20fill%3D%22%235C677D%22/%3E%3Ccircle%20cx%3D%2272%22%20cy%3D%2245%22%20r%3D%224%22%20fill%3D%22%235C677D%22/%3E%3Cpath%20d%3D%22M78%2028a10%2010%200%201%201%206%2016%22%20fill%3D%22none%22%20stroke%3D%22%235C677D%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22/%3E%3Ccircle%20cx%3D%2286%22%20cy%3D%2252%22%20r%3D%222.4%22%20fill%3D%22%235C677D%22/%3E%3C/svg%3E";
 IMAGES.dx_panza_booty = "assets/booty_icons/APROBADO_booty_panza_nauseas_t.png";
-IMAGES.dx_baile_booty = "assets/booty_baile_loop.gif";
+IMAGES.dx_baile_booty = "assets/booty_icons/APROBADO_booty_bailarin_t.png";
 IMAGES.ic_si = "data:image/svg+xml;utf8," + encodeURIComponent("<svg viewBox=\"0 0 120 90\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"60\" cy=\"45\" r=\"30\" fill=\"#CDEFD9\"/><path d=\"M45 46l10 10 20-22\" fill=\"none\" stroke=\"#2C8F5B\" stroke-width=\"7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>");
 IMAGES.ic_no = "data:image/svg+xml;utf8," + encodeURIComponent("<svg viewBox=\"0 0 120 90\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"60\" cy=\"45\" r=\"30\" fill=\"#ECEFF3\"/><path d=\"M48 33l24 24M72 33L48 57\" stroke=\"#6B7787\" stroke-width=\"7\" stroke-linecap=\"round\"/></svg>");
 // Íconos de lubricante (20/11/2026)
@@ -1320,15 +1326,18 @@ add({ id:"hobbies", mode:"primera", section:"Ficha básica", huli:"motivo",
   hint:"Tus pasatiempos: lo que disfrutas en tu tiempo libre (por ejemplo, deporte, música, leer, cocinar, viajar).",
   placeholder:"Por ejemplo: correr, ver series, salir con amigos" });
 add({ id:"nombre", mode:"primera", also:"seguimiento", section:"Ficha básica", huli:"ficha",
-  type:"text", required:true, title:"Nombre o nombres", placeholder:"Tu(s) nombre(s)" });
+  type:"text", required:true, title:"Nombre o nombres", placeholder:"Tu(s) nombre(s)",
+  showIfFn: () => state.mode !== "seguimiento" /* en seguimiento va en Datos del paciente, 24/11/2026 */ });
 add({ id:"apellido1", mode:"primera", also:"seguimiento", section:"Ficha básica", huli:"ficha",
-  type:"text", required:true, title:"Primer apellido", placeholder:"Primer apellido" });
+  type:"text", required:true, title:"Primer apellido", placeholder:"Primer apellido",
+  showIfFn: () => state.mode !== "seguimiento" });
 add({ id:"apellido2", mode:"primera", also:"seguimiento", section:"Ficha básica", huli:"ficha",
   type:"text", required:false, title:"Segundo apellido",
-  hint:"Si no tienes, déjalo en blanco.", placeholder:"Segundo apellido" });
+  hint:"Si no tienes, déjalo en blanco.", placeholder:"Segundo apellido",
+  showIfFn: () => state.mode !== "seguimiento" });
 add({ id:"fnac", mode:"primera", also:"seguimiento", section:"Ficha básica", huli:"ficha",
   type:"date", required:true, title:"Fecha de nacimiento",
-  showIfFn: () => state.mode !== "primera" /* en primera va en la pantalla de CURP, 24/11/2026 */ });
+  showIfFn: () => false /* primera y seguimiento: va en la pantalla combinada, 24/11/2026 */ });
 add({ id:"sexo_bio", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"mc", required:true, grid:2, gridFit:true, gridClass:"sexo-grid", slideUp:true, titleEmph:"asignado",
   title:"Sexo asignado al nacimiento",
@@ -1381,18 +1390,43 @@ add({ id:"tiene_curp", mode:"primera", section:"Ficha básica", huli:"ficha",
 add({ id:"curp", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"text", required:true, title:"CURP", placeholder:"18 caracteres",
   showIf:{ id:"tiene_curp", in:["Sí"] }, showIfFn: () => false /* va junto con telefono */ });
-add({ id:"telefono", mode:"primera", section:"Ficha básica", huli:"ficha",
+add({ id:"telefono", mode:"primera", also:"seguimiento", section:"Ficha básica", huli:"ficha",
   type:"telcc", required:true, withEmail:true, withCurp:true, withCivil:true, withFnac:true,
   title:"Estado civil, teléfono, correo, CURP y fecha de nacimiento",
+  titleFn: () => state.mode === "seguimiento" ? "Datos del paciente" : "Estado civil, teléfono, correo, CURP y fecha de nacimiento",
   telHint:"Elige la clave de tu país y escribe tu número de 10 dígitos." });
+add({ id:"peso", mode:"seguimiento", section:"Ficha básica", huli:"ficha",
+  type:"text", required:true, title:"Peso", suffix:"kg",
+  showIfFn: () => false /* va en Datos del paciente, 24/11/2026 */ });
+add({ id:"talla", mode:"seguimiento", section:"Ficha básica", huli:"ficha",
+  type:"text", required:true, title:"Talla (m)", suffix:"m",
+  showIfFn: () => false /* va en Datos del paciente, 24/11/2026 */ });
 const LADAS = [
-  ["🇲🇽 México","+52"],["🇺🇸 Estados Unidos","+1"],["🇨🇦 Canadá","+1"],["🇨🇴 Colombia","+57"],
-  ["🇦🇷 Argentina","+54"],["🇨🇱 Chile","+56"],["🇵🇪 Perú","+51"],["🇬🇹 Guatemala","+502"],
-  ["🇻🇪 Venezuela","+58"],["🇧🇷 Brasil","+55"],["🇪🇸 España","+34"]
+  ["🇲🇽 México","+52"],["🇺🇸 Estados Unidos","+1"],["🇨🇦 Canadá","+1"],["🇵🇷 Puerto Rico","+1"],
+  ["🇦🇷 Argentina","+54"],
+  ["🇨🇴 Colombia","+57"],["🇨🇱 Chile","+56"],["🇵🇪 Perú","+51"],["🇻🇪 Venezuela","+58"],
+  ["🇧🇷 Brasil","+55"],["🇪🇨 Ecuador","+593"],["🇧🇴 Bolivia","+591"],["🇵🇾 Paraguay","+595"],
+  ["🇺🇾 Uruguay","+598"],["🇬🇹 Guatemala","+502"],["🇭🇳 Honduras","+504"],["🇸🇻 El Salvador","+503"],
+  ["🇳🇮 Nicaragua","+505"],["🇨🇷 Costa Rica","+506"],["🇵🇦 Panamá","+507"],["🇨🇺 Cuba","+53"],
+  ["🇩🇴 República Dominicana","+1"],["🇭🇹 Haití","+509"]
 ];
-function telPartes() {
-  const m = String(val("telefono") || "").match(/^(\+\d+)\s*(\d*)$/);
-  return m ? { cc: m[1], num: m[2] } : { cc: "+52", num: String(val("telefono") || "").replace(/\D/g, "").slice(-10) };
+function parseTel(v) {
+  const raw = String(v || "").replace(/\s+/g, "");
+  const codes = [];
+  LADAS.forEach(function (x) { if (codes.indexOf(x[1]) < 0) codes.push(x[1]); });
+  codes.sort(function (a, b) { return b.length - a.length; });
+  for (let i = 0; i < codes.length; i++) {
+    if (raw.indexOf(codes[i]) === 0) return { cc: codes[i], num: raw.slice(codes[i].length).replace(/\D/g, "") };
+  }
+  return { cc: "+52", num: raw.replace(/\D/g, "") };
+}
+function telPartes() { return parseTel(val("telefono")); }
+function telMaxLen(cc) { return (cc === "+52" || cc === "+1") ? 10 : 11; }
+function telOk(v) {
+  const p = (v == null || v === "") ? telPartes() : parseTel(v);
+  const n = String(p.num || "");
+  if (p.cc === "+52" || p.cc === "+1") return n.length === 10;
+  return n.length >= 8 && n.length <= 11;
 }
 add({ id:"correo", mode:"primera", section:"Ficha básica", huli:"ficha",
   type:"email", required:false, title:"Correo electrónico", placeholder:"tucorreo@ejemplo.com",
@@ -3721,6 +3755,7 @@ const BLOCK_OF = {};
 // Preguntas que ya no tienen pantalla propia porque se capturan dentro de otra (pantallas combinadas).
 // Su respuesta debe seguir saliendo en la nota y en la ficha: cuentan como visibles si su pantalla anfitriona lo es.
 const MERGED_INTO = { correo:"telefono", tiene_curp:"telefono", curp:"telefono", civil:"telefono",
+  nombre:"telefono", apellido1:"telefono", apellido2:"telefono", fnac:"telefono", peso:"telefono", talla:"telefono",
   estado_nac_otro:"estado_nac", estado_res:"estado_nac", estado_res_otro:"estado_nac",
   religion:"mascotas", mascotas_cual:"mascotas" };
 APP_ENF.map(e => e[0]).concat(["otro"]).forEach(k => { MERGED_INTO["app_"+k+"_med"] = "app_"+k+"_desde"; });
@@ -3746,7 +3781,8 @@ const BOOTY_MASK = {
   // variante drag (aprobada): pacientes LGBT. Si faltara el archivo, no se muestra imagen
   booty_bano_tiempo: { base:"assets/booty_icons/APROBADO_booty_bano_tiempo", label:"Booty en el baño", sinRubor:true },
   booty_cirujano: { base:"assets/booty_icons/booty_cirujano_v1", label:"Booty vestido de cirujano", sinRubor:true },
-  booty_graduacion: { base:"assets/booty_icons/booty_graduacion_v1", label:"Booty con birrete y toga", sinRubor:true },
+  // Graduado oficial (Dr. Agus 24/11/2026), en «Último grado de estudios». Tres capas como v7b: relleno (blanco) → rubor → línea, color de tema. Animado (borla).
+  booty_graduacion: { base:"assets/booty_icons/APROBADO_booty_graduado", label:"Booty graduado, con birrete", capas:["relleno","rubor","linea"], anim:true, fallback:"assets/booty_icons/APROBADO_booty_graduado_t.webp" },
   booty_perdida_peso_drag: { base:"assets/booty_icons/APROBADO_booty_perdida_peso_drag", label:"Booty y la pérdida de peso", sinRubor:true },
   // Apenado v7b (oficial, Dr. Agus 24/11/2026). Tres capas: relleno → rubor → línea, color de tema, precarga sincronizada.
   booty_apenado: { base:"assets/booty_icons/APROBADO_booty_apenado_v7b", label:"Booty apenado, cubriéndose la cara con las aletas", capas:["relleno","rubor","linea"], fallback:"assets/booty_icons/APROBADO_booty_apenado_v7b_t.png" },
@@ -3757,7 +3793,8 @@ const BOOTY_MASK = {
   booty_abrazo: { base:"assets/booty_icons/booty_abrazo", label:"Booty dando un abrazo cálido", sinRubor:true, fallback:"assets/booty_icons/booty_abrazo_t.png" },
   // Panza náuseas oficial (Dr. Agus 24/11/2026), para doxy_malestar Sí. Tres capas como v7b/reposo/dolor: relleno (blanco) → rubor → línea, color de tema. El rubor está vacío a propósito.
   booty_panza_nauseas: { base:"assets/booty_icons/APROBADO_booty_panza_nauseas", label:"Booty con malestar intestinal, tocándose la panza", capas:["relleno","rubor","linea"], fallback:"assets/booty_icons/APROBADO_booty_panza_nauseas_t.png" },
-  booty_baile: { img:"assets/booty_baile_loop.gif", label:"Booty bailando, sin malestar" }
+  // Bailarín oficial (Dr. Agus 24/11/2026), para doxy_malestar No. Tres capas como v7b, animado 80 cuadros, fondo transparente.
+  booty_baile: { base:"assets/booty_icons/APROBADO_booty_bailarin", label:"Booty bailando, sin malestar", capas:["relleno","rubor","linea"], anim:true, ratio:"480/600", fallback:"assets/booty_icons/APROBADO_booty_bailarin.gif" }
 };
 /* Imagen de pérdida de peso (Dr. Agus 20/11/2026): LGBT -> drag; los demás (incluye hombre heterosexual,
    sin respuesta o "Prefiero no responder") -> bikini (v3).
@@ -3796,10 +3833,89 @@ function bootyMaskUrlOk(u) {
 function bootyMaskFirst(urls) {
   return urls.reduce((p, u) => p.then(got => got || (u ? bootyMaskUrlOk(u) : "")), Promise.resolve(""));
 }
+function bootyAnimImgFallback(box, d) {
+  const u = d.fallback || (d.base ? d.base + "_t.webp" : "");
+  if (!u) return;
+  box.querySelectorAll(".capa").forEach(n => n.remove());
+  box.classList.add("booty-img");
+  box.classList.remove("booty-anim-on");
+  const im = el("img"); im.src = u; im.alt = d.label || ""; im.setAttribute("decoding","async");
+  box.appendChild(im);
+}
+function bootyStartAnim(box, d, urls) {
+  if (!d.anim) return;
+  const capas = d.capas || [];
+  const fallback = () => bootyAnimImgFallback(box, d);
+  if (typeof ImageDecoder === "undefined") { fallback(); return; }
+  let dead = false, timer = 0;
+  const stop = () => { dead = true; if (timer) { clearTimeout(timer); timer = 0; } };
+  const watch = setInterval(() => { if (!box.isConnected) { stop(); clearInterval(watch); } }, 800);
+  Promise.all(urls.map(function (u) {
+    if (!u) return Promise.resolve(null);
+    return fetch(u).then(r => r.ok ? r.arrayBuffer() : Promise.reject(new Error("mask"))).then(buf => {
+      const dec = new ImageDecoder({ data: buf, type: "image/webp" });
+      return (dec.completed ? dec.completed.catch(() => {}) : Promise.resolve()).then(() => dec);
+    }).catch(() => null);
+  })).then(function (decs) {
+    if (dead || !decs.some(Boolean)) { fallback(); return; }
+    const main = decs.find(Boolean);
+    const tr = main.tracks && main.tracks.selectedTrack;
+    const n = (tr && tr.frameCount) || 1;
+    return main.decode({ frameIndex: 0 }).then(function (first) {
+      const w = first.image.displayWidth, h = first.image.displayHeight;
+      first.image.close();
+      const canvas = document.createElement("canvas");
+      canvas.className = "booty-anim-c";
+      canvas.setAttribute("aria-hidden", "true");
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      const ctx = canvas.getContext("2d");
+      ctx.scale(dpr, dpr);
+      const off = document.createElement("canvas");
+      off.width = w; off.height = h;
+      const octx = off.getContext("2d");
+      box.appendChild(canvas);
+      box.classList.add("booty-anim-on");
+      let i = 0;
+      function tick() {
+        if (dead || !box.isConnected) { stop(); return; }
+        const tema = (getComputedStyle(box).getPropertyValue("--tema") || "").trim() || bootyTemaColor();
+        ctx.clearRect(0, 0, w, h);
+        let delay = 40;
+        const jobs = [];
+        for (let li = 0; li < capas.length; li++) {
+          const dec = decs[li];
+          if (!dec) continue;
+          const color = capas[li] === "relleno" ? "#fff" : tema;
+          const fc = (dec.tracks && dec.tracks.selectedTrack && dec.tracks.selectedTrack.frameCount) || n;
+          jobs.push(dec.decode({ frameIndex: i % fc }).then(function (r) {
+            if (r.image.duration) delay = Math.max(delay, r.image.duration / 1000);
+            octx.clearRect(0, 0, w, h);
+            octx.globalCompositeOperation = "source-over";
+            octx.drawImage(r.image, 0, 0, w, h);
+            octx.globalCompositeOperation = "source-in";
+            octx.fillStyle = color;
+            octx.fillRect(0, 0, w, h);
+            ctx.drawImage(off, 0, 0);
+            r.image.close();
+          }).catch(() => {}));
+        }
+        Promise.all(jobs).then(function () {
+          i++;
+          if (dead) return;
+          timer = setTimeout(tick, Math.max(20, Math.min(delay || 40, 200)));
+        });
+      }
+      tick();
+    });
+  }).catch(fallback);
+}
 function bootyMask(slot) {
   const d = BOOTY_MASK[slot];
   if (!d) return null;
   const box = el("div", { className:"booty-mask" }); box.setAttribute("role", "img"); box.setAttribute("aria-label", d.label || "");
+  if (d.ratio) box.classList.add("ratio-" + String(d.ratio).replace("/", "-"));
   if (d.emoji) {
     box.classList.add("booty-emoji");
     box.textContent = d.emoji;
@@ -3847,6 +3963,7 @@ function bootyMask(slot) {
   if (d.capas && d.capas.length) {
     Promise.all(d.capas.map(c => bootyMaskFirst(layerUrl(c)))).then(found => {
       if (!montarCapas(found)) bootyMaskFirst(fallbackUrls).then(montarFallback);
+      else if (d.anim) bootyStartAnim(box, d, found);
     });
     return box;
   }
@@ -4429,10 +4546,13 @@ function isAnswered(q) {
     return true;
   }
   if (v == null || String(v).trim() === "") return false;
-  if (q.type === "telcc" && !/^\+\d+ \d{10}$/.test(String(v))) return false;
+  if (q.type === "telcc" && !telOk(v)) return false;
+  if (q.withEmail && !EMAIL_RE.test(String(val("correo") || "").trim())) return false;
+  if (q.type === "telcc" && state.mode === "seguimiento" && !nombreOk()) return false;
+  if (q.type === "telcc" && state.mode === "seguimiento" && !pesoTallaOk()) return false;
   if (q.withCurp && !curpOk()) return false;
   if (q.withFnac && !fnacOk()) return false;
-  if (q.withCivil && !civilOk()) return false;
+  if (q.withCivil && state.mode !== "seguimiento" && !civilOk()) return false;
   if (q.id === "fnac" && !fnacOk()) return false;
   if (q.type === "mascrel" && !(mascOk() && religionOk())) return false;
   if (q.type === "mascnombres" && !mascNombresOk()) return false;
@@ -4481,7 +4601,7 @@ function displayAnswer(qOrId) {
 function ans(id) { return displayAnswer(id); }
 function has(id) { return !!(ans(id) || "").trim(); }
 function fullName() {
-  return [ans("nombre"), ans("apellido1"), ans("apellido2")].filter(Boolean).join(" ");
+  return [val("nombre"), val("apellido1"), val("apellido2")].map(x => String(x || "").trim()).filter(Boolean).join(" ");
 }
 
 /* ========== Render ========== */
@@ -4588,7 +4708,34 @@ function bindFnacInput(inp, navQ, opts) {
   return sync;
 }
 
-function curpOk() { return val("tiene_curp") === "No tengo CURP" || String(val("curp") || "").length === 18; }
+function curpValido(s) {
+  const c = String(s || "").toUpperCase().trim();
+  return /^[A-ZÑ]{4}\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])[HM][A-Z]{5}[A-Z0-9]\d$/.test(c);
+}
+function curpOk() {
+  const c = String(val("curp") || "").trim();
+  return val("tiene_curp") === "No tengo CURP" || c === "No lo sabe" || curpValido(c);
+}
+function nombreOk() {
+  return !!(String(val("nombre") || "").trim() && String(val("apellido1") || "").trim());
+}
+function normaMedida(s) { return String(s || "").trim().replace(",", "."); }
+function parseMedida(s) {
+  const t0 = normaMedida(s);
+  if (!/^\d+(\.\d+)?$/.test(t0)) return null;
+  const n = parseFloat(t0);
+  return isFinite(n) ? n : null;
+}
+function medidaOk(id) {
+  const v = String(val(id) || "").trim();
+  if (v === "No lo sabe") return true;
+  const n = parseMedida(v);
+  if (n == null) return false;
+  if (id === "talla") return n >= 0.5 && n <= 2.5;
+  if (id === "peso") return n >= 1 && n <= 400;
+  return true;
+}
+function pesoTallaOk() { return medidaOk("peso") && medidaOk("talla"); }
 function canProceed(q) {
   if (!q) return false;
   if (q.chain && !q._inChain) return chainOk(q);
@@ -4600,7 +4747,9 @@ function canProceed(q) {
   if (q.withEmail) { const c = String(val("correo") || "").trim(); if (!EMAIL_RE.test(c)) return false; } // correo obligatorio (Dr. Agus 20/11/2026)
   if (q.withCurp && !curpOk()) return false;
   if (q.withFnac && !fnacOk()) return false;
-  if (q.withCivil && !civilOk()) return false;
+  if (q.withCivil && state.mode !== "seguimiento" && !civilOk()) return false;
+  if (q.type === "telcc" && state.mode === "seguimiento" && !nombreOk()) return false;
+  if (q.type === "telcc" && state.mode === "seguimiento" && !pesoTallaOk()) return false;
   if (q.id === "fnac" && !fnacOk()) return false;
   if (q.type === "mascrel" && !(mascOk() && religionOk())) return false;
   if (q.type === "mascnombres" && !mascNombresOk()) return false;
@@ -5076,6 +5225,7 @@ function renderInput(q) {
       box.appendChild(bq);
     }
   } else if (q.type === "telcc") {
+    const sg = state.mode === "seguimiento";
     const p = telPartes();
     const wrap = el("div", { className:"numunit telcc" });
     const sel = el("select", { className:"field", id:"inp-cc" });
@@ -5084,25 +5234,69 @@ function renderInput(q) {
     let k0 = state.telccIdx != null ? state.telccIdx : LADAS.findIndex(x => x[1] === p.cc);
     sel.value = String(k0 >= 0 ? k0 : 0);
     const inp = el("input", { className:"field", type:"tel", id:"inp-tel" });
-    inp.inputMode = "numeric"; inp.maxLength = 10; inp.placeholder = "10 dígitos"; inp.autocomplete = "tel-national";
+    inp.inputMode = "numeric"; inp.placeholder = "10 dígitos"; inp.autocomplete = "tel-national";
     inp.value = p.num;
     const sync = () => {
-      inp.value = inp.value.replace(/\D/g, "").slice(0, 10);
+      const cc = LADAS[Number(sel.value)][1];
+      const maxn = telMaxLen(cc);
+      inp.maxLength = maxn;
+      inp.placeholder = (cc === "+52" || cc === "+1") ? "10 dígitos" : "8 a 11 dígitos";
+      inp.value = inp.value.replace(/\D/g, "").slice(0, maxn);
       state.telccIdx = Number(sel.value);
-      state.answers[q.id] = LADAS[Number(sel.value)][1] + " " + inp.value;
+      state.answers[q.id] = cc + inp.value;
       updateNav(q);
     };
+    inp.maxLength = telMaxLen(LADAS[Number(sel.value)][1]);
     inp.addEventListener("input", sync); sel.addEventListener("change", sync);
     const box0 = box, partes = [];
     const parte = (done) => { const p = el("div", { className:"seq-part" }); box0.appendChild(p); partes.push({ node:p, done }); return p; };
-    if (q.withCivil) {
+    let cu, nc, maybePrefillFnac = () => {}, syncFnac = () => {};
+    if (sg) {
+      const top = el("div", { className:"datos-top" });
+      box0.appendChild(top);
+      const addTxt = (id, lbl, ph, required) => {
+        const l = el("label", { className:"pair-lbl" }); l.textContent = lbl; l.htmlFor = "inp-" + id;
+        const ti = el("input", { className:"field", type:"text", id:"inp-" + id });
+        ti.placeholder = ph; ti.value = String(val(id) || "");
+        ti.autocomplete = id === "nombre" ? "given-name" : id === "apellido1" ? "family-name" : "additional-name";
+        ti.addEventListener("input", () => { const v = ti.value; if (v.trim()) state.answers[id] = v; else delete state.answers[id]; updateNav(q); });
+        top.appendChild(l); top.appendChild(ti);
+        if (!required) {
+          const h = el("p", { className:"q-hint" }); h.textContent = "Si no tienes, déjalo en blanco."; top.appendChild(h);
+        }
+      };
+      addTxt("nombre", "Nombre o nombres", "Tu(s) nombre(s)", true);
+      addTxt("apellido1", "Primer apellido", "Primer apellido", true);
+      addTxt("apellido2", "Segundo apellido", "Segundo apellido", false);
+      if (q.withFnac) {
+        const l4 = el("label", { className:"pair-lbl" }); l4.textContent = "Fecha de nacimiento"; l4.htmlFor = "inp-fnac";
+        const fi = el("input", { className:"field", type:"date", id:"inp-fnac" });
+        fi.value = String(val("fnac") || "");
+        const edad = el("p", { className:"q-hint", id:"edad-calc" });
+        const err = el("p", { className:"fnac-err" });
+        const mis = el("p", { className:"fnac-curp-hint" });
+        const stF = { err, edad, mismatch: mis, manual: !state.fnacFromCurp };
+        syncFnac = bindFnacInput(fi, q, stF);
+        maybePrefillFnac = () => {
+          const iso = curpFechaISO(val("curp"));
+          if (!iso) return;
+          if (!val("fnac") || state.fnacFromCurp) {
+            fi.value = iso; state.fnacFromCurp = true; stF.manual = false; syncFnac();
+          } else syncFnac();
+        };
+        top.appendChild(l4); top.appendChild(fi); top.appendChild(edad); top.appendChild(err); top.appendChild(mis);
+        syncFnac();
+      }
+    }
+    if (q.withCivil && !sg) {
       box = parte(civilOk);
       const lc = el("label", { className:"pair-lbl" }); lc.textContent = "Estado civil"; box.appendChild(lc);
       const cq = Q.find(x => x.id === "civil"); if (cq) renderCivil(box, cq, q);
     }
-    box = parte(() => /^\+\d+ \d{10}$/.test(String(val(q.id) || "")));
-    if (q.withEmail) { const l1 = el("label", { className:"pair-lbl" }); l1.textContent = "Teléfono celular"; box.appendChild(l1); }
-    if (q.telHint) { const th = el("p", { className:"q-hint tel-hint" }); th.textContent = q.telHint; box.appendChild(th); }
+    box = parte(() => telOk());
+    if (q.withEmail || sg) { const l1 = el("label", { className:"pair-lbl" }); l1.textContent = sg ? "Teléfono celular (WhatsApp)" : "Teléfono celular"; box.appendChild(l1); }
+    const hintTxt = sg ? "Elige la clave de tu país y escribe tu número de 10 dígitos (WhatsApp)." : (q.telHint || "");
+    if (hintTxt) { const th = el("p", { className:"q-hint tel-hint" }); th.textContent = hintTxt; box.appendChild(th); }
     wrap.appendChild(sel); wrap.appendChild(inp); box.appendChild(wrap);
     if (q.withEmail) {
       box = parte(() => { const c = String(val("correo") || "").trim(); return EMAIL_RE.test(c); });
@@ -5122,27 +5316,53 @@ function renderInput(q) {
     if (q.withCurp) {
       box = parte(curpOk);
       const l3 = el("label", { className:"pair-lbl" }); l3.textContent = "CURP"; l3.htmlFor = "inp-curp";
-      const cu = el("input", { className:"field", type:"text", id:"inp-curp" });
+      cu = el("input", { className:"field", type:"text", id:"inp-curp" });
       cu.maxLength = 18; cu.autocomplete = "off"; cu.autocapitalize = "characters"; cu.spellcheck = false;
       cu.placeholder = "18 caracteres"; cu.style.textTransform = "uppercase";
-      cu.value = String(val("curp") || "");
-      const nc = el("button", { className:"btn ghost num-nose", type:"button" });
+      const curpVal = String(val("curp") || "");
+      cu.value = curpVal === "No lo sabe" ? "" : curpVal;
+      nc = el("button", { className:"btn ghost num-nose", type:"button" });
       nc.textContent = "No tengo CURP";
       if (val("tiene_curp") === "No tengo CURP") nc.classList.add("selected");
+      const nsCurp = el("button", { className:"btn ghost num-nose", type:"button" });
+      nsCurp.textContent = "No lo sé";
+      if (curpVal === "No lo sabe") nsCurp.classList.add("selected");
+      const curpErr = el("p", { className:"q-hint pair-err" });
+      const syncCurpErr = () => {
+        const v = String(val("curp") || "");
+        if (!v || v === "No lo sabe" || val("tiene_curp") === "No tengo CURP") curpErr.textContent = "";
+        else if (v.length < 18) curpErr.textContent = "Deben ser 18 caracteres.";
+        else if (!curpValido(v)) curpErr.textContent = "Revisa tu CURP: deben ser 18 caracteres válidos.";
+        else curpErr.textContent = "";
+      };
       cu.addEventListener("input", () => {
         const v = cu.value.toUpperCase().slice(0, 18);
+        cu.value = v;
+        nsCurp.classList.remove("selected");
         if (v) { state.answers.curp = v; state.answers.tiene_curp = "Sí"; nc.classList.remove("selected"); }
         else { delete state.answers.curp; if (val("tiene_curp") === "Sí") delete state.answers.tiene_curp; }
+        syncCurpErr();
         updateNav(q);
       });
       nc.addEventListener("click", () => {
         cu.value = ""; delete state.answers.curp; state.answers.tiene_curp = "No tengo CURP";
-        nc.classList.add("selected"); updateNav(q);
+        nc.classList.add("selected"); nsCurp.classList.remove("selected");
+        updateNav(q);
         if (canProceed(q)) goNext();
       });
-      box.appendChild(l3); box.appendChild(cu); box.appendChild(nc);
+      nsCurp.addEventListener("click", () => {
+        cu.value = ""; state.answers.curp = "No lo sabe";
+        if (val("tiene_curp") === "No tengo CURP" || val("tiene_curp") === "Sí") delete state.answers.tiene_curp;
+        nsCurp.classList.add("selected"); nc.classList.remove("selected");
+        updateNav(q);
+        if (canProceed(q)) goNext();
+      });
+      const alts = el("div", { className:"curp-alts" });
+      alts.appendChild(nc); alts.appendChild(nsCurp);
+      box.appendChild(l3); box.appendChild(cu); box.appendChild(alts); box.appendChild(curpErr);
+      syncCurpErr();
     }
-    if (q.withFnac) {
+    if (q.withFnac && !sg) {
       box = parte(fnacOk);
       const l4 = el("label", { className:"pair-lbl" }); l4.textContent = "Fecha de nacimiento"; l4.htmlFor = "inp-fnac";
       const fi = el("input", { className:"field", type:"date", id:"inp-fnac" });
@@ -5159,10 +5379,54 @@ function renderInput(q) {
           fi.value = iso; state.fnacFromCurp = true; st.manual = false; syncF();
         } else syncF();
       };
-      cu.addEventListener("input", maybePrefill);
-      nc.addEventListener("click", () => syncF());
+      if (cu) cu.addEventListener("input", maybePrefill);
+      if (nc) nc.addEventListener("click", () => syncF());
       box.appendChild(l4); box.appendChild(fi); box.appendChild(edad); box.appendChild(err); box.appendChild(mis);
       syncF(); maybePrefill();
+    } else if (sg && q.withFnac && cu) {
+      cu.addEventListener("input", maybePrefillFnac);
+      if (nc) nc.addEventListener("click", () => syncFnac());
+      maybePrefillFnac();
+    }
+    if (sg) {
+      const medida = (id, lbl, suf, ph) => {
+        box = parte(() => medidaOk(id));
+        const l = el("label", { className:"pair-lbl" }); l.textContent = lbl; l.htmlFor = "inp-" + id;
+        const mi = el("input", { className:"field", type:"text", id:"inp-" + id });
+        mi.inputMode = "decimal"; mi.placeholder = ph; mi.autocomplete = "off";
+        const cur = String(val(id) || "");
+        mi.value = cur === "No lo sabe" ? "" : cur;
+        const mw = el("div", { className:"num-suffix" });
+        mw.appendChild(mi);
+        const sp = el("span", { className:"num-suffix-lbl" }); sp.textContent = suf;
+        mw.appendChild(sp);
+        const ns = el("button", { className:"btn ghost num-nose", type:"button" });
+        ns.textContent = "No lo sé";
+        if (cur === "No lo sabe") ns.classList.add("selected");
+        const herr = el("p", { className:"q-hint pair-err" });
+        mi.addEventListener("input", () => {
+          let raw = mi.value.replace(/[^\d.,]/g, "");
+          const sep = raw.search(/[.,]/);
+          if (sep >= 0) raw = raw.slice(0, sep + 1) + raw.slice(sep + 1).replace(/[.,]/g, "");
+          if (raw !== mi.value) mi.value = raw;
+          ns.classList.remove("selected");
+          const norm = normaMedida(raw);
+          if (norm) state.answers[id] = norm;
+          else delete state.answers[id];
+          if (id === "talla" && raw && parseMedida(norm) != null && !medidaOk("talla")) herr.textContent = "La talla va en metros, por ejemplo 1.70 (entre 0.50 y 2.50).";
+          else if (id === "peso" && raw && parseMedida(norm) != null && !medidaOk("peso")) herr.textContent = "Revisa el peso en kg.";
+          else herr.textContent = "";
+          updateNav(q);
+        });
+        ns.addEventListener("click", () => {
+          mi.value = ""; state.answers[id] = "No lo sabe"; ns.classList.add("selected");
+          updateNav(q);
+          if (canProceed(q)) goNext();
+        });
+        box.appendChild(l); box.appendChild(mw); box.appendChild(ns); box.appendChild(herr);
+      };
+      medida("peso", "Peso", "kg", "Ej. 70");
+      medida("talla", "Talla (m)", "m", "Ej. 1.70");
     }
     box = box0;
     seqParts(partes);
@@ -6436,9 +6700,17 @@ function composeFechaNac() {
   return fn;
 }
 function composeCURP() {
-  const t = ans("tiene_curp");
+  const t = String(val("tiene_curp") || "");
   if (t === "No tengo CURP" || t === "No tiene CURP") return "No tiene CURP";
-  return ans("curp") || "";
+  const c = String(val("curp") || "").trim();
+  if (c === "No lo sabe") return "No lo sabe";
+  return c;
+}
+function composeMedida(id, suf) {
+  const v = String(val(id) || "").trim();
+  if (!v) return "";
+  if (v === "No lo sabe") return "No lo sabe";
+  return v + " " + suf;
 }
 function pesoDetTxt() {
   if (ans("perdida_peso_det")) return ans("perdida_peso_det");
@@ -6540,6 +6812,8 @@ function huliFields() {
   addF("Ficha básica", "Identificación (CURP)", composeCURP());
   addF("Ficha básica", "Teléfono", ans("telefono"));
   addF("Ficha básica", "Correo", ans("correo"));
+  addF("Ficha básica", "Peso", composeMedida("peso", "kg"));
+  addF("Ficha básica", "Talla", composeMedida("talla", "m"));
   addF("Ficha básica", "Estado civil", ans("civil"));
   addF("Ficha básica", "Ocupación", composeOcupacion());
   addF("Ficha básica", "Estado de residencia", composeEstadoRes());
